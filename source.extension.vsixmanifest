@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="6ca49b7a-1b45-4d4d-8b8b-16cbc261fa55" Version="1.0" Language="en-US" Publisher="Friedrich Brunzema" />
+    <DisplayName>TddHelper</DisplayName>
+    <Description>This package is a clone of TabGroupJumper (https://github.com/mrdooz/TabGroupJumper) and includes functionality from the TestLocator addin (https://visualstudiogallery.msdn.microsoft.com/59355370-8b82-4702-869d-0c6108438e51).</Description>
+    <License>License.txt</License>
+    <GettingStartedGuide>License.txt</GettingStartedGuide>
+    <Icon>Package.ico</Icon>
+    <Tags>Productivity, Unit Test</Tags>
+  </Metadata>
+  <Installation InstalledByMsi="false" AllUsers="true">
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[12.0]" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+    <Dependency Id="Microsoft.VisualStudio.MPF.12.0" DisplayName="Visual Studio MPF 12.0" d:Source="Installed" Version="[12.0]" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+  </Assets>
+</PackageManifest>
