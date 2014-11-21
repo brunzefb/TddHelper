@@ -1,15 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="6ca49b7a-1b45-4d4d-8b8b-16cbc261fa55" Version="1.0" Language="en-US" Publisher="Friedrich Brunzema" />
+    <Identity Id="804fe725-8637-4682-97b5-07ce08876c6b" Version="1.0" Language="en-US" Publisher="DreamWorks" />
     <DisplayName>TddHelper</DisplayName>
-    <Description>This package is a clone of TabGroupJumper (https://github.com/mrdooz/TabGroupJumper) and includes functionality from the TestLocator addin (https://visualstudiogallery.msdn.microsoft.com/59355370-8b82-4702-869d-0c6108438e51).</Description>
+    <Description xml:space="preserve">A helper utilty that exposes commands to move to the next tab group, split windows, and jump to test or implementation files.</Description>
     <License>License.txt</License>
-    <GettingStartedGuide>License.txt</GettingStartedGuide>
-    <Icon>Package.ico</Icon>
-    <Tags>Productivity, Unit Test</Tags>
+    <Icon>Resources\Package.ico</Icon>
+    <Tags>TDD, </Tags>
   </Metadata>
-  <Installation InstalledByMsi="false" AllUsers="true">
+  <Installation InstalledByMsi="false">
     <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[12.0]" />
   </Installation>
   <Dependencies>
