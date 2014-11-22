@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TddHelper", "TddHelper\TddHelper.csproj", "{C7534B37-0FB0-432D-8F47-EAACD78AD460}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TddHelperTest", "TddHelperTest\TddHelperTest.csproj", "{702E3404-6B6A-4EA8-BA30-E760C1616EC2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{C7534B37-0FB0-432D-8F47-EAACD78AD460}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7534B37-0FB0-432D-8F47-EAACD78AD460}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7534B37-0FB0-432D-8F47-EAACD78AD460}.Release|Any CPU.Build.0 = Release|Any CPU
+		{702E3404-6B6A-4EA8-BA30-E760C1616EC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{702E3404-6B6A-4EA8-BA30-E760C1616EC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{702E3404-6B6A-4EA8-BA30-E760C1616EC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{702E3404-6B6A-4EA8-BA30-E760C1616EC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
