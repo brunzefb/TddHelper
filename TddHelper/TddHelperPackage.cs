@@ -20,11 +20,11 @@ using System.IO;
 using System.Runtime.InteropServices;
 using EnvDTE;
 using EnvDTE80;
-using Microsoft.Build.BuildEngine;
+
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Project = EnvDTE.Project;
+
 
 namespace DreamWorks.TddHelper
 {
@@ -35,7 +35,9 @@ namespace DreamWorks.TddHelper
 	public sealed class TddHelperPackage : Package
 	{
 		private const string Document = "Document";
-		private static List<string> _fileList;
+		private const string OpenFileCommand = "File.OpenFile";
+		private const string CsharpFileExtension = ".cs";
+		private const string TestDotCs = "test.cs";
 
 		public TddHelperPackage()
 		{
@@ -70,107 +72,31 @@ namespace DreamWorks.TddHelper
 				return;
 
 			var fullName = dte.ActiveWindow.Document.FullName;
-			var isTest = fullName.ToLower().EndsWith("test.cs");
-			var isCs = fullName.ToLower().EndsWith(".cs");
+			var isTest = fullName.ToLower().EndsWith(TestDotCs);
+			var isCs = fullName.ToLower().EndsWith(CsharpFileExtension);
 
 			if (!isCs)
 				return;
 
-			if (_fileList == null)
-				GetCSharpFilesFromSolution(dte);
+			var helper = new SolutionHelper(dte);
+			helper.GetCSharpFilesFromSolution();
 
 			var fileName = Path.GetFileName(fullName);
 			string targetToActivate;
 			if (!isTest)
-				targetToActivate = FindPathToTestFile(fileName);
+				targetToActivate = helper.FindPathToTestFile(fileName);
 			else
-				targetToActivate = FindPathImplementationFile(fileName);
+				targetToActivate = helper.FindPathImplementationFile(fileName);
 
 			if (!dte.IsOpenFile[EnvDTE.Constants.vsViewKindTextView, targetToActivate])
-				dte.ExecuteCommand("File.OpenFile", targetToActivate);
+				dte.ExecuteCommand(OpenFileCommand, targetToActivate);
 			
-		}
-
-		private string  FindPathToTestFile(string csFile)
-		{
-			var idx = csFile.LastIndexOf('.');
-			if (idx == -1)
-				return string.Empty;
-			var testFileName = csFile.Substring(0, idx) + "Test.cs";
-
-			foreach (var fullPathToFile in _fileList)
-			{
-				var fileName = Path.GetFileName(fullPathToFile);
-				if (String.Equals(fileName, testFileName, StringComparison.OrdinalIgnoreCase))
-					if (File.Exists(fullPathToFile))
-						return fullPathToFile;
-			}
-			return string.Empty;
-		}
-
-		private string FindPathImplementationFile(string csFile)
-		{
-			var idx = csFile.LastIndexOf("Test.cs", StringComparison.Ordinal);
-			if (idx == -1)
-				return string.Empty;
-			var implFile = csFile.Substring(0, idx) + ".cs";
-
-			foreach (var fullPathToFile in _fileList)
-			{
-				var fileName = Path.GetFileName(fullPathToFile);
-				if (String.Equals(fileName, implFile, StringComparison.OrdinalIgnoreCase))
-					if (File.Exists(fullPathToFile))
-						return fullPathToFile;
-			}
-			return string.Empty;
-		}
-
-		private void GetCSharpFilesFromSolution(DTE2 dte)
-		{
-			_fileList = new List<string>();
-			var solution = dte.Solution;
-			var solutionProjects = solution.Projects;
-			var buildEngine = new Microsoft.Build.BuildEngine.Engine();
-			var buildEngineProject = new Microsoft.Build.BuildEngine.Project(buildEngine);
-
-			foreach (var p in solutionProjects)
-			{
-				var project = p as Project;
-				if (project == null)
-					continue;
-
-				if (!project.FileName.EndsWith(".csproj"))
-					continue;
-
-				CollectFilesForProject(project.FileName, buildEngineProject);
-			}
-		}
-
-		private void CollectFilesForProject(string fileName, Microsoft.Build.BuildEngine.Project project)
-		{
-			try
-			{
-				project.Load(fileName);
-			}
-			catch (Exception)
-			{
-				Debug.WriteLine("Problem loading project");
-			}
-
-			BuildItemGroup buildItemGroup = project.GetEvaluatedItemsByName("Compile");
-			foreach (BuildItem buildItem in buildItemGroup)
-			{
-				var directory = Path.GetDirectoryName(fileName);
-				if (directory != null)
-				{
-					string path = Path.Combine(directory, buildItem.Include);
-					_fileList.Add(path);
-				}
-			}
 		}
 
 		
 
+		
+		
 		private void JumpRight(object sender, EventArgs e)
 		{
 			ExecuteJump(true);
@@ -214,6 +140,7 @@ namespace DreamWorks.TddHelper
 			var topLevelWindows = new List<Window>();
 			foreach (Window window in dte.Windows)
 			{
+				
 				if (window.Kind == Document && (window.Left > 0 || window.Top > 0))
 					topLevelWindows.Add(window);
 			}
