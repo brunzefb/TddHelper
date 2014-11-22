@@ -18,9 +18,7 @@ namespace DreamWorks.TddHelper
 	{
 		public const uint cmdIdJumpLeft = 0x100;
 		public const uint cmdIdJumpRight = 0x101;
-		public const uint cmdIdJumpUp = 0x102;
-		public const uint cmdIdJumpDown = 0x103;
-		public const uint cmdIdLocateTest = 0x104;
-		public const uint cmdIdSplitWindow = 0x105;
+		public const uint cmdIdLocateTest = 0x102;
+		public const uint cmdIdSplitWindow = 0x103;
 	};
 }

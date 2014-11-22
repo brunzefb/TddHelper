@@ -15,12 +15,16 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.Build.BuildEngine;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Project = EnvDTE.Project;
 
 namespace DreamWorks.TddHelper
 {
@@ -31,6 +35,7 @@ namespace DreamWorks.TddHelper
 	public sealed class TddHelperPackage : Package
 	{
 		private const string Document = "Document";
+		private static List<string> _fileList;
 
 		public TddHelperPackage()
 		{
@@ -52,56 +57,145 @@ namespace DreamWorks.TddHelper
 			var menuItemJumpLeft = new MenuCommand(JumpLeft, cmdIdJumpLeft);
 			menuCommandService.AddCommand(menuItemJumpLeft);
 
-			var cmdJumpUp = new CommandID(GuidList.guidTddHelperCmdSet, (int)PkgCmdIDList.cmdIdJumpUp);
-			var menuItemJumpUp = new MenuCommand(JumpUp, cmdJumpUp);
-			menuCommandService.AddCommand(menuItemJumpUp);
-
-			var cmdJumpDown = new CommandID(GuidList.guidTddHelperCmdSet, (int)PkgCmdIDList.cmdIdJumpDown);
-			var menuItemJumpDown = new MenuCommand(JumpDown, cmdJumpDown);
-			menuCommandService.AddCommand(menuItemJumpDown);
-
 			var cmdIdLocateTest = new CommandID(GuidList.guidTddHelperCmdSet, (int)PkgCmdIDList.cmdIdLocateTest);
-			var menuItemLocateTest = new MenuCommand(LocateTest, cmdIdLocateTest);
+			var menuItemLocateTest = new MenuCommand(OpenTestOrImplementation, cmdIdLocateTest);
 			menuCommandService.AddCommand(menuItemLocateTest);
 			
 		}
-
-		private void JumpDown(object sender, EventArgs e)
+		
+		private void OpenTestOrImplementation(object sender, EventArgs e)
 		{
-			JumpLeft(sender, e);
+			var dte = (DTE2)GetService(typeof(DTE));
+			if (dte.ActiveWindow == null || dte.ActiveDocument == null || dte.ActiveWindow.Document == null)
+				return;
+
+			var fullName = dte.ActiveWindow.Document.FullName;
+			var isTest = fullName.ToLower().EndsWith("test.cs");
+			var isCs = fullName.ToLower().EndsWith(".cs");
+
+			if (!isCs)
+				return;
+
+			if (_fileList == null)
+				GetCSharpFilesFromSolution(dte);
+
+			var fileName = Path.GetFileName(fullName);
+			string targetToActivate;
+			if (!isTest)
+				targetToActivate = FindPathToTestFile(fileName);
+			else
+				targetToActivate = FindPathImplementationFile(fileName);
+
+			var itemOps = dte.ItemOperations;
+			if (itemOps == null)
+				return;
+
+			if (itemOps.IsFileOpen(EnvDTE.Constants.vsViewKindTextView, targetToActivate))
+				itemOps.OpenFile(targetToActivate, EnvDTE.Constants.vsViewKindTextView);
+			
 		}
 
-		private void JumpUp(object sender, EventArgs e)
+		private string  FindPathToTestFile(string csFile)
 		{
-			JumpRight(sender, e);
+			var idx = csFile.LastIndexOf('.');
+			if (idx == -1)
+				return string.Empty;
+			var testFileName = csFile.Substring(0, idx) + "Test.cs";
+
+			foreach (var fullPathToFile in _fileList)
+			{
+				var fileName = Path.GetFileName(fullPathToFile);
+				if (String.Equals(fileName, testFileName, StringComparison.OrdinalIgnoreCase))
+					if (File.Exists(fullPathToFile))
+						return fullPathToFile;
+			}
+			return string.Empty;
+		}
+
+		private string FindPathImplementationFile(string csFile)
+		{
+			var idx = csFile.LastIndexOf("Test.cs", StringComparison.Ordinal);
+			if (idx == -1)
+				return string.Empty;
+			var implFile = csFile.Substring(0, idx) + ".cs";
+
+			foreach (var fullPathToFile in _fileList)
+			{
+				var fileName = Path.GetFileName(fullPathToFile);
+				if (String.Equals(fileName, implFile, StringComparison.OrdinalIgnoreCase))
+					if (File.Exists(fullPathToFile))
+						return fullPathToFile;
+			}
+			return string.Empty;
+		}
+
+		private void GetCSharpFilesFromSolution(DTE2 dte)
+		{
+			_fileList = new List<string>();
+			var solution = dte.Solution;
+			var solutionProjects = solution.Projects;
+			var buildEngine = new Microsoft.Build.BuildEngine.Engine();
+			var buildEngineProject = new Microsoft.Build.BuildEngine.Project(buildEngine);
+
+			foreach (var p in solutionProjects)
+			{
+				var project = p as Project;
+				if (project == null)
+					continue;
+
+				if (!project.FileName.EndsWith(".csproj"))
+					continue;
+
+				CollectFilesForProject(project.FileName, buildEngineProject);
+			}
+		}
+
+		private void CollectFilesForProject(string fileName, Microsoft.Build.BuildEngine.Project project)
+		{
+			try
+			{
+				project.Load(fileName);
+			}
+			catch (Exception)
+			{
+				Debug.WriteLine("Problem loading project");
+			}
+
+			BuildItemGroup buildItemGroup = project.GetEvaluatedItemsByName("Compile");
+			foreach (BuildItem buildItem in buildItemGroup)
+			{
+				var directory = Path.GetDirectoryName(fileName);
+				if (directory != null)
+				{
+					string path = Path.Combine(directory, buildItem.Include);
+					_fileList.Add(path);
+				}
+			}
 		}
 
 		
-		private void LocateTest(object sender, EventArgs e)
-		{
-			VsShowMessageBox("Locate Test -- Not implemented yet... :-(");
-		}
 
 		private void JumpRight(object sender, EventArgs e)
 		{
-			var dte = (DTE2)GetService(typeof(DTE));
-			var topLevelWindows = GetSortedTopLevelWindows(dte);
-			if (topLevelWindows.Count < 2)
-				return;
-			var activeIndex = FindActiveWindowIndex(topLevelWindows, dte);
-			activeIndex--;
-			activeIndex = (activeIndex < 0 ? activeIndex + topLevelWindows.Count : activeIndex) % topLevelWindows.Count;
-			topLevelWindows[activeIndex].Activate();
+			ExecuteJump(true);
 		}
 
 		private void JumpLeft(object sender, EventArgs e)
 		{
+			ExecuteJump(false);
+		}
+
+		private void ExecuteJump(bool jumpRight)
+		{
 			var dte = (DTE2)GetService(typeof(DTE));
 			var topLevelWindows = GetSortedTopLevelWindows(dte);
 			if (topLevelWindows.Count < 2)
 				return;
 			var activeIndex = FindActiveWindowIndex(topLevelWindows, dte);
-			activeIndex++;
+			if (jumpRight) 
+				activeIndex--; 
+			else 
+				activeIndex++;
 			activeIndex = (activeIndex < 0 ? activeIndex + topLevelWindows.Count : activeIndex) % topLevelWindows.Count;
 			topLevelWindows[activeIndex].Activate();
 		}
@@ -150,4 +244,5 @@ namespace DreamWorks.TddHelper
 				out result));
 		}
 	}
+
 }

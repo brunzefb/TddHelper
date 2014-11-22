@@ -30,27 +30,9 @@
           <ToolTipText>Jumps to the left tab group</ToolTipText>
         </Strings>
       </Button>
-
-      <Button guid="guidTddHelperCmdSet" id="cmdIdJumpUp" priority="0x0100" type="Button" >
-        <Parent guid="guidTddHelperCmdSet" id="MyMenuGroup" />
-        <Icon guid="guidImages" id="bmpJumpUp" />
-        <Strings>
-          <ButtonText>Jump Up</ButtonText>
-          <ToolTipText>Jumps to the upper tab group</ToolTipText>
-        </Strings>
-      </Button>
-      <Button guid="guidTddHelperCmdSet" id="cmdIdJumpDown" priority="0x0100" type="Button">
-        <Parent guid="guidTddHelperCmdSet" id="MyMenuGroup" />
-        <Icon guid="guidImages" id="bmpJumpDown" />
-        <Strings>
-          <ButtonText>Jump Down</ButtonText>
-          <ToolTipText>Jumps to the lower tab group</ToolTipText>
-        </Strings>
-      </Button>
-      
       <Button guid="guidTddHelperCmdSet" id="cmdIdLocateTest" priority="0x0100" type="Button">
         <Parent guid="guidTddHelperCmdSet" id="MyMenuGroup" />
-        <Icon guid="guidImages" id="bmpLocate" />
+        <Icon guid="guidImages" id="bmpJumpLeft" />
         <Strings>
           <ButtonText>Goto Test/Implementation</ButtonText>
           <ToolTipText>Activates either test or implementation</ToolTipText>
@@ -58,14 +40,12 @@
       </Button>
     </Buttons>
     <Bitmaps>
-      <Bitmap guid="guidImages" href="Resources\Images.png" usedList="bmpJumpRight, bmpJumpLeft, bmpJumpUp, bmpJumpDown, bmpLocate, bmpSplit"/>
+      <Bitmap guid="guidImages" href="Resources\Images.png" usedList="bmpJumpRight, bmpJumpLeft"/>
     </Bitmaps>
   </Commands>
   <KeyBindings>
     <KeyBinding guid="guidTddHelperCmdSet" id="cmdIdJumpRight" editor="guidVSStd97" key1="VK_RIGHT" mod1="Control Alt" />
     <KeyBinding guid="guidTddHelperCmdSet" id="cmdIdJumpLeft" editor="guidVSStd97" key1="VK_LEFT" mod1="Control Alt" />
-    <KeyBinding guid="guidTddHelperCmdSet" id="cmdIdJumpUp" editor="guidVSStd97" key1="VK_UP" mod1="Control Alt"  />
-    <KeyBinding guid="guidTddHelperCmdSet" id="cmdIdJumpDown" editor="guidVSStd97" key1="VK_DOWN" mod1="Control Alt"  />
   </KeyBindings>
   <Symbols>
     <GuidSymbol name="guidTddHelperPkg" value="{804fe725-8637-4682-97b5-07ce08876c6b}" />
@@ -74,18 +54,12 @@
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="cmdIdJumpRight" value="0x0100" />
       <IDSymbol name="cmdIdJumpLeft" value="0x0101" />
-      <IDSymbol name="cmdIdJumpUp" value="0x0102" />
-      <IDSymbol name="cmdIdJumpDown" value="0x0103" />
-      <IDSymbol name="cmdIdLocateTest" value="0x0104" />
+      <IDSymbol name="cmdIdLocateTest" value="0x0102" />
       
     </GuidSymbol>
     <GuidSymbol name="guidImages" value="{3e23f046-edd8-4dbf-97ed-fef438306050}" >
       <IDSymbol name="bmpJumpRight" value="1" />
       <IDSymbol name="bmpJumpLeft" value="2" />
-      <IDSymbol name="bmpJumpUp" value="3" />
-      <IDSymbol name="bmpJumpDown" value="4" />
-      <IDSymbol name="bmpLocate" value="5" />
-      <IDSymbol name="bmpSplit" value="6" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>
