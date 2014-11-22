@@ -86,12 +86,8 @@ namespace DreamWorks.TddHelper
 			else
 				targetToActivate = FindPathImplementationFile(fileName);
 
-			var itemOps = dte.ItemOperations;
-			if (itemOps == null)
-				return;
-
-			if (itemOps.IsFileOpen(EnvDTE.Constants.vsViewKindTextView, targetToActivate))
-				itemOps.OpenFile(targetToActivate, EnvDTE.Constants.vsViewKindTextView);
+			if (!dte.IsOpenFile[EnvDTE.Constants.vsViewKindTextView, targetToActivate])
+				dte.ExecuteCommand("File.OpenFile", targetToActivate);
 			
 		}
 
