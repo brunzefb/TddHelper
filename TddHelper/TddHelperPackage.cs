@@ -92,9 +92,6 @@ namespace DreamWorks.TddHelper
 				dte.ExecuteCommand(OpenFileCommand, targetToActivate);
 			
 		}
-
-		
-
 		
 		
 		private void JumpRight(object sender, EventArgs e)

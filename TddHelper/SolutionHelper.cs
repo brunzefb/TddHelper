@@ -57,6 +57,11 @@ namespace DreamWorks.TddHelper
 			}
 		}
 
+		public List<string> ProjectFiles
+		{
+			get { return _fileList; }
+		}
+
 		private ProjectItem RecursiveGetProjectItem(ProjectItem item)
 		{
 			if (item.ProjectItems == null)
