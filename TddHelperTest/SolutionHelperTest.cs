@@ -58,6 +58,11 @@ namespace TddHelperTest
 				yield return projectItemQueue.Dequeue();
 		}
 
+		private IEnumerator<Project> NullProjectList()
+		{
+			yield return null;
+		}
+
 		private Queue<ProjectItem> GetProjectItemQueue()
 		{
 			var projectItemQueue = new Queue<ProjectItem>();
@@ -118,7 +123,6 @@ namespace TddHelperTest
 			var projectMocksQueue = GetProjectQueue();
 			while (projectMocksQueue.Count > 0)
 				yield return projectMocksQueue.Dequeue();
-
 		}
 
 		private IEnumerator<Property> PropertyList()
@@ -133,6 +137,55 @@ namespace TddHelperTest
 			var helper = new SolutionHelper(_mockDte.Object);
 			helper.GetCSharpFilesFromSolution();
 			Assert.That(helper.ProjectFiles.Count, Is.EqualTo(10));
+		}
+
+		[Test]
+		public void EnumerateFiles_Null_Objects()
+		{
+			var helper = new SolutionHelper(_mockDte.Object);
+			_mockSolution.Setup(sol => sol.Projects).Returns(() => (Projects)null);
+			helper.GetCSharpFilesFromSolution();
+			Assert.That(helper.ProjectFiles.Count, Is.EqualTo(0));
+
+
+			_mockSolution.Setup(sol => sol.Projects).Returns(() => _mockProjects.Object);
+			_mockProjects.Setup(projects => projects.GetEnumerator()).Returns(NullProjectList());
+			helper.GetCSharpFilesFromSolution();
+			Assert.That(helper.ProjectFiles.Count, Is.EqualTo(0));
+			_mockProjects.Setup(projects => projects.GetEnumerator()).Returns(ProjectList);
+
+			_mockProps.Setup(prop => prop.GetEnumerator()).Returns(PropertyListNull);
+			helper.GetCSharpFilesFromSolution();
+			Assert.That(helper.ProjectFiles.Count, Is.EqualTo(0));
+			_mockProps.Setup(prop => prop.GetEnumerator()).Returns(PropertyList);
+
+			_mockProjects.Setup(projects => projects.GetEnumerator()).Returns(ProjectVbList);
+			helper.GetCSharpFilesFromSolution();
+			Assert.That(helper.ProjectFiles.Count, Is.EqualTo(0));
+			_mockProjects.Setup(projects => projects.GetEnumerator()).Returns(ProjectList);
+
+		}
+
+		private IEnumerator<Project> ProjectVbList()
+		{
+			var projectMocksQueue = GetVbProjectQueue();
+			while (projectMocksQueue.Count > 0)
+				yield return projectMocksQueue.Dequeue();
+
+		}
+		private Queue<Project> GetVbProjectQueue()
+		{
+			var projectMocksQueue = new Queue<Project>();
+			var p1 = new Mock<Project>();
+			p1.Setup(proj => proj.FileName).Returns(@"c:\\temp\foo.vbproj");
+			p1.Setup(proj => proj.Properties).Returns(_mockProps.Object);
+			projectMocksQueue.Enqueue(p1.Object);
+			return projectMocksQueue;
+		}
+
+		private IEnumerator<Property> PropertyListNull()
+		{
+			yield return null;
 		}
 
 		[Test]

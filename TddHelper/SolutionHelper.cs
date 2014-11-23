@@ -28,6 +28,10 @@ namespace DreamWorks.TddHelper
 		{
 			var solution = _dte.Solution;
 			var solutionProjects = solution.Projects;
+
+			if (solution == null || solutionProjects == null)
+				return;
+
 			_fileList.Clear();
 
 			foreach (var p in solutionProjects)
