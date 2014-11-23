@@ -7,9 +7,8 @@ using EnvDTE80;
 
 namespace DreamWorks.TddHelper
 {
-	public class SolutionHelper
+	internal class SolutionHelper
 	{
-		
 		private readonly List<ProjectItem> _projectItemList = new List<ProjectItem>();
 		private readonly List<ProjectItem> _subItemList = new List<ProjectItem>();
 		private readonly List<string> _fileList = new List<string>();
@@ -76,7 +75,6 @@ namespace DreamWorks.TddHelper
 			return item;
 		}
 
-
 		private void GetFilesFromProjectItem(ProjectItem item, string directoryName)
 		{
 			if (item.FileCount == 0)
@@ -92,7 +90,6 @@ namespace DreamWorks.TddHelper
 				if (item.FileNames[i].ToLower().EndsWith(CsharpFileExtension))
 					_fileList.Add(Path.Combine(directoryName, item.FileNames[i]));
 		}
-
 
 		private bool HasProperty(Properties properties, string propertyName)
 		{

@@ -78,18 +78,41 @@ namespace TddHelperTest
 			pi3.Setup(projItem => projItem.Name).Returns("file1.cs");
 			projectItemQueue.Enqueue(pi3.Object);
 
+			// test recursion
 			var pi4 = new Mock<ProjectItem>();
-			pi3.Setup(projItem => projItem.ProjectItems).Returns((ProjectItems)null);
-			pi3.Setup(projItem => projItem.FileCount).Returns(2);
-			// ReSharper disable UseIndexedProperty
-			pi3.Setup(projItem => projItem.get_FileNames(0)).Returns(Path.GetTempFileName() +"Test.cs");
-			pi3.Setup(projItem => projItem.get_FileNames(1)).Returns(Path.GetTempFileName() +".cs");
+			pi4.Setup(projItem => projItem.ProjectItems).Returns(GetSubProjectItems().Object);
+			pi4.Setup(projItem => projItem.FileCount).Returns(0);
 			// ReSharper restore UseIndexedProperty
 			projectItemQueue.Enqueue(pi4.Object);
+
+			var pi7 = new Mock<ProjectItem>();
+			pi7.Setup(projItem => projItem.ProjectItems).Returns((ProjectItems)null);
+			pi7.Setup(projItem => projItem.FileCount).Returns(2);
+			// ReSharper disable UseIndexedProperty
+			pi7.Setup(projItem => projItem.get_FileNames(0)).Returns(Path.GetTempFileName() + "Test.cs");
+			pi7.Setup(projItem => projItem.get_FileNames(1)).Returns(Path.GetTempFileName() + ".cs");
+			// ReSharper restore UseIndexedProperty
+			projectItemQueue.Enqueue(pi7.Object);
+
 			return projectItemQueue;
 		}
 
-		
+		private Mock<ProjectItems> GetSubProjectItems()
+		{
+			var pi6 = new Mock<ProjectItems>();
+			pi6.Setup(projItem => projItem.GetEnumerator()).Returns(SpecialProjectList);
+			return pi6;
+		}
+
+		private IEnumerator<ProjectItem> SpecialProjectList()
+		{
+			var pi3 = new Mock<ProjectItem>();
+			pi3.Setup(projItem => projItem.ProjectItems).Returns((ProjectItems)null);
+			pi3.Setup(projItem => projItem.FileCount).Returns(1);
+			pi3.Setup(projItem => projItem.Name).Returns("file1.cs");
+			yield return pi3.Object;
+		}
+
 		private IEnumerator<Project> ProjectList()
 		{
 			var projectMocksQueue = GetProjectQueue();
@@ -109,7 +132,7 @@ namespace TddHelperTest
 		{
 			var helper = new SolutionHelper(_mockDte.Object);
 			helper.GetCSharpFilesFromSolution();
-			Assert.That(helper.ProjectFiles.Count, Is.EqualTo(6));
+			Assert.That(helper.ProjectFiles.Count, Is.EqualTo(10));
 		}
 
 		[Test]
@@ -120,11 +143,12 @@ namespace TddHelperTest
 				File.Delete(testFileName);
 			var helper = new SolutionHelper(_mockDte.Object);
 			helper.GetCSharpFilesFromSolution();
+			Assert.That(helper.FindPathImplementationFile("foobar"), Is.Empty);
 			var testFile = helper.FindPathImplementationFile("file1Test.cs");
 			Assert.That(testFile, Is.Empty); // file does not exist
 			File.Create(testFileName);
 			testFile = helper.FindPathImplementationFile("file1Test.cs");
-			Assert.That(testFile, Is.EqualTo(testFileName));
+			Assert.That(testFile, Is.SamePath(testFileName));
 		}
 
 		[Test]
@@ -132,8 +156,9 @@ namespace TddHelperTest
 		{
 			var helper = new SolutionHelper(_mockDte.Object);
 			helper.GetCSharpFilesFromSolution();
+			Assert.That(helper.FindPathToTestFile("foobar"), Is.Empty);
 			var list = helper.ProjectFiles;
-			var fullPathToTest = list[1];
+			var fullPathToTest = list[3];
 			var index = fullPathToTest.LastIndexOf("Test", System.StringComparison.Ordinal);
 			var fullPathToImpl = fullPathToTest.Substring(0, index) + ".cs";
 			var impl = helper.FindPathToTestFile(Path.GetFileName(fullPathToImpl));
