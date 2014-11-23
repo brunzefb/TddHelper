@@ -9,13 +9,15 @@ namespace DreamWorks.TddHelper
 {
 	public class SolutionHelper
 	{
-		public const string FullPathPropertyName = "FullPath";
+		
 		private readonly List<ProjectItem> _projectItemList = new List<ProjectItem>();
 		private readonly List<ProjectItem> _subItemList = new List<ProjectItem>();
-		private const string CsprojExtension = ".csproj";
 		private readonly List<string> _fileList = new List<string>();
+		public const string FullPathPropertyName = "FullPath";
+		private const string CsprojExtension = ".csproj";
 		private const string CsharpFileExtension = ".cs";
 		private const string TestFileSuffix = "Test.cs";
+		private const char Period = '.';
 		private readonly DTE2 _dte;
 
 		public SolutionHelper(DTE2 dte)
@@ -85,7 +87,6 @@ namespace DreamWorks.TddHelper
 					_fileList.Add(Path.Combine(directoryName, item.Name));
 				return;
 			}
-
 			
 			for (short i = 0; i < item.FileCount; i++)
 				if (item.FileNames[i].ToLower().EndsWith(CsharpFileExtension))
@@ -108,7 +109,7 @@ namespace DreamWorks.TddHelper
 
 		public string FindPathToTestFile(string csFile)
 		{
-			var idx = csFile.LastIndexOf('.');
+			var idx = csFile.LastIndexOf(Period);
 			if (idx == -1)
 				return string.Empty;
 			var testFileName = csFile.Substring(0, idx) + TestFileSuffix;

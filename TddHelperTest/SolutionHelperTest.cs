@@ -94,10 +94,7 @@ namespace TddHelperTest
 		{
 			var projectMocksQueue = GetProjectQueue();
 			while (projectMocksQueue.Count > 0)
-			{
 				yield return projectMocksQueue.Dequeue();
-				var list = ProjectItemList(); // second foreach ProjectItem needs data
-			}
 
 		}
 
