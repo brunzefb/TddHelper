@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System.IO;
-using DreamWorks.TddHelper;
+using DreamWorks.TddHelper.Implementation;
 using EnvDTE;
 using EnvDTE80;
 using Moq;
@@ -10,13 +10,16 @@ using NUnit.Framework;
 namespace TddHelperTest
 {
 	[TestFixture]
-	public class SolutionHelperTest
+	public class TestLocatorTest
 	{
 		private Mock<DTE2> _mockDte;
 		private Mock<Projects> _mockProjects;
 		private Mock<Solution> _mockSolution;
 		private Mock<Properties> _mockProps;
 		private Mock<Property> _mockProp;
+		private Mock<Window> _mockWin;
+		private Mock<Document> _mockDoc;
+		private TestLocator _testLocator;
 		
 		[TestFixtureSetUp]
 		public void TestFixtureSetup()
@@ -26,11 +29,18 @@ namespace TddHelperTest
 			_mockSolution = new Mock<Solution>();
 			_mockProps = new Mock<Properties>();
 			_mockProp = new Mock<Property>();
-
+			_mockWin = new Mock<Window>();
+			_mockDoc = new Mock<Document>();
 			_mockDte.Setup(dte => dte.Solution).Returns(() => _mockSolution.Object);
 			_mockSolution.Setup(sol => sol.Projects).Returns(() => _mockProjects.Object);
 			_mockProjects.Setup(projects => projects.GetEnumerator()).Returns(ProjectList);
 			_mockProps.Setup(prop => prop.GetEnumerator()).Returns(PropertyList);
+		}
+
+		[SetUp]
+		public void SetUp()
+		{
+			_testLocator = new TestLocator(_mockDte.Object);
 		}
 
 		private Queue<Project> GetProjectQueue()
@@ -92,10 +102,11 @@ namespace TddHelperTest
 
 			var pi7 = new Mock<ProjectItem>();
 			pi7.Setup(projItem => projItem.ProjectItems).Returns((ProjectItems)null);
-			pi7.Setup(projItem => projItem.FileCount).Returns(2);
+			pi7.Setup(projItem => projItem.FileCount).Returns(3);
 			// ReSharper disable UseIndexedProperty
 			pi7.Setup(projItem => projItem.get_FileNames(0)).Returns(Path.GetTempFileName() + "Test.cs");
 			pi7.Setup(projItem => projItem.get_FileNames(1)).Returns(Path.GetTempFileName() + ".cs");
+			pi7.Setup(projItem => projItem.get_FileNames(2)).Returns(@"c:\temp\file1Test.cs");
 			// ReSharper restore UseIndexedProperty
 			projectItemQueue.Enqueue(pi7.Object);
 
@@ -127,41 +138,39 @@ namespace TddHelperTest
 
 		private IEnumerator<Property> PropertyList()
 		{
-			_mockProp.Setup(p => p.Name).Returns(SolutionHelper.FullPathPropertyName);
+			_mockProp.Setup(p => p.Name).Returns(TestLocator.FullPathPropertyName);
 			yield return _mockProp.Object;
 		}
 
 		[Test]
 		public void EnumerateFiles()
 		{
-			var helper = new SolutionHelper(_mockDte.Object);
-			helper.GetCSharpFilesFromSolution();
-			Assert.That(helper.ProjectFiles.Count, Is.EqualTo(10));
+			
+			_testLocator.GetCSharpFilesFromSolution();
+			Assert.That(_testLocator.ProjectFiles.Count, Is.EqualTo(12));
 		}
 
 		[Test]
 		public void EnumerateFiles_Null_Objects()
 		{
-			var helper = new SolutionHelper(_mockDte.Object);
 			_mockSolution.Setup(sol => sol.Projects).Returns(() => (Projects)null);
-			helper.GetCSharpFilesFromSolution();
-			Assert.That(helper.ProjectFiles.Count, Is.EqualTo(0));
-
+			_testLocator.GetCSharpFilesFromSolution();
+			Assert.That(_testLocator.ProjectFiles.Count, Is.EqualTo(0));
 
 			_mockSolution.Setup(sol => sol.Projects).Returns(() => _mockProjects.Object);
 			_mockProjects.Setup(projects => projects.GetEnumerator()).Returns(NullProjectList());
-			helper.GetCSharpFilesFromSolution();
-			Assert.That(helper.ProjectFiles.Count, Is.EqualTo(0));
+			_testLocator.GetCSharpFilesFromSolution();
+			Assert.That(_testLocator.ProjectFiles.Count, Is.EqualTo(0));
 			_mockProjects.Setup(projects => projects.GetEnumerator()).Returns(ProjectList);
 
 			_mockProps.Setup(prop => prop.GetEnumerator()).Returns(PropertyListNull);
-			helper.GetCSharpFilesFromSolution();
-			Assert.That(helper.ProjectFiles.Count, Is.EqualTo(0));
+			_testLocator.GetCSharpFilesFromSolution();
+			Assert.That(_testLocator.ProjectFiles.Count, Is.EqualTo(0));
 			_mockProps.Setup(prop => prop.GetEnumerator()).Returns(PropertyList);
 
 			_mockProjects.Setup(projects => projects.GetEnumerator()).Returns(ProjectVbList);
-			helper.GetCSharpFilesFromSolution();
-			Assert.That(helper.ProjectFiles.Count, Is.EqualTo(0));
+			_testLocator.GetCSharpFilesFromSolution();
+			Assert.That(_testLocator.ProjectFiles.Count, Is.EqualTo(0));
 			_mockProjects.Setup(projects => projects.GetEnumerator()).Returns(ProjectList);
 
 		}
@@ -194,31 +203,89 @@ namespace TddHelperTest
 			const string testFileName = @"c:\temp\file1.cs";
 			if (File.Exists(testFileName))
 				File.Delete(testFileName);
-			var helper = new SolutionHelper(_mockDte.Object);
-			helper.GetCSharpFilesFromSolution();
-			Assert.That(helper.FindPathImplementationFile("foobar"), Is.Empty);
-			var testFile = helper.FindPathImplementationFile("file1Test.cs");
+			
+			_testLocator.GetCSharpFilesFromSolution();
+			Assert.That(_testLocator.FindPathImplementationFile("foobar"), Is.Empty);
+			var testFile = _testLocator.FindPathImplementationFile("file1Test.cs");
 			Assert.That(testFile, Is.Empty); // file does not exist
 			File.Create(testFileName);
-			testFile = helper.FindPathImplementationFile("file1Test.cs");
+			testFile = _testLocator.FindPathImplementationFile("file1Test.cs");
 			Assert.That(testFile, Is.SamePath(testFileName));
 		}
 
 		[Test]
 		public void FindPathToTest()
 		{
-			var helper = new SolutionHelper(_mockDte.Object);
-			helper.GetCSharpFilesFromSolution();
-			Assert.That(helper.FindPathToTestFile("foobar"), Is.Empty);
-			var list = helper.ProjectFiles;
+			_testLocator.GetCSharpFilesFromSolution();
+			Assert.That(_testLocator.FindPathToTestFile("foobar"), Is.Empty);
+			var list = _testLocator.ProjectFiles;
 			var fullPathToTest = list[3];
 			var index = fullPathToTest.LastIndexOf("Test", System.StringComparison.Ordinal);
 			var fullPathToImpl = fullPathToTest.Substring(0, index) + ".cs";
-			var impl = helper.FindPathToTestFile(Path.GetFileName(fullPathToImpl));
+			var impl = _testLocator.FindPathToTestFile(Path.GetFileName(fullPathToImpl));
 			Assert.That(impl, Is.Empty); // file does not exist
 			File.Create(fullPathToTest);
-			var foundFile = helper.FindPathToTestFile(Path.GetFileName(fullPathToImpl));
+			var foundFile = _testLocator.FindPathToTestFile(Path.GetFileName(fullPathToImpl));
 			Assert.That(fullPathToTest, Is.SamePath(foundFile));
+		}
+
+		[Test]
+		public void OpenTestOrImplementation_Happy_Implementation()
+		{
+			_mockDoc.Setup(a => a.FullName).Returns(@"c:\temp\file1Test.cs");
+			_mockWin.Setup(a => a.Document).Returns(_mockDoc.Object);
+			_mockDte.Setup(a => a.ActiveWindow).Returns(_mockWin.Object);
+			_mockDte.Setup(a => a.ActiveDocument).Returns(_mockDoc.Object);
+			
+			_mockDte.Setup(a => a.get_IsOpenFile(Constants.vsViewKindTextView, It.IsAny<string>())).Returns(false);
+			_mockDte.Setup(a => a.ExecuteCommand(It.IsAny<string>(), It.IsAny<string>()))
+				.Callback((string a, string b)=>ExecuteCallback(a,b));
+
+			_testLocator.OpenTestOrImplementation(null, null);
+		}
+
+		
+		[Test]
+		public void OpenTestOrImplementation_Happy_TestFile()
+		{
+			_testLocator.GetCSharpFilesFromSolution();
+			File.Create(@"c:\temp\file1Test.cs");
+			_mockDoc.Setup(a => a.FullName).Returns(@"c:\temp\file1.cs");
+			_mockWin.Setup(a => a.Document).Returns(_mockDoc.Object);
+			_mockDte.Setup(a => a.ActiveWindow).Returns(_mockWin.Object);
+			_mockDte.Setup(a => a.ActiveDocument).Returns(_mockDoc.Object);
+
+			_mockDte.Setup(a => a.get_IsOpenFile(Constants.vsViewKindTextView, It.IsAny<string>())).Returns(false);
+			_mockDte.Setup(a => a.ExecuteCommand(It.IsAny<string>(), It.IsAny<string>()))
+				.Callback((string a, string b) => ExecuteCallback2(a, b));
+
+			_testLocator.OpenTestOrImplementation(null, null);
+		}
+
+		[Test]
+		public void OpenTestOrImplementation_NonHappy()
+		{
+			_mockDoc.Setup(a => a.FullName).Returns(@"c:\temp\file1Test.cs");
+			_mockWin.Setup(a => a.Document).Returns(_mockDoc.Object);
+			_mockDte.Setup(a => a.ActiveWindow).Returns((Window)null);
+			_testLocator.OpenTestOrImplementation(null, null);
+
+			_mockDoc.Setup(a => a.FullName).Returns(@"c:\temp\NonCSFile.txt");
+			_mockWin.Setup(a => a.Document).Returns(_mockDoc.Object);
+			_mockDte.Setup(a => a.ActiveWindow).Returns(_mockWin.Object);
+			_mockDte.Setup(a => a.ActiveDocument).Returns(_mockDoc.Object);
+			_testLocator.OpenTestOrImplementation(null, null);
+
+		}
+
+		public void ExecuteCallback(string command, string targetToActivate)
+		{
+			Assert.That(targetToActivate, Is.EqualTo(@"c:\temp\file1.cs"));
+		}
+
+		public void ExecuteCallback2(string command, string targetToActivate)
+		{
+			Assert.That(targetToActivate, Is.EqualTo(@"c:\temp\file1Test.cs"));
 		}
 	}
 }

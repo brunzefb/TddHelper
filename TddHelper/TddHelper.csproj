@@ -134,7 +134,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="SolutionHelper.cs" />
+    <Compile Include="Implementation\TestLocator.cs" />
+    <Compile Include="Implementation\TabJumper.cs" />
     <Compile Include="TddHelperPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PkgCmdID.cs" />

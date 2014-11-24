@@ -1,13 +1,12 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using EnvDTE;
 using EnvDTE80;
 
-namespace DreamWorks.TddHelper
+namespace DreamWorks.TddHelper.Implementation
 {
-	internal class SolutionHelper
+	internal class TestLocator
 	{
 		private readonly List<ProjectItem> _projectItemList = new List<ProjectItem>();
 		private readonly List<ProjectItem> _subItemList = new List<ProjectItem>();
@@ -15,15 +14,43 @@ namespace DreamWorks.TddHelper
 		public const string FullPathPropertyName = "FullPath";
 		private const string CsprojExtension = ".csproj";
 		private const string CsharpFileExtension = ".cs";
-		private const string TestFileSuffix = "Test.cs";
+		private const string OpenFileCommand = "File.OpenFile";
+		private const string TestDotCs = "test.cs";
 		private const char Period = '.';
 		private readonly DTE2 _dte;
 
-		public SolutionHelper(DTE2 dte)
+
+		public TestLocator(DTE2 dte)
 		{
 			_dte = dte;
 		}
-		
+
+		internal void OpenTestOrImplementation(object sender, EventArgs e)
+		{
+			
+			if (_dte.ActiveWindow == null || _dte.ActiveDocument == null || _dte.ActiveWindow.Document == null)
+				return;
+
+			var fullName = _dte.ActiveWindow.Document.FullName;
+			var isTest = fullName.ToLower().EndsWith(TestDotCs);
+			var isCs = fullName.ToLower().EndsWith(CsharpFileExtension);
+
+			if (!isCs)
+				return;
+			
+			GetCSharpFilesFromSolution();
+
+			var fileName = Path.GetFileName(fullName);
+			string targetToActivate;
+			if (!isTest)
+				targetToActivate = FindPathToTestFile(fileName);
+			else
+				targetToActivate = FindPathImplementationFile(fileName);
+
+			if (!_dte.get_IsOpenFile(Constants.vsViewKindTextView, targetToActivate))
+				_dte.ExecuteCommand(OpenFileCommand, targetToActivate);
+		}
+
 		public void GetCSharpFilesFromSolution()
 		{
 			var solution = _dte.Solution;
@@ -113,7 +140,7 @@ namespace DreamWorks.TddHelper
 			var idx = csFile.LastIndexOf(Period);
 			if (idx == -1)
 				return string.Empty;
-			var testFileName = csFile.Substring(0, idx) + TestFileSuffix;
+			var testFileName = csFile.Substring(0, idx) + TestDotCs;
 
 			foreach (var fullPathToFile in _fileList)
 			{
@@ -127,7 +154,7 @@ namespace DreamWorks.TddHelper
 
 		public string FindPathImplementationFile(string csFile)
 		{
-			var idx = csFile.LastIndexOf(TestFileSuffix, StringComparison.Ordinal);
+			var idx = csFile.LastIndexOf(TestDotCs, StringComparison.OrdinalIgnoreCase);
 			if (idx == -1)
 				return string.Empty;
 			var implFile = csFile.Substring(0, idx) + CsharpFileExtension;
