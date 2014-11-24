@@ -30,7 +30,6 @@ namespace DreamWorks.TddHelper.Implementation
 
 		internal void ExecuteJump(bool jumpRight)
 		{
-			
 			var topLevelWindows = GetSortedTopLevelWindows();
 			if (topLevelWindows.Count < 2)
 				return;
@@ -61,7 +60,6 @@ namespace DreamWorks.TddHelper.Implementation
 			var topLevelWindows = new List<Window>();
 			foreach (Window window in _dte.Windows)
 			{
-
 				if (window.Kind == Document && (window.Left > 0 || window.Top > 0))
 					topLevelWindows.Add(window);
 			}
