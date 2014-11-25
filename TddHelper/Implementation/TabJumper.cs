@@ -66,6 +66,5 @@ namespace DreamWorks.TddHelper.Implementation
 			topLevelWindows.Sort((a, b) => a.Left < b.Left ? -1 : 1);
 			return topLevelWindows;
 		}
-
 	}
 }
