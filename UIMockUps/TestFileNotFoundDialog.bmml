@@ -1,0 +1,96 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="655" measuredH="527" mockupW="503" mockupH="502">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::TitleWindow" x="152" y="25" w="302" h="502" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <bottomheight>0</bottomheight>
+        <close>true</close>
+        <dragger>false</dragger>
+        <maximizeRestore>false</maximizeRestore>
+        <minimize>false</minimize>
+        <text>Corresponding%20Test%20File%20Not%20Found%20%20%3A-%28</text>
+      </controlProperties>
+    </control>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::Button" x="297" y="482" w="56" h="27" measuredW="41" measuredH="27" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>OK</text>
+      </controlProperties>
+    </control>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::Button" x="362" y="482" w="-1" h="-1" measuredW="64" measuredH="27" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Cancel</text>
+      </controlProperties>
+    </control>
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::Label" x="167" y="58" w="-1" h="-1" measuredW="213" measuredH="21" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Create%20new%20test%20in%20following%20project%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="7" controlTypeID="com.balsamiq.mockups::List" x="186" y="78" w="240" h="88" measuredW="100" measuredH="126" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <selectedIndex>1</selectedIndex>
+        <text>%5C%5BCreate%20Test%20Project%5C%5D%0ATestProject1%0ATestProject2</text>
+        <verticalScrollbar>true</verticalScrollbar>
+      </controlProperties>
+    </control>
+    <control controlID="9" controlTypeID="com.balsamiq.mockups::List" x="186" y="203" w="239" h="100" measuredW="100" measuredH="126" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <selectedIndex>1</selectedIndex>
+        <text>Visual%20C%23%0ANUnitTemplate%0AMBTestTemplate</text>
+        <verticalScrollbar>true</verticalScrollbar>
+      </controlProperties>
+    </control>
+    <control controlID="13" controlTypeID="com.balsamiq.mockups::List" x="185" y="327" w="240" h="99" measuredW="100" measuredH="126" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <selectedIndex>1</selectedIndex>
+        <text>R%23Template1%0AR%23Template2</text>
+        <verticalScrollbar>true</verticalScrollbar>
+      </controlProperties>
+    </control>
+    <control controlID="15" controlTypeID="com.balsamiq.mockups::RadioButton" x="167" y="181" w="-1" h="-1" measuredW="213" measuredH="22" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <state>selected</state>
+        <text>Using%20Visual%20Studio%20File%20Template</text>
+      </controlProperties>
+    </control>
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::RadioButton" x="167" y="306" w="-1" h="-1" measuredW="130" measuredH="22" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Using%20R%23%20Template</text>
+      </controlProperties>
+    </control>
+    <control controlID="17" controlTypeID="com.balsamiq.mockups::StickyNote" x="475" y="68" w="128" h="143" measuredW="109" measuredH="123" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Selections%20of%20Radio%20Buttons%0Aand%20all%20listboxes%2C%20checkbox%0Aare%20persisted</text>
+      </controlProperties>
+    </control>
+    <control controlID="19" controlTypeID="com.balsamiq.mockups::StickyNote" x="475" y="245" w="153" h="169" measuredW="109" measuredH="123" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>R%23%20Option%20only%0Ashown%20if%20R%23%20%0Ainstalled.%20If%20not%2C%0ARadio%20buttons%0Ago%20away%2C%20and%20dialog%0Aresizes%20appropriately</text>
+      </controlProperties>
+    </control>
+    <control controlID="22" controlTypeID="com.balsamiq.mockups::Label" x="168" y="435" w="-1" h="-1" measuredW="145" measuredH="21" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Preview%20of%20Test%20file%20Path%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="23" controlTypeID="com.balsamiq.mockups::Label" x="176" y="450" w="-1" h="-1" measuredW="204" measuredH="21" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>...%5CSource%5CTestProject1%5CFileTest.cs</text>
+      </controlProperties>
+    </control>
+    <control controlID="24" controlTypeID="com.balsamiq.mockups::StickyNote" x="468" y="445" w="187" h="82" measuredW="109" measuredH="123" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Do%20we%20need%20to%20preview%20filename%3F</text>
+      </controlProperties>
+    </control>
+    <control controlID="25" controlTypeID="com.balsamiq.mockups::Button" x="239" y="482" w="-1" h="-1" measuredW="49" measuredH="27" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Help</text>
+      </controlProperties>
+    </control>
+    <control controlID="27" controlTypeID="com.balsamiq.mockups::Arrow" x="380" y="462" w="97" h="22" measuredW="150" measuredH="100" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text/>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>

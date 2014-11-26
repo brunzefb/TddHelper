@@ -1,0 +1,95 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="946" measuredH="488" mockupW="866" mockupH="441">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::TitleWindow" x="80" y="47" w="745" h="441" measuredW="450" measuredH="400" zOrder="0" locked="true" isInGroup="-1">
+      <controlProperties>
+        <bottomheight>0</bottomheight>
+        <dragger>false</dragger>
+        <text>Options</text>
+      </controlProperties>
+    </control>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::Image" x="85" y="79" w="-1" h="-1" measuredW="269" measuredH="399" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>./assets/VSMockup.png</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::Image" x="333" y="427" w="-1" h="-1" measuredW="487" measuredH="60" zOrder="2" locked="true" isInGroup="-1">
+      <controlProperties>
+        <src>./assets/Okbtn.png</src>
+      </controlProperties>
+    </control>
+    <control controlID="4" controlTypeID="com.balsamiq.mockups::TextInput" x="452" y="83" w="358" h="-1" measuredW="57" measuredH="27" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Test.cs</text>
+      </controlProperties>
+    </control>
+    <control controlID="7" controlTypeID="com.balsamiq.mockups::Label" x="354" y="85" w="-1" h="-1" measuredW="91" measuredH="21" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Test%20File%20Suffix%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="8" controlTypeID="com.balsamiq.mockups::TextInput" x="452" y="124" w="358" h="-1" measuredW="80" measuredH="27" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Test.csproj</text>
+      </controlProperties>
+    </control>
+    <control controlID="9" controlTypeID="com.balsamiq.mockups::Label" x="357" y="127" w="-1" h="-1" measuredW="83" measuredH="21" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Project%20Suffix%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="10" controlTypeID="com.balsamiq.mockups::FieldSet" x="354" y="164" w="456" h="113" measuredW="200" measuredH="170" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Editing%20Layout</text>
+      </controlProperties>
+    </control>
+    <control controlID="11" controlTypeID="com.balsamiq.mockups::RadioButtonGroup" x="370" y="185" w="319" h="61" measuredW="305" measuredH="61" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%28o%29%20UnitTest%20class%20%5C%5BLeft%5C%5D%2C%20Class%20to%20be%20tested%20%5C%5BRight%5C%5D%0A%28%29%20Class%20to%20be%20tested%20%5C%5BLeft%5C%5D%2C%20UnitTest%20class%20%5C%5BRight%5C%5D%0A%28%29%20Do%20not%20use%20a%20split%20window</text>
+      </controlProperties>
+    </control>
+    <control controlID="12" controlTypeID="com.balsamiq.mockups::CheckBox" x="357" y="295" w="-1" h="-1" measuredW="402" measuredH="22" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Create%20Test%20Project%20Automatically%20%20%5C%5BIf%20unchecked%20prompt%20with%20UI%5C%5D</text>
+      </controlProperties>
+    </control>
+    <control controlID="13" controlTypeID="com.balsamiq.mockups::CheckBox" x="357" y="316" w="-1" h="-1" measuredW="407" measuredH="22" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Create%20Test%20File%20Automatically%20%20%20%20%20%20%20%20%20%5C%5BIf%20unchecked%20prompt%20with%20UI%5C%5D</text>
+      </controlProperties>
+    </control>
+    <control controlID="14" controlTypeID="com.balsamiq.mockups::CheckBox" x="357" y="338" w="-1" h="-1" measuredW="300" measuredH="22" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <state>selected</state>
+        <text>Mirror%20Project%20Folders%20when%20creating%20Unit%20Tests</text>
+      </controlProperties>
+    </control>
+    <control controlID="15" controlTypeID="com.balsamiq.mockups::CheckBox" x="357" y="359" w="-1" h="-1" measuredW="419" measuredH="22" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <state>selected</state>
+        <text>When%20creating%20a%20test%20project%2C%20reference%20the%20project%20of%20original%20class</text>
+      </controlProperties>
+    </control>
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::CheckBox" x="357" y="381" w="-1" h="-1" measuredW="422" measuredH="22" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <state>selected</state>
+        <text>Make%20new%20test%20project%20a%20Friend%20Assembly%20of%20project%20of%20original%20class</text>
+      </controlProperties>
+    </control>
+    <control controlID="17" controlTypeID="com.balsamiq.mockups::StickyNote" x="837" y="75" w="-1" h="-1" measuredW="109" measuredH="123" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>The%20defaults%20are%20shown%0Ain%20the%20UI</text>
+      </controlProperties>
+    </control>
+    <control controlID="18" controlTypeID="com.balsamiq.mockups::StickyNote" x="95" y="245" w="-1" h="-1" measuredW="109" measuredH="123" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Default%20Visual%20Studio%0AOptions%20UI%0AShowing%20the%20%0ATDD%20Options%20page</text>
+      </controlProperties>
+    </control>
+    <control controlID="19" controlTypeID="com.balsamiq.mockups::StickyNote" x="831" y="228" w="-1" h="-1" measuredW="109" measuredH="123" zOrder="16" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>No%20support%20%0Afor%20up/down%20layout</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
