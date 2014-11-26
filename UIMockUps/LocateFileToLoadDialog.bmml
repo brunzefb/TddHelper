@@ -1,0 +1,36 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="670" measuredH="313" mockupW="610" mockupH="293">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::TitleWindow" x="60" y="20" w="475" h="293" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <bottomheight>0</bottomheight>
+        <text>TDD%20Helper%20%20Locate%20File%20to%20Load</text>
+      </controlProperties>
+    </control>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::Button" x="386" y="271" w="61" h="27" measuredW="41" measuredH="27" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>OK</text>
+      </controlProperties>
+    </control>
+    <control controlID="2" controlTypeID="com.balsamiq.mockups::Button" x="456" y="271" w="-1" h="-1" measuredW="64" measuredH="27" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Cancel</text>
+      </controlProperties>
+    </control>
+    <control controlID="3" controlTypeID="com.balsamiq.mockups::TextArea" x="73" y="60" w="447" h="69" measuredW="200" measuredH="140" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>I%27m%20having%20some%20problems%20finding%20the%20corresponding%20file%20you%20are%20trying%20to%20locate%2C%20because%20there%20more%20than%20one%20file%20with%20that%20name.%20%20Please%20select%20the%20name%20of%20the%20file%20you%20wish%20to%20load.</text>
+      </controlProperties>
+    </control>
+    <control controlID="5" controlTypeID="com.balsamiq.mockups::StickyNote" x="537" y="106" w="133" h="190" measuredW="109" measuredH="123" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Preselect%20the%20most%20likely%20choice%20if%20possible.%20%20No%20persistence%20of%20the%20choice%2C%20pops%20up%20on%20every%20conflict.</text>
+      </controlProperties>
+    </control>
+    <control controlID="6" controlTypeID="com.balsamiq.mockups::List" x="73" y="138" w="447" h="118" measuredW="100" measuredH="126" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <selectedIndex>1</selectedIndex>
+        <text>C%3A%5Cgit%5Cproj%5Csubproj%5Csubfolder%5Cfoo%5Cbar%5Ccls.cs%0AC%3A%5Cgit%5Cproj%5Csubproj%5Csubfolder2%5Cfoo%5Cbaz%5Ccls.cs%0AC%3A%5Cgit%5Cproj%5Csubproj%5Csubfolder3%5Cqqq%5Cbar%5Ccls.cs</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
