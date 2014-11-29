@@ -68,27 +68,6 @@ namespace DreamWorks.TddHelper
 			
 		}
 		
-		
-		
-		
-		private void VsShowMessageBox(string message)
-		{
-			var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-			var clsid = Guid.Empty;
-			int result;
-			ErrorHandler.ThrowOnFailure(uiShell.ShowMessageBox(
-				0,
-				ref clsid,
-				Resources.AppTitle,
-				message,
-				string.Empty,
-				0,
-				OLEMSGBUTTON.OLEMSGBUTTON_OK,
-				OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
-				OLEMSGICON.OLEMSGICON_INFO,
-				0,
-				out result));
-		}
 	}
 
 }

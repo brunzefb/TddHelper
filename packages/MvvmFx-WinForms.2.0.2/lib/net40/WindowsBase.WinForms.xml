@@ -1,0 +1,270 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WindowsBase.WinForms</name>
+    </assembly>
+    <members>
+        <member name="T:MvvmFx.Windows.ValidateValueCallback">
+            <summary>
+            ValidateValueCallback
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MvvmFx.Windows.Freezable">
+            <summary>
+            Freezable
+            </summary>
+            <remarks>This class isn't implemented.</remarks>
+        </member>
+        <member name="T:MvvmFx.Windows.DependencyObject">
+            <summary>
+            Represents an object that participates in the dependency property system.
+            </summary>
+            <remarks>This implementation of this class isn't completed.</remarks>
+        </member>
+        <member name="T:MvvmFx.Windows.IDependencyObject">
+            <summary>
+            Defines methods and properties that an object implements to use <see cref="T:MvvmFx.Windows.DependencyProperty"/>.
+            </summary>
+        </member>
+        <member name="T:MvvmFx.Windows.AttachedPropertyBrowsableWhenAttributePresentAttribute">
+            <summary>
+            AttachedPropertyBrowsableWhenAttributePresentAttribute
+            </summary>
+            <remarks>This class isn't implemented.</remarks>
+        </member>
+        <member name="T:MvvmFx.Windows.AttachedPropertyBrowsableAttribute">
+            <summary>
+            AttachedPropertyBrowsableAttribute
+            </summary>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.IEditableCollectionView">
+            <summary>
+            IEditableCollectionView
+            </summary>
+        </member>
+        <member name="T:MvvmFx.Collections.Specialized.CollectionChangedEventManager">
+            <summary>
+            CollectionChangedEventManager
+            </summary>
+        </member>
+        <member name="T:MvvmFx.Windows.WeakEventManager">
+            <summary>
+            WeakEventManager
+            </summary>
+            <remarks>This class isn't completely implemented.</remarks>
+        </member>
+        <member name="T:MvvmFx.Windows.WeakEventManager.ListenerList">
+            <summary>
+            ListenerList
+            </summary>
+            <remarks>This class isn't implemented.</remarks>
+        </member>
+        <member name="T:MvvmFx.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:MvvmFx.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:MvvmFx.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:MvvmFx.Properties.Resources.CannotOverrideMetadataOnReadonlyPropertyWithoutUsingDependencyPropertyKey">
+            <summary>
+              Looks up a localized string similar to Cannot override metadata on readonly property &apos;{0}&apos; without using a DependencyPropertyKey.
+            </summary>
+        </member>
+        <member name="T:MvvmFx.Windows.PropertyMetadata">
+            <summary>
+            PropertyMetadata
+            </summary>
+        </member>
+        <member name="T:MvvmFx.Windows.LocalValueEnumerator">
+            <summary>
+            LocalValueEnumerator
+            </summary>
+            <remarks>This class isn't completely implemented.</remarks>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.CurrentChangingEventArgs">
+            <summary>
+            CurrentChangingEventArgs
+            </summary>
+        </member>
+        <member name="T:MvvmFx.Windows.IWeakEventListener">
+            <summary>
+            IWeakEventListener
+            </summary>
+        </member>
+        <member name="T:MvvmFx.Windows.Forms.UserControl">
+            <summary>
+            Represents a UserControl that participates in the dependency property system.
+            </summary>
+            <remarks>This implementation of this class isn't completed.</remarks>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.SortDescriptionCollection">
+            <summary>
+            SortDescriptionCollection
+            </summary>
+        </member>
+        <member name="T:MvvmFx.Windows.LocalValueEntry">
+            <summary>
+            LocalValueEntry
+            </summary>
+            <remarks>This class isn't implemented.</remarks>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.PropertyChangedEventManager">
+            <summary>
+            PropertyChangedEventManager
+            </summary>
+            <remarks>This class isn't implemented.</remarks>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.CurrentChangingEventManager">
+            <summary>
+            CurrentChangingEventManager
+            </summary>
+            <remarks>This class isn't implemented.</remarks>
+        </member>
+        <member name="T:MvvmFx.Windows.DependencyProperty">
+            <summary>
+            Represents a WPF like dependency property that accepts specifications for a default value and callbacks for property changed, coerce value and validate.
+            </summary>
+        </member>
+        <member name="T:MvvmFx.Windows.PropertyChangedCallback">
+            <summary>
+            PropertyChangedCallback
+            </summary>
+            <param name="d">The d.</param>
+            <param name="e">The <see cref="T:MvvmFx.Windows.DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.NewItemPlaceholderPosition">
+            <summary>
+            NewItemPlaceholderPosition
+            </summary>
+        </member>
+        <member name="T:MvvmFx.Windows.DependencyPropertyChangedEventArgs">
+            <summary>
+            DependencyPropertyChangedEventArgs
+            </summary>
+            <remarks>This class isn't completely implemented.</remarks>
+        </member>
+        <member name="T:MvvmFx.Windows.AttachedPropertyBrowsableForTypeAttribute">
+            <summary>
+            AttachedPropertyBrowsableForTypeAttribute
+            </summary>
+            <remarks>This class isn't implemented.</remarks>
+        </member>
+        <member name="T:MvvmFx.Windows.CoerceValueCallback">
+            <summary>
+            CoerceValueCallback
+            </summary>
+            <param name="d">The d.</param>
+            <param name="baseValue">The base value.</param>
+            <returns></returns>
+        </member>
+        <member name="T:MvvmFx.Windows.ExpressionConverter">
+            <summary>
+            ExpressionConverter
+            </summary>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.SortDescription">
+            <summary>
+            SortDescription
+            </summary>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.CurrentChangingEventHandler">
+            <summary>
+            CurrentChangingEventHandler
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="e">The <see cref="T:MvvmFx.ComponentModel.CurrentChangingEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="T:MvvmFx.Windows.Forms.Form">
+            <summary>
+            Represents a Form that participates in the dependency property system.
+            </summary>
+            <remarks>This implementation of this class isn't completed.</remarks>
+        </member>
+        <member name="T:MvvmFx.Windows.DependencyPropertyKey">
+            <summary>
+            DependencyPropertyKey
+            </summary>
+        </member>
+        <member name="T:MvvmFx.Windows.DependencyPropertyChangedEventHandler">
+            <summary>
+            DependencyPropertyChangedEventHandler
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="e">The <see cref="T:MvvmFx.Windows.DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.ItemPropertyInfo">
+            <summary>
+            ItemPropertyInfo
+            </summary>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.CurrentChangedEventManager">
+            <summary>
+            CurrentChangedEventManager
+            </summary>
+            <remarks>This class isn't implemented.</remarks>
+        </member>
+        <member name="T:MvvmFx.Windows.Expression">
+            <summary>
+            Expression
+            </summary>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.PropertyFilterOptions">
+            <summary>
+            PropertyFilterOptions
+            </summary>
+        </member>
+        <member name="T:MvvmFx.Windows.DependencyObjectType">
+            <summary>
+            DependencyObjectType
+            </summary>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.ReferenceEqualityComparer">
+            <summary>
+            ReferenceEqualityComparer
+            </summary>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.DependencyPropertyDescriptor">
+            <summary>
+            DependencyPropertyDescriptor
+            </summary>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.IItemProperties">
+            <summary>
+            IItemProperties
+            </summary>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.ICollectionViewFactory">
+            <summary>
+            ICollectionViewFactory
+            </summary>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.ICollectionView">
+            <summary>
+            ICollectionView
+            </summary>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.GroupDescription">
+            <summary>
+            GroupDescription
+            </summary>
+            <remarks>This class isn't implemented.</remarks>
+        </member>
+        <member name="T:MvvmFx.ComponentModel.PropertyFilterAttribute">
+            <summary>
+            PropertyFilterAttribute
+            </summary>
+        </member>
+    </members>
+</doc>
