@@ -18,6 +18,7 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Runtime.InteropServices;
 using DreamWorks.TddHelper.Implementation;
+using DreamWorks.TddHelper.View;
 using EnvDTE;
 using EnvDTE80;
 
@@ -31,6 +32,7 @@ namespace DreamWorks.TddHelper
 	[PackageRegistration(UseManagedResourcesOnly = true)]
 	[InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
 	[ProvideMenuResource("Menus.ctmenu", 1)]
+	[ProvideOptionPageAttribute(typeof(OptionsPageCustom), "Tdd Helper", "TddHelper", 100, 102, true, new [] { "Change Tdd Helper options" })]
 	[Guid(GuidList.guidTddHelperPkgString)]
 	public sealed class TddHelperPackage : Package
 	{

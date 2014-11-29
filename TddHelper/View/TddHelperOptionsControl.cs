@@ -48,7 +48,7 @@ namespace DreamWorks.TddHelper.View
 			_optionsViewModel.CreateReference = true;
 			_optionsViewModel.MakeFriendAssembly = true;
 			_optionsViewModel.MirrorProjectFolders = true;
-			_optionsViewModel.Cleanup = false;
+			_optionsViewModel.Clean = false;
 		}
 
 		private void OnLoad(object sender, EventArgs e)
@@ -124,9 +124,8 @@ namespace DreamWorks.TddHelper.View
 						o => o.ProjectSuffix));
 		}
 
-		private void CleanMode_CheckedChanged(object sender, EventArgs e)
-		{
+		public OptionsPageCustom OptionsPage { get; set; }
 
-		}
+		
 	}
 }

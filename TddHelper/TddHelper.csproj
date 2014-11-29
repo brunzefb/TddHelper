@@ -162,6 +162,9 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Implementation\TestLocator.cs" />
     <Compile Include="Implementation\TabJumper.cs" />
+    <Compile Include="View\OptionsPageCustom.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="View\TddHelperOptionsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
