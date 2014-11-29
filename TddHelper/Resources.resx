@@ -129,4 +129,10 @@
   <data name="AppTitle" xml:space="preserve">
     <value>TddHelper</value>
   </data>
+  <data name="TddHelper_App_Name" xml:space="preserve">
+    <value>Tdd Helper</value>
+  </data>
+  <data name="TddHelperOptionsControl_ConfirmClearCacheMessage" xml:space="preserve">
+    <value>The cache of file associations has been cleared. </value>
+  </data>
 </root>

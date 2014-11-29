@@ -15,7 +15,12 @@ namespace DreamWorks.TddHelper.View
 		public TddHelperOptionsControl()
 		{
 			InitializeComponent();
-			Load += OnLoad;
+		}
+
+		public void OnLoad(object sender, EventArgs e)
+		{
+			AddBindings();
+			LoadOrDefault();
 		}
 
 		public void Save()
@@ -51,12 +56,6 @@ namespace DreamWorks.TddHelper.View
 			_optionsViewModel.Clean = false;
 		}
 
-		private void OnLoad(object sender, EventArgs e)
-		{
-			AddBindings();
-			LoadOrDefault();
-		}
-
 		private void AddBindings()
 		{
 			_optionsViewModel = new OptionsViewModel();
@@ -65,6 +64,15 @@ namespace DreamWorks.TddHelper.View
 			BindTextControls();
 			BindRadioButtons();
 			BindCheckboxes();
+
+			ClearcacheButton.Click += ClearcacheButton_Click;
+		}
+
+		void ClearcacheButton_Click(object sender, EventArgs e)
+		{
+			MessageBox.Show(OptionsPage, 
+				Resources.TddHelperOptionsControl_ConfirmClearCacheMessage, 
+				Resources.TddHelper_App_Name, MessageBoxButtons.OK);
 		}
 
 		private void BindCheckboxes()

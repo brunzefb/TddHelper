@@ -55,7 +55,7 @@
 			this.label1.Location = new System.Drawing.Point(-2, 2);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(83, 15);
-			this.label1.TabIndex = 0;
+			this.label1.TabIndex = 13;
 			this.label1.Text = "Test file s&uffix:";
 			// 
 			// label2
@@ -74,7 +74,7 @@
 			this.TestFileSuffixEdit.Location = new System.Drawing.Point(83, 0);
 			this.TestFileSuffixEdit.Name = "TestFileSuffixEdit";
 			this.TestFileSuffixEdit.Size = new System.Drawing.Size(155, 21);
-			this.TestFileSuffixEdit.TabIndex = 1;
+			this.TestFileSuffixEdit.TabIndex = 12;
 			// 
 			// ProjectSuffixEdit
 			// 
@@ -82,7 +82,7 @@
 			this.ProjectSuffixEdit.Location = new System.Drawing.Point(83, 28);
 			this.ProjectSuffixEdit.Name = "ProjectSuffixEdit";
 			this.ProjectSuffixEdit.Size = new System.Drawing.Size(155, 21);
-			this.ProjectSuffixEdit.TabIndex = 4;
+			this.ProjectSuffixEdit.TabIndex = 10;
 			// 
 			// groupBox1
 			// 
@@ -116,7 +116,7 @@
 			this.UnitTestRightRadio.Location = new System.Drawing.Point(12, 39);
 			this.UnitTestRightRadio.Name = "UnitTestRightRadio";
 			this.UnitTestRightRadio.Size = new System.Drawing.Size(249, 19);
-			this.UnitTestRightRadio.TabIndex = 6;
+			this.UnitTestRightRadio.TabIndex = 8;
 			this.UnitTestRightRadio.TabStop = true;
 			this.UnitTestRightRadio.Text = "&Implementation file left, Unit Test file right";
 			this.UnitTestRightRadio.UseVisualStyleBackColor = true;
@@ -128,7 +128,7 @@
 			this.UnitTestLeftRadio.Location = new System.Drawing.Point(12, 20);
 			this.UnitTestLeftRadio.Name = "UnitTestLeftRadio";
 			this.UnitTestLeftRadio.Size = new System.Drawing.Size(245, 19);
-			this.UnitTestLeftRadio.TabIndex = 5;
+			this.UnitTestLeftRadio.TabIndex = 9;
 			this.UnitTestLeftRadio.TabStop = true;
 			this.UnitTestLeftRadio.Text = "&Unit test file left, Implementation file right";
 			this.UnitTestLeftRadio.UseVisualStyleBackColor = true;
@@ -140,7 +140,7 @@
 			this.AutoCreateProjectCheckbox.Location = new System.Drawing.Point(0, 151);
 			this.AutoCreateProjectCheckbox.Name = "AutoCreateProjectCheckbox";
 			this.AutoCreateProjectCheckbox.Size = new System.Drawing.Size(395, 19);
-			this.AutoCreateProjectCheckbox.TabIndex = 8;
+			this.AutoCreateProjectCheckbox.TabIndex = 6;
 			this.AutoCreateProjectCheckbox.Text = "Create Test &Project Automatically [Leave unchecked to be prompted]";
 			this.AutoCreateProjectCheckbox.UseVisualStyleBackColor = true;
 			// 
@@ -151,7 +151,7 @@
 			this.AutoCreateFileCheckbox.Location = new System.Drawing.Point(0, 172);
 			this.AutoCreateFileCheckbox.Name = "AutoCreateFileCheckbox";
 			this.AutoCreateFileCheckbox.Size = new System.Drawing.Size(377, 19);
-			this.AutoCreateFileCheckbox.TabIndex = 9;
+			this.AutoCreateFileCheckbox.TabIndex = 5;
 			this.AutoCreateFileCheckbox.Text = "Create Test &File Automatically [Leave unchecked to be prompted]";
 			this.AutoCreateFileCheckbox.UseVisualStyleBackColor = true;
 			// 
@@ -162,7 +162,7 @@
 			this.MirrorProjectFoldersChecbox.Location = new System.Drawing.Point(0, 193);
 			this.MirrorProjectFoldersChecbox.Name = "MirrorProjectFoldersChecbox";
 			this.MirrorProjectFoldersChecbox.Size = new System.Drawing.Size(275, 19);
-			this.MirrorProjectFoldersChecbox.TabIndex = 10;
+			this.MirrorProjectFoldersChecbox.TabIndex = 4;
 			this.MirrorProjectFoldersChecbox.Text = "&Mirror Project Folders when creating Unit Test";
 			this.MirrorProjectFoldersChecbox.UseVisualStyleBackColor = true;
 			// 
@@ -173,7 +173,7 @@
 			this.CreateReferenceCheckbox.Location = new System.Drawing.Point(0, 214);
 			this.CreateReferenceCheckbox.Name = "CreateReferenceCheckbox";
 			this.CreateReferenceCheckbox.Size = new System.Drawing.Size(369, 19);
-			this.CreateReferenceCheckbox.TabIndex = 11;
+			this.CreateReferenceCheckbox.TabIndex = 3;
 			this.CreateReferenceCheckbox.Text = "When creating project, add &reference to implementation project";
 			this.CreateReferenceCheckbox.UseVisualStyleBackColor = true;
 			// 
@@ -184,7 +184,7 @@
 			this.MakeFriendAssemblyCheckbox.Location = new System.Drawing.Point(0, 235);
 			this.MakeFriendAssemblyCheckbox.Name = "MakeFriendAssemblyCheckbox";
 			this.MakeFriendAssemblyCheckbox.Size = new System.Drawing.Size(390, 19);
-			this.MakeFriendAssemblyCheckbox.TabIndex = 12;
+			this.MakeFriendAssemblyCheckbox.TabIndex = 2;
 			this.MakeFriendAssemblyCheckbox.Text = "Make new test project a Frien&d Assembly of Implementation project";
 			this.MakeFriendAssemblyCheckbox.UseVisualStyleBackColor = true;
 			// 
@@ -195,7 +195,7 @@
 			this.CleanCheckbox.Location = new System.Drawing.Point(0, 256);
 			this.CleanCheckbox.Name = "CleanCheckbox";
 			this.CleanCheckbox.Size = new System.Drawing.Size(323, 19);
-			this.CleanCheckbox.TabIndex = 13;
+			this.CleanCheckbox.TabIndex = 1;
 			this.CleanCheckbox.Text = "Clean Mode (Close all other &windows after loading file)";
 			this.CleanCheckbox.UseVisualStyleBackColor = true;
 			// 
@@ -204,7 +204,7 @@
 			this.ClearcacheButton.Location = new System.Drawing.Point(320, -1);
 			this.ClearcacheButton.Name = "ClearcacheButton";
 			this.ClearcacheButton.Size = new System.Drawing.Size(75, 23);
-			this.ClearcacheButton.TabIndex = 2;
+			this.ClearcacheButton.TabIndex = 11;
 			this.ClearcacheButton.Text = "Clear cac&he";
 			this.buttonToolTip.SetToolTip(this.ClearcacheButton, "This will clear out all remembered file\r\nassociations between Test and Implementa" +
         "tion\r\nFiles.  The storage is solution-specific, using this\r\nclears out all previ" +
