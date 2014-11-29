@@ -1,4 +1,6 @@
-﻿using MvvmFx.MvvmLight;
+﻿// Copyright AB SCIEX 2014. All rights reserved.
+
+using MvvmFx.MvvmLight;
 
 namespace DreamWorks.TddHelper.ViewModel
 {
@@ -128,16 +130,16 @@ namespace DreamWorks.TddHelper.ViewModel
 
 		public void UpdateUI()
 		{
-			RaisePropertyChanged(() =>ProjectSuffix);
-			RaisePropertyChanged(() =>TestFileSuffix);
-			RaisePropertyChanged(() =>UnitTestLeft);
-			RaisePropertyChanged(() =>UnitTestRight);
-			RaisePropertyChanged(() =>NoSplit);
-			RaisePropertyChanged(() =>AutoCreateTestFile);
-			RaisePropertyChanged(() =>AutoCreateTestProject);
-			RaisePropertyChanged(() =>CreateReference); 
-			RaisePropertyChanged(() =>MakeFriendAssembly);
-			RaisePropertyChanged(() =>MirrorProjectFolders);
+			RaisePropertyChanged(() => ProjectSuffix);
+			RaisePropertyChanged(() => TestFileSuffix);
+			RaisePropertyChanged(() => UnitTestLeft);
+			RaisePropertyChanged(() => UnitTestRight);
+			RaisePropertyChanged(() => NoSplit);
+			RaisePropertyChanged(() => AutoCreateTestFile);
+			RaisePropertyChanged(() => AutoCreateTestProject);
+			RaisePropertyChanged(() => CreateReference);
+			RaisePropertyChanged(() => MakeFriendAssembly);
+			RaisePropertyChanged(() => MirrorProjectFolders);
 			RaisePropertyChanged(() => Clean);
 		}
 	}

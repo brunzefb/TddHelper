@@ -19,6 +19,8 @@ namespace DreamWorks.TddHelper.View
 			_bindingManager = new BindingManager();
 		}
 
+		public OptionsPageCustom OptionsPage { get; set; }
+
 		public void OnLoad(object sender, EventArgs e)
 		{
 			if (!_bindingsAdded)
@@ -37,19 +39,18 @@ namespace DreamWorks.TddHelper.View
 
 		private void UpdateUI()
 		{
+			// deserialization bypasses the property sets, thats why we have to update the UI
 			if (!string.IsNullOrEmpty(TddSettings.Default.Settings))
 				_optionsViewModel = JsonConvert.DeserializeObject<OptionsViewModel>
 					(TddSettings.Default.Settings);
 			_optionsViewModel.UpdateUI();
 		}
 
-	
 		private void AddBindings()
 		{
 			BindTextControls();
 			BindRadioButtons();
 			BindCheckboxes();
-
 			ClearcacheButton.Click += ClearcacheButton_Click;
 		}
 
@@ -82,7 +83,6 @@ namespace DreamWorks.TddHelper.View
 				new TypedBinding<CheckBox, OptionsViewModel>
 					(MakeFriendAssemblyCheckbox, c => c.Checked, _optionsViewModel,
 						o => o.MakeFriendAssembly));
-
 			_bindingManager.Bindings.Add(
 				new TypedBinding<CheckBox, OptionsViewModel>
 					(CleanCheckbox, c => c.Checked, _optionsViewModel,
@@ -116,9 +116,5 @@ namespace DreamWorks.TddHelper.View
 					(ProjectSuffixEdit, t => t.Text, _optionsViewModel,
 						o => o.ProjectSuffix));
 		}
-
-		public OptionsPageCustom OptionsPage { get; set; }
-
-		
 	}
 }
