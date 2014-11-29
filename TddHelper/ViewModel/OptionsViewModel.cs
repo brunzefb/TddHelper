@@ -4,14 +4,14 @@ namespace DreamWorks.TddHelper.ViewModel
 {
 	internal class OptionsViewModel : ViewModelBase
 	{
-		private string _testFileSuffix;
-		private string _projectSuffix;
+		private string _testFileSuffix = "Test.cs";
+		private string _projectSuffix = "Test.csproj";
 		private bool _autoCreateTestProject;
 		private bool _autoCreateTestFile;
 		private bool _mirrorProjectFolders;
 		private bool _createReference;
 		private bool _makeFriendAssembly;
-		private bool _unitTestLeft;
+		private bool _unitTestLeft = true;
 		private bool _unitTestRight;
 		private bool _noSplitWindow;
 		private bool _clean;
@@ -124,6 +124,21 @@ namespace DreamWorks.TddHelper.ViewModel
 				_clean = value;
 				RaisePropertyChanged(() => Clean);
 			}
+		}
+
+		public void UpdateUI()
+		{
+			RaisePropertyChanged(() =>ProjectSuffix);
+			RaisePropertyChanged(() =>TestFileSuffix);
+			RaisePropertyChanged(() =>UnitTestLeft);
+			RaisePropertyChanged(() =>UnitTestRight);
+			RaisePropertyChanged(() =>NoSplit);
+			RaisePropertyChanged(() =>AutoCreateTestFile);
+			RaisePropertyChanged(() =>AutoCreateTestProject);
+			RaisePropertyChanged(() =>CreateReference); 
+			RaisePropertyChanged(() =>MakeFriendAssembly);
+			RaisePropertyChanged(() =>MirrorProjectFolders);
+			RaisePropertyChanged(() => Clean);
 		}
 	}
 }

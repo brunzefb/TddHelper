@@ -3,24 +3,30 @@ using System.Windows.Forms;
 using DreamWorks.TddHelper.ViewModel;
 using MvvmFx.Windows.Data;
 using Newtonsoft.Json;
-using DreamWorks.TddHelper;
 
 namespace DreamWorks.TddHelper.View
 {
 	public partial class TddHelperOptionsControl : UserControl
 	{
-		private BindingManager _bindingManager;
+		private readonly BindingManager _bindingManager;
 		private OptionsViewModel _optionsViewModel;
+		private static bool _bindingsAdded;
 
 		public TddHelperOptionsControl()
 		{
 			InitializeComponent();
+			_optionsViewModel = new OptionsViewModel();
+			_bindingManager = new BindingManager();
 		}
 
 		public void OnLoad(object sender, EventArgs e)
 		{
-			AddBindings();
-			LoadOrDefault();
+			if (!_bindingsAdded)
+			{
+				AddBindings();
+				_bindingsAdded = true;
+			}
+			UpdateUI();
 		}
 
 		public void Save()
@@ -29,38 +35,17 @@ namespace DreamWorks.TddHelper.View
 			TddSettings.Default.Save();
 		}
 
-		private void LoadOrDefault()
+		private void UpdateUI()
 		{
-			if (string.IsNullOrEmpty(TddSettings.Default.Settings))
-			{
-				SetDefaults();
-				Save();
-			}
-			else
+			if (!string.IsNullOrEmpty(TddSettings.Default.Settings))
 				_optionsViewModel = JsonConvert.DeserializeObject<OptionsViewModel>
 					(TddSettings.Default.Settings);
+			_optionsViewModel.UpdateUI();
 		}
 
-		private void SetDefaults()
-		{
-			_optionsViewModel.ProjectSuffix = "Test.csproj";
-			_optionsViewModel.TestFileSuffix = "Test.cs";
-			_optionsViewModel.UnitTestLeft = true;
-			_optionsViewModel.UnitTestRight = false;
-			_optionsViewModel.NoSplit = false;
-			_optionsViewModel.AutoCreateTestFile = false;
-			_optionsViewModel.AutoCreateTestProject = false;
-			_optionsViewModel.CreateReference = true;
-			_optionsViewModel.MakeFriendAssembly = true;
-			_optionsViewModel.MirrorProjectFolders = true;
-			_optionsViewModel.Clean = false;
-		}
-
+	
 		private void AddBindings()
 		{
-			_optionsViewModel = new OptionsViewModel();
-			_bindingManager = new BindingManager();
-
 			BindTextControls();
 			BindRadioButtons();
 			BindCheckboxes();
