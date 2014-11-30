@@ -27,6 +27,7 @@ namespace DreamWorks.TddHelper.View
 	    {
 		    base.OnClosed(e);
 		    _optionsControl.Save();
+		   
 	    }
 
 	    /// <summary>

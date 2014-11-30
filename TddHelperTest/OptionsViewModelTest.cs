@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using DreamWorks.TddHelper.ViewModel;
+﻿using DreamWorks.TddHelper.ViewModel;
 using NUnit.Framework;
 
 
@@ -8,62 +7,62 @@ namespace TddHelperTest
 	[TestFixture]
 	public class OptionsViewModelTest
 	{
-		OptionsViewModel _t;
+		OptionsViewModel _optionsViewModel;
 		private bool _propertyChangedCalled;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_t = new OptionsViewModel();
+			_optionsViewModel = new OptionsViewModel();
 		}
 
 		[Test]
 		public void Properties()
 		{
-			_t.UnitTestLeft = true;
-			Assert.That(_t.UnitTestLeft, Is.True);
+			_optionsViewModel.UnitTestLeft = true;
+			Assert.That(_optionsViewModel.UnitTestLeft, Is.True);
 
-			_t.UnitTestRight = true;
-			Assert.IsTrue(_t.UnitTestRight);
+			_optionsViewModel.UnitTestRight = true;
+			Assert.IsTrue(_optionsViewModel.UnitTestRight);
 
-			_t.NoSplit = true;
-			Assert.IsTrue(_t.NoSplit);
+			_optionsViewModel.NoSplit = true;
+			Assert.IsTrue(_optionsViewModel.NoSplit);
 
-			_t.TestFileSuffix = "abcd";
-			Assert.That(_t.TestFileSuffix, Is.EqualTo("abcd"));
+			_optionsViewModel.TestFileSuffix = "abcd";
+			Assert.That(_optionsViewModel.TestFileSuffix, Is.EqualTo("abcd"));
 
-			_t.ProjectSuffix = "ee";
-			Assert.That(_t.ProjectSuffix, Is.EqualTo("ee"));
+			_optionsViewModel.ProjectSuffix = "ee";
+			Assert.That(_optionsViewModel.ProjectSuffix, Is.EqualTo("ee"));
 
-			_t.AutoCreateTestProject = true;
-			Assert.IsTrue(_t.AutoCreateTestProject);
+			_optionsViewModel.AutoCreateTestProject = true;
+			Assert.IsTrue(_optionsViewModel.AutoCreateTestProject);
 
-			_t.AutoCreateTestFile = true;
-			Assert.IsTrue(_t.AutoCreateTestFile);
+			_optionsViewModel.AutoCreateTestFile = true;
+			Assert.IsTrue(_optionsViewModel.AutoCreateTestFile);
 
-			_t.MirrorProjectFolders = true;
-			Assert.IsTrue(_t.MirrorProjectFolders);
+			_optionsViewModel.MirrorProjectFolders = true;
+			Assert.IsTrue(_optionsViewModel.MirrorProjectFolders);
 
-			_t.CreateReference = true;
-			Assert.IsTrue(_t.CreateReference);
+			_optionsViewModel.CreateReference = true;
+			Assert.IsTrue(_optionsViewModel.CreateReference);
 
-			_t.MakeFriendAssembly = true;
-			Assert.IsTrue(_t.MakeFriendAssembly);
+			_optionsViewModel.MakeFriendAssembly = true;
+			Assert.IsTrue(_optionsViewModel.MakeFriendAssembly);
 
-			_t.Clean = true;
-			Assert.IsTrue(_t.Clean);
+			_optionsViewModel.Clean = true;
+			Assert.IsTrue(_optionsViewModel.Clean);
 			
 		}
 
 		[Test]
 		public void UpdateUI()
 		{
-			_t.PropertyChanged += _t_PropertyChanged;
-			_t.UpdateUI();
+			_optionsViewModel.PropertyChanged += optionsViewModelPropertyChanged;
+			_optionsViewModel.UpdateUI();
 			Assert.That(_propertyChangedCalled, Is.True);
 		}
 
-		void _t_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void optionsViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			_propertyChangedCalled = true;
 		}

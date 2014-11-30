@@ -4,7 +4,7 @@ using MvvmFx.MvvmLight;
 
 namespace DreamWorks.TddHelper.ViewModel
 {
-	internal class OptionsViewModel : ViewModelBase
+	public class OptionsViewModel : ViewModelBase
 	{
 		private string _testFileSuffix = "Test.cs";
 		private string _projectSuffix = "Test.csproj";

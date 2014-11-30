@@ -29,12 +29,19 @@ namespace DreamWorks.TddHelper.View
 				_bindingsAdded = true;
 			}
 			UpdateUI();
+		
+		}
+
+		public OptionsViewModel OptionsViewModel
+		{
+			get { return _optionsViewModel; }
 		}
 
 		public void Save()
 		{
 			TddSettings.Default.Settings = JsonConvert.SerializeObject(_optionsViewModel);
 			TddSettings.Default.Save();
+			StaticOptions.TddHelper = _optionsViewModel;
 		}
 
 		private void UpdateUI()

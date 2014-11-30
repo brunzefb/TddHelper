@@ -1,6 +1,9 @@
-﻿using System;
+﻿// Copyright AB SCIEX 2014. All rights reserved.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using EnvDTE;
 using EnvDTE80;
 
@@ -17,8 +20,19 @@ namespace DreamWorks.TddHelper.Implementation
 		private const string OpenFileCommand = "File.OpenFile";
 		private const string TestDotCs = "test.cs";
 		private const char Period = '.';
+		private const string Document = "Document";
+		private const int Left = 0;
+		private const int Right = 1;
+		private const int OnlyOne = 1;
+		
+		private Window _tempWindow;
+		private List<Window> _sortedTopLevelWindows;
 		private readonly DTE2 _dte;
-
+		private const string NewVerticalTabGroupCommand = "Window.NewVerticalTabGroup";
+		private const string WindowMoveToPreviousTabGroup = "Window.MoveToPreviousTabGroup";
+		private const string WindowMoveToNextTabGroupCommand = "Window.MoveToNextTabGroup";
+		private const string NewFileCommand = "File.NewFile";
+		private const string DummyTextDocument = "Text.txt";
 
 		public TestLocator(DTE2 dte)
 		{
@@ -27,29 +41,157 @@ namespace DreamWorks.TddHelper.Implementation
 
 		internal void OpenTestOrImplementation(object sender, EventArgs e)
 		{
-			
-			if (_dte.ActiveWindow == null || _dte.ActiveDocument == null || _dte.ActiveWindow.Document == null)
+			if (_dte.ActiveWindow == null || _dte.ActiveDocument == null ||
+			    _dte.ActiveWindow.Document == null)
 				return;
 
-			var fullName = _dte.ActiveWindow.Document.FullName;
-			var isTest = fullName.ToLower().EndsWith(TestDotCs);
-			var isCs = fullName.ToLower().EndsWith(CsharpFileExtension);
+			_sortedTopLevelWindows = GetSortedTopLevelWindows();
+
+			var sourcePath = _dte.ActiveWindow.Document.FullName;
+			var isSourcePathTest = sourcePath.ToLower().EndsWith(StaticOptions.TddHelper.TestFileSuffix);
+			var isCs = sourcePath.ToLower().EndsWith(CsharpFileExtension);
 
 			if (!isCs)
 				return;
-			
+
 			GetCSharpFilesFromSolution();
 
-			var fileName = Path.GetFileName(fullName);
+			var fileName = Path.GetFileName(sourcePath);
 			string targetToActivate;
-			if (!isTest)
+			if (!isSourcePathTest)
 				targetToActivate = FindPathToTestFile(fileName);
 			else
 				targetToActivate = FindPathImplementationFile(fileName);
 
-			if (!_dte.get_IsOpenFile(Constants.vsViewKindTextView, targetToActivate))
-				_dte.ExecuteCommand(OpenFileCommand, targetToActivate);
+			LoadOther(sourcePath, targetToActivate, isSourcePathTest);
 		}
+
+		private void LoadOther(string sourcePath, string targetPath, bool sourcePathIsTest)
+		{
+			var targetDocument = GetDocumentForPath(targetPath);
+			if (null == targetDocument)
+			{
+				_dte.ExecuteCommand(OpenFileCommand, targetPath);
+			}
+			else
+				targetDocument.Activate();
+
+			if (!StaticOptions.TddHelper.NoSplit)
+			{
+				if (GetSortedTopLevelWindows().Count() == 1)
+					_dte.ExecuteCommand(NewVerticalTabGroupCommand);
+
+				ArrangeWindows(sourcePath, targetPath, sourcePathIsTest);
+			}
+			var sourceDocument = GetDocumentForPath(sourcePath);
+			if (sourceDocument != null)
+				sourceDocument.Activate();
+		}
+
+		private void ArrangeWindows(string sourcePath, string targetPath, bool sourcePathIsTest)
+		{
+			int indexOfTarget = FindActiveWindowIndex(); // we loaded or activated target
+			if (!sourcePathIsTest) 
+			{
+				// target is test
+				var indexOfTest = indexOfTarget;
+				WindowMoveHelper(indexOfTest, Right, false); 
+				
+				// source is the implementation file
+				var implementationDocument = GetDocumentForPath(sourcePath);
+				if (implementationDocument != null)
+					implementationDocument.Activate();
+				var indexOfImplementation = FindActiveWindowIndex();
+				WindowMoveHelper(indexOfImplementation, Left, true);
+			}
+			else
+			{
+				// target is implementation
+				var indexOfImplementation = indexOfTarget;
+				WindowMoveHelper(indexOfImplementation, Left, true);
+
+				// source is the test file
+				var implementationDocument = GetDocumentForPath(targetPath);
+				if (implementationDocument != null)
+					implementationDocument.Activate();
+				var indexOfTest = FindActiveWindowIndex();
+				WindowMoveHelper(indexOfTest, Right, false); 
+
+			}
+			_tempWindow.Close();
+		}
+
+
+		private void WindowMoveHelper(int windowIndexToCheck, int positionToCheckForMove, bool moveToNext)
+		{
+			var isUnitTestLeft = StaticOptions.TddHelper.UnitTestLeft;
+			string windowMoveCommand = moveToNext? WindowMoveToNextTabGroupCommand : WindowMoveToPreviousTabGroup;
+			
+			if (isUnitTestLeft && windowIndexToCheck == positionToCheckForMove)
+			{
+				var topLevelWindow = WindowAtIndex(windowIndexToCheck);
+				if (topLevelWindow == null)
+					return;
+				if (topLevelWindow.Collection.Count == OnlyOne)
+					_dte.ExecuteCommand(NewFileCommand, DummyTextDocument);
+				_tempWindow = _dte.ActiveWindow;
+				_dte.ExecuteCommand(windowMoveCommand);
+			}
+		}
+
+		private Window WindowAtIndex(int index)
+		{
+			int currentIndex = 0;
+
+			foreach (Window w in _sortedTopLevelWindows)
+			{
+				if (currentIndex == index)
+					return w;
+				currentIndex++;
+			}
+			return null;
+		}
+
+
+		private Document GetDocumentForPath(string targetPath)
+		{
+			foreach (var topLevelWindow in _sortedTopLevelWindows)
+			{
+				foreach (Window lowerLevelWindow in topLevelWindow.Collection)
+				{
+					var fullPath = Path.Combine(lowerLevelWindow.Document.Path, lowerLevelWindow.Caption);
+					if (string.Equals(fullPath, targetPath, StringComparison.CurrentCultureIgnoreCase))
+						return lowerLevelWindow.Document;
+				}
+			}
+			return null;
+		}
+
+		internal int FindActiveWindowIndex()
+		{
+			for (var i = 0; i < _sortedTopLevelWindows.Count; ++i)
+			{
+				if (_sortedTopLevelWindows[i].Document != _dte.ActiveDocument)
+					continue;
+				return i;
+			}
+			return 0;
+		}
+
+		internal List<Window> GetSortedTopLevelWindows()
+		{
+			// Documents with a "left" or "top" value > 0 are the focused ones in each group, 
+			// so we only need to collect those
+			var topLevelWindows = new List<Window>();
+			foreach (Window window in _dte.Windows)
+			{
+				if (window.Kind == Document && (window.Left > 0 || window.Top > 0))
+					topLevelWindows.Add(window);
+			}
+			topLevelWindows.Sort((a, b) => a.Left < b.Left ? -1 : 1);
+			return topLevelWindows;
+		}
+
 
 		public void GetCSharpFilesFromSolution()
 		{
@@ -85,7 +227,6 @@ namespace DreamWorks.TddHelper.Implementation
 				}
 				foreach (var item in _projectItemList)
 					GetFilesFromProjectItem(item, Path.GetDirectoryName(project.FileName));
-
 			}
 		}
 
@@ -116,7 +257,7 @@ namespace DreamWorks.TddHelper.Implementation
 					_fileList.Add(Path.Combine(directoryName, item.Name));
 				return;
 			}
-			
+
 			for (short i = 0; i < item.FileCount; i++)
 				if (item.FileNames[i].ToLower().EndsWith(CsharpFileExtension))
 					_fileList.Add(Path.Combine(directoryName, item.FileNames[i]));
