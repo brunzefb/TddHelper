@@ -26,7 +26,6 @@ namespace DreamWorks.TddHelper.Implementation
 		private const int OnlyOne = 1;
 		
 		private Window _tempWindow;
-		private List<Window> _sortedTopLevelWindows;
 		private readonly DTE2 _dte;
 		private const string NewVerticalTabGroupCommand = "Window.NewVerticalTabGroup";
 		private const string WindowMoveToPreviousTabGroup = "Window.MoveToPreviousTabGroup";
@@ -45,8 +44,7 @@ namespace DreamWorks.TddHelper.Implementation
 			    _dte.ActiveWindow.Document == null)
 				return;
 
-			_sortedTopLevelWindows = GetSortedTopLevelWindows();
-
+		
 			var sourcePath = _dte.ActiveWindow.Document.FullName;
 			var isSourcePathTest = sourcePath.ToLower().EndsWith(StaticOptions.TddHelper.TestFileSuffix);
 			var isCs = sourcePath.ToLower().EndsWith(CsharpFileExtension);
@@ -78,8 +76,10 @@ namespace DreamWorks.TddHelper.Implementation
 
 			if (!StaticOptions.TddHelper.NoSplit)
 			{
-				if (GetSortedTopLevelWindows().Count() == 1)
+				var sortedTopLevelWindows = GetSortedTopLevelWindows();
+				if (sortedTopLevelWindows.Count() == OnlyOne)
 					_dte.ExecuteCommand(NewVerticalTabGroupCommand);
+				sortedTopLevelWindows.Clear();
 
 				ArrangeWindows(sourcePath, targetPath, sourcePathIsTest);
 			}
@@ -118,7 +118,8 @@ namespace DreamWorks.TddHelper.Implementation
 				WindowMoveHelper(indexOfTest, Right, false); 
 
 			}
-			_tempWindow.Close();
+			if (_tempWindow != null)
+				_tempWindow.Close();
 		}
 
 
@@ -133,8 +134,10 @@ namespace DreamWorks.TddHelper.Implementation
 				if (topLevelWindow == null)
 					return;
 				if (topLevelWindow.Collection.Count == OnlyOne)
+				{
 					_dte.ExecuteCommand(NewFileCommand, DummyTextDocument);
-				_tempWindow = _dte.ActiveWindow;
+					_tempWindow = _dte.ActiveWindow;
+				}
 				_dte.ExecuteCommand(windowMoveCommand);
 			}
 		}
@@ -143,11 +146,19 @@ namespace DreamWorks.TddHelper.Implementation
 		{
 			int currentIndex = 0;
 
-			foreach (Window w in _sortedTopLevelWindows)
+			var sortedTopLevelWindows = GetSortedTopLevelWindows();
+			try
 			{
-				if (currentIndex == index)
-					return w;
-				currentIndex++;
+				foreach (Window window in sortedTopLevelWindows)
+				{
+					if (currentIndex == index)
+						return window;
+					currentIndex++;
+				}
+			}
+			finally
+			{
+				sortedTopLevelWindows.Clear();
 			}
 			return null;
 		}
@@ -155,25 +166,45 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private Document GetDocumentForPath(string targetPath)
 		{
-			foreach (var topLevelWindow in _sortedTopLevelWindows)
+			var sortedTopLevelWindows = GetSortedTopLevelWindows();
+			try
 			{
-				foreach (Window lowerLevelWindow in topLevelWindow.Collection)
+				foreach (var topLevelWindow in sortedTopLevelWindows)
 				{
-					var fullPath = Path.Combine(lowerLevelWindow.Document.Path, lowerLevelWindow.Caption);
-					if (string.Equals(fullPath, targetPath, StringComparison.CurrentCultureIgnoreCase))
-						return lowerLevelWindow.Document;
+					foreach (Window lowerLevelWindow in topLevelWindow.Collection)
+					{
+						if (lowerLevelWindow.Document != null &&
+						    !string.IsNullOrEmpty(lowerLevelWindow.Document.Path))
+						{
+							var fullPath = Path.Combine(lowerLevelWindow.Document.Path, lowerLevelWindow.Caption);
+							if (string.Equals(fullPath, targetPath, StringComparison.CurrentCultureIgnoreCase))
+								return lowerLevelWindow.Document;
+						}
+					}
 				}
+			}
+			finally
+			{
+				sortedTopLevelWindows.Clear();
 			}
 			return null;
 		}
 
 		internal int FindActiveWindowIndex()
 		{
-			for (var i = 0; i < _sortedTopLevelWindows.Count; ++i)
+			var sortedTopLevelWindows = GetSortedTopLevelWindows();
+			try
 			{
-				if (_sortedTopLevelWindows[i].Document != _dte.ActiveDocument)
-					continue;
-				return i;
+				for (var i = 0; i < sortedTopLevelWindows.Count; ++i)
+				{
+					if (sortedTopLevelWindows[i].Document != _dte.ActiveDocument)
+						continue;
+					return i;
+				}
+			}
+			finally
+			{
+				sortedTopLevelWindows.Clear();
 			}
 			return 0;
 		}
@@ -185,7 +216,7 @@ namespace DreamWorks.TddHelper.Implementation
 			var topLevelWindows = new List<Window>();
 			foreach (Window window in _dte.Windows)
 			{
-				if (window.Kind == Document && (window.Left > 0 || window.Top > 0))
+				if (window.Kind == Document && (window.Left == 0 || window.Top == 0))
 					topLevelWindows.Add(window);
 			}
 			topLevelWindows.Sort((a, b) => a.Left < b.Left ? -1 : 1);

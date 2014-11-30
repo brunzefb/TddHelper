@@ -32,9 +32,10 @@ namespace DreamWorks.TddHelper
 		{
 			base.Initialize();
 			var dte = (DTE2)GetService(typeof(DTE));
+			LoadOptions();
 			_tabJumper = new TabJumper(dte);
 			_solutionHelper = new TestLocator(dte);
-
+			
 			var menuCommandService =
 				GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
 			if (null == menuCommandService)
@@ -56,7 +57,7 @@ namespace DreamWorks.TddHelper
 				cmdIdLocateTest);
 			menuCommandService.AddCommand(menuItemLocateTest);
 
-			LoadOptions();
+			
 		}
 
 		private static void LoadOptions()

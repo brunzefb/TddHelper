@@ -48,8 +48,10 @@ namespace DreamWorks.TddHelper.View
 		{
 			// deserialization bypasses the property sets, thats why we have to update the UI
 			if (!string.IsNullOrEmpty(TddSettings.Default.Settings))
-				_optionsViewModel = JsonConvert.DeserializeObject<OptionsViewModel>
-					(TddSettings.Default.Settings);
+			{
+				var fromDisk = JsonConvert.DeserializeObject<OptionsViewModel>(TddSettings.Default.Settings);
+				_optionsViewModel.Clone(fromDisk);
+			}
 			_optionsViewModel.UpdateUI();
 		}
 

@@ -18,6 +18,22 @@ namespace DreamWorks.TddHelper.ViewModel
 		private bool _noSplitWindow;
 		private bool _clean;
 
+		public OptionsViewModel Clone(OptionsViewModel other)
+		{
+			_testFileSuffix = other.TestFileSuffix;
+			_projectSuffix = other.ProjectSuffix;
+			_autoCreateTestFile = other.AutoCreateTestFile;
+			_autoCreateTestProject = other.AutoCreateTestProject;
+			_mirrorProjectFolders = MirrorProjectFolders;
+			_createReference = other.CreateReference;
+			_makeFriendAssembly = other.MakeFriendAssembly;
+			_unitTestLeft = other.UnitTestLeft;
+			_unitTestRight = other.UnitTestRight;
+			_noSplitWindow = other.NoSplit;
+			_clean = other.Clean;
+			return this;
+		}
+		
 		public bool UnitTestLeft
 		{
 			get { return _unitTestLeft; }
