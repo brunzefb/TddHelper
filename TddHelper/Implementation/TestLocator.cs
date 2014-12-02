@@ -56,33 +56,28 @@ namespace DreamWorks.TddHelper.Implementation
 			_implementationPath = string.Empty;
 			_unitTestPath = string.Empty;
 			if (!isSourcePathTest)
+			{
 				_unitTestPath = FindPathToTestFile(fileName);
+				_implementationPath = sourcePath;
+			}
 			else
+			{
+				_unitTestPath = sourcePath;
 				_implementationPath = FindPathImplementationFile(fileName);
+			}
 
 			Load();
 		}
 
 		private void Load()
 		{
-			// sanity check
-			var topLevel = GetTopLevelWindows();
-			if (topLevel.Count == 0 || !File.Exists(_unitTestPath) ||
+			if (!ActivateFirstDocument() || !File.Exists(_unitTestPath) ||
 			    !File.Exists(_implementationPath))
 				return;
 
-			// need to activate left most window because FileOpen loads in current tab well
-			var leftMostWindow = topLevel[0];
-			leftMostWindow.Document.Activate();
+			SaveAndUnloadDocuments();
 
-			// save and close both source and target -- this avoids a lot of problem scenarios
-			// such as floating windows
-			var unitTestDocument = GetDocumentForPath(_unitTestPath);
-			var implementationDocument = GetDocumentForPath(_implementationPath);
-
-			UnloadDocuments(unitTestDocument, implementationDocument);
-
-			if (!StaticOptions.TddHelper.NoSplit)
+			if (StaticOptions.TddHelper.NoSplit)
 				LoadDocumentsIntoOneTabWell();
 			else
 				LoadAndPlaceImplementationAndTest();
@@ -116,17 +111,20 @@ namespace DreamWorks.TddHelper.Implementation
 			_dte.ExecuteCommand(OpenFileCommand, _unitTestPath);
 		}
 
-		private void UnloadDocuments(Document unitTestDocument, Document implementationDocument)
+		private void SaveAndUnloadDocuments()
 		{
-			if (!StaticOptions.TddHelper.Clean)
-			{
-				SaveAndCloseIfOpen(unitTestDocument);
-				SaveAndCloseIfOpen(implementationDocument);
-			}
-			else
+			var unitTestDocument = GetDocumentForPath(_unitTestPath);
+			var implementationDocument = GetDocumentForPath(_implementationPath);
+
+			if (StaticOptions.TddHelper.Clean)
 			{
 				_dte.ExecuteCommand(FileSaveAll);
 				_dte.ExecuteCommand(WindowCloseAllDocuments);
+			}
+			else
+			{
+				SaveAndCloseIfOpen(unitTestDocument);
+				SaveAndCloseIfOpen(implementationDocument);
 			}
 		}
 
@@ -150,18 +148,19 @@ namespace DreamWorks.TddHelper.Implementation
 			return null;
 		}
 
-		internal List<Window> GetTopLevelWindows()
+		internal bool ActivateFirstDocument()
 		{
-			// Documents with a "left" or "top" value > 0 are the focused ones in each group, 
-			// so we only need to collect those
 			var topLevelWindows = new List<Window>();
 			foreach (Window window in _dte.Windows)
 			{
-				if (window.Kind == Document && (window.Left == 0 || window.Top == 0))
-					topLevelWindows.Add(window);
+				if (window.Kind == Document)
+				{
+					window.Document.Activate();
+					return true;
+				}
 			}
 
-			return topLevelWindows;
+			return false;
 		}
 
 
