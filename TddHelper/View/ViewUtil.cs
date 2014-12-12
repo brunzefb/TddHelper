@@ -46,7 +46,7 @@ namespace DreamWorks.TddHelper.View
 		private static bool TryFindDocTabPanelElement(FrameworkElement parent, out FrameworkElement foundChild)
 		{
 			foundChild = null;
-			
+
 			if (parent == null)
 			{
 				return false;

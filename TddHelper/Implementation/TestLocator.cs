@@ -71,8 +71,7 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private void Load()
 		{
-			if (!ActivateFirstDocument() || !File.Exists(_unitTestPath) ||
-			    !File.Exists(_implementationPath))
+			if ( !File.Exists(_unitTestPath) || !File.Exists(_implementationPath))
 				return;
 
 			SaveAndUnloadDocuments();
@@ -85,6 +84,7 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private void LoadAndPlaceImplementationAndTest()
 		{
+			ActivateFirstDocument();
 			if (StaticOptions.TddHelper.UnitTestLeft)
 			{
 				_dte.ExecuteCommand(OpenFileCommand, _unitTestPath);
@@ -97,9 +97,13 @@ namespace DreamWorks.TddHelper.Implementation
 			}
 
 			if (ViewUtil.IsMoreThanOneTabWellShown())
+			{
 				_dte.ExecuteCommand(WindowMoveToNextTabGroupCommand);
+			}
 			else
+			{
 				_dte.ExecuteCommand(NewVerticalTabGroupCommand);
+			}
 
 			var unitTestDocument = GetDocumentForPath(_unitTestPath);
 			unitTestDocument.Activate();
@@ -150,10 +154,10 @@ namespace DreamWorks.TddHelper.Implementation
 
 		internal bool ActivateFirstDocument()
 		{
-			var topLevelWindows = new List<Window>();
 			foreach (Window window in _dte.Windows)
 			{
-				if (window.Kind == Document)
+				// document in the first tab well has Left==32
+				if (window.Kind == Document && window.Left == 32)
 				{
 					window.Document.Activate();
 					return true;
