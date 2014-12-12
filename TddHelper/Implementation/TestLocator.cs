@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using DreamWorks.TddHelper.View;
 using EnvDTE;
@@ -163,7 +164,6 @@ namespace DreamWorks.TddHelper.Implementation
 					return true;
 				}
 			}
-
 			return false;
 		}
 
@@ -201,7 +201,7 @@ namespace DreamWorks.TddHelper.Implementation
 					_projectItemList.AddRange(_subItemList);
 				}
 				foreach (var item in _projectItemList)
-					GetFilesFromProjectItem(item, Path.GetDirectoryName(project.FileName));
+					GetFilesFromProjectItem(item);
 			}
 		}
 
@@ -222,20 +222,26 @@ namespace DreamWorks.TddHelper.Implementation
 			return item;
 		}
 
-		private void GetFilesFromProjectItem(ProjectItem item, string directoryName)
+		private void GetFilesFromProjectItem(ProjectItem item)
 		{
 			if (item.FileCount == 0)
 				return;
 			if (item.FileCount == 1)
 			{
-				if (item.Name.ToLower().EndsWith(CsharpFileExtension))
-					_fileList.Add(Path.Combine(directoryName, item.Name));
+				var filePath = item.get_FileNames(0);
+				if (filePath.ToLower().EndsWith(CsharpFileExtension))
+					_fileList.Add(filePath);
 				return;
 			}
 
 			for (short i = 0; i < item.FileCount; i++)
-				if (item.FileNames[i].ToLower().EndsWith(CsharpFileExtension))
-					_fileList.Add(Path.Combine(directoryName, item.FileNames[i]));
+			{
+				if (item.FileNames[i].ToLower().EndsWith(CsharpFileExtension) &&
+				    item.Document != null)
+				{
+					_fileList.Add(Path.Combine(item.Document.Path, item.Name));
+				}
+			}
 		}
 
 		private bool HasProperty(Properties properties, string propertyName)
