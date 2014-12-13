@@ -90,11 +90,17 @@ namespace DreamWorks.TddHelper.Implementation
 			{
 				_dte.ExecuteCommand(OpenFileCommand, _unitTestPath);
 				_dte.ExecuteCommand(OpenFileCommand, _implementationPath);
+				var doc = GetDocumentForPath(_implementationPath);
+				if (doc != null)
+					doc.Activate();
 			}
 			else
 			{
 				_dte.ExecuteCommand(OpenFileCommand, _implementationPath);
 				_dte.ExecuteCommand(OpenFileCommand, _unitTestPath);
+				var doc = GetDocumentForPath(_unitTestPath);
+				if (doc != null)
+					doc.Activate();
 			}
 
 			if (ViewUtil.IsMoreThanOneTabWellShown())
@@ -105,9 +111,6 @@ namespace DreamWorks.TddHelper.Implementation
 			{
 				_dte.ExecuteCommand(NewVerticalTabGroupCommand);
 			}
-
-			var unitTestDocument = GetDocumentForPath(_unitTestPath);
-			unitTestDocument.Activate();
 		}
 
 		private void LoadDocumentsIntoOneTabWell()
@@ -160,6 +163,7 @@ namespace DreamWorks.TddHelper.Implementation
 				// document in the first tab well has Left==32
 				if (window.Kind == Document && window.Left == 32)
 				{
+					window.Activate();
 					window.Document.Activate();
 					return true;
 				}
