@@ -35,6 +35,7 @@ namespace DreamWorks.TddHelper.Implementation
 		private string _unitTestPath;
 		private string _implementationPath;
 		private readonly IVsUIShell _shell;
+		private string _solutionId;
 
 
 		public TestLocator(DTE2 dte, IVsUIShell shell)
@@ -188,6 +189,7 @@ namespace DreamWorks.TddHelper.Implementation
 		public void GetCSharpFilesFromSolution()
 		{
 			var solution = _dte.Solution;
+			_solutionId = solution.ExtenderCATID;
 			var solutionProjects = solution.Projects;
 
 			if (solution == null || solutionProjects == null)
