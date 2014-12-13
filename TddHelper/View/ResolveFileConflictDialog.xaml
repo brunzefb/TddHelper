@@ -1,0 +1,52 @@
+﻿<Window x:Class="DreamWorks.TddHelper.View.ResolveFileConflictDialog"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		Title="Locate Correct File to Load"
+		Height="371"
+		ShowInTaskbar="False"
+		Width="600"
+		Loaded="ResolveFileConflictDialog_OnLoaded"
+		ResizeMode="NoResize">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="12" />
+			<RowDefinition Height="57*" />
+			<RowDefinition Height="224*" />
+			<RowDefinition Height="38*" />
+			<RowDefinition Height="12" />
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="12" />
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="12" />
+		</Grid.ColumnDefinitions>
+		<TextBlock TextWrapping="WrapWithOverflow"
+				   Grid.Column="1"
+				   Grid.Row="1"
+				   Grid.RowSpan="3">
+			There is more than one matching file. You need to choose the file you wish to open.  The system will remember your choice, and open 
+			the same file the next time.  File matches are remembered per solution. 
+			You can clear the remebered file associations using the clear cache button found
+			in the options page.
+		</TextBlock>
+		<ListBox Grid.Row="2"
+				 Grid.Column="1"
+				 ItemsSource="{Binding FileList}"
+				 SelectedValue="{Binding SelectedFile}"
+				 SelectedValuePath="."
+				 DisplayMemberPath="DisplayPath">
+		</ListBox>
+		<StackPanel HorizontalAlignment="Right"
+					Orientation="Horizontal"
+					Grid.Row="3"
+					Grid.Column="1">
+			<Button MinWidth="80"
+					Command="{Binding OkCommand}"
+					Margin="5,8,5,8">OK</Button>
+			<Button MinWidth="80"
+					Command="{Binding CancelCommand}"
+					Margin="5,8,5,8">Cancel</Button>
+		</StackPanel>
+
+	</Grid>
+</Window>

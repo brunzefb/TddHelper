@@ -1,6 +1,4 @@
-﻿// Copyright AB SCIEX 2014. All rights reserved.
-
-using MvvmFx.MvvmLight;
+﻿using MvvmFx.MvvmLight;
 
 namespace DreamWorks.TddHelper.ViewModel
 {

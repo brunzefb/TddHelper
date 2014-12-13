@@ -39,6 +39,9 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GalaSoft.MvvmLight">
+      <HintPath>..\packages\MvvmLightLibs.5.0.2.0\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
@@ -90,6 +93,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.0.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
@@ -163,6 +169,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TddSettings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Util.cs" />
     <Compile Include="ViewModel\OptionsViewModel.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -172,8 +179,13 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Implementation\TestLocator.cs" />
     <Compile Include="Implementation\TabJumper.cs" />
+    <Compile Include="ViewModel\ResolveFileConflictDialogViewModel.cs" />
+    <Compile Include="View\ICanClose.cs" />
     <Compile Include="View\OptionsPageCustom.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="View\ResolveFileConflictDialog.xaml.cs">
+      <DependentUpon>ResolveFileConflictDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TddHelperOptionsControl.cs">
       <SubType>UserControl</SubType>
@@ -231,6 +243,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="View\ResolveFileConflictDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>

@@ -4,8 +4,10 @@ using System.IO;
 using DreamWorks.TddHelper.Implementation;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.Shell.Interop;
 using Moq;
 using NUnit.Framework;
+using Constants = EnvDTE.Constants;
 
 namespace TddHelperTest
 {
@@ -20,6 +22,7 @@ namespace TddHelperTest
 		private Mock<Window> _mockWin;
 		private Mock<Document> _mockDoc;
 		private TestLocator _testLocator;
+		private Mock<IVsUIShell> _mockUiShell;
 		
 		[TestFixtureSetUp]
 		public void TestFixtureSetup()
@@ -31,6 +34,7 @@ namespace TddHelperTest
 			_mockProp = new Mock<Property>();
 			_mockWin = new Mock<Window>();
 			_mockDoc = new Mock<Document>();
+			_mockUiShell = new Mock<IVsUIShell>();
 			_mockDte.Setup(dte => dte.Solution).Returns(() => _mockSolution.Object);
 			_mockSolution.Setup(sol => sol.Projects).Returns(() => _mockProjects.Object);
 			_mockProjects.Setup(projects => projects.GetEnumerator()).Returns(ProjectList);
@@ -40,7 +44,7 @@ namespace TddHelperTest
 		[SetUp]
 		public void SetUp()
 		{
-			_testLocator = new TestLocator(_mockDte.Object);
+			_testLocator = new TestLocator(_mockDte.Object, _mockUiShell.Object);
 		}
 
 		private Queue<Project> GetProjectQueue()

@@ -1,5 +1,4 @@
-﻿// Copyright AB SCIEX 2014. All rights reserved.
-
+﻿
 using System;
 using System.Diagnostics;
 using System.Windows;

@@ -1,12 +1,15 @@
-﻿// Copyright AB SCIEX 2014. All rights reserved.
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
 using DreamWorks.TddHelper.View;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.Shell.Interop;
+using Window = System.Windows.Window;
 
 namespace DreamWorks.TddHelper.Implementation
 {
@@ -31,10 +34,13 @@ namespace DreamWorks.TddHelper.Implementation
 		private const string WindowCloseAllDocuments = "Window.CloseAllDocuments";
 		private string _unitTestPath;
 		private string _implementationPath;
+		private readonly IVsUIShell _shell;
 
-		public TestLocator(DTE2 dte)
+
+		public TestLocator(DTE2 dte, IVsUIShell shell)
 		{
 			_dte = dte;
+			_shell = shell;
 		}
 
 		internal void OpenTestOrImplementation(object sender, EventArgs e)
@@ -72,7 +78,7 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private void Load()
 		{
-			if ( !File.Exists(_unitTestPath) || !File.Exists(_implementationPath))
+			if (!File.Exists(_unitTestPath) || !File.Exists(_implementationPath))
 				return;
 
 			SaveAndUnloadDocuments();
@@ -86,30 +92,38 @@ namespace DreamWorks.TddHelper.Implementation
 		private void LoadAndPlaceImplementationAndTest()
 		{
 			ActivateFirstDocument();
-			if (StaticOptions.TddHelper.UnitTestLeft)
+			try
 			{
-				_dte.ExecuteCommand(OpenFileCommand, _unitTestPath);
-				_dte.ExecuteCommand(OpenFileCommand, _implementationPath);
-				var doc = GetDocumentForPath(_implementationPath);
-				if (doc != null)
-					doc.Activate();
-			}
-			else
-			{
-				_dte.ExecuteCommand(OpenFileCommand, _implementationPath);
-				_dte.ExecuteCommand(OpenFileCommand, _unitTestPath);
-				var doc = GetDocumentForPath(_unitTestPath);
-				if (doc != null)
-					doc.Activate();
-			}
+				if (StaticOptions.TddHelper.UnitTestLeft)
+				{
+					_dte.ExecuteCommand(OpenFileCommand, _unitTestPath);
+					_dte.ExecuteCommand(OpenFileCommand, _implementationPath);
+					var doc = GetDocumentForPath(_implementationPath);
+					if (doc != null)
+						doc.Activate();
+				}
+				else
+				{
+					_dte.ExecuteCommand(OpenFileCommand, _implementationPath);
+					_dte.ExecuteCommand(OpenFileCommand, _unitTestPath);
+					var doc = GetDocumentForPath(_unitTestPath);
+					if (doc != null)
+						doc.Activate();
+				}
 
-			if (ViewUtil.IsMoreThanOneTabWellShown())
-			{
-				_dte.ExecuteCommand(WindowMoveToNextTabGroupCommand);
+				if (ViewUtil.IsMoreThanOneTabWellShown())
+				{
+					_dte.ExecuteCommand(WindowMoveToNextTabGroupCommand);
+				}
+				else
+				{
+					_dte.ExecuteCommand(NewVerticalTabGroupCommand);
+				}
 			}
-			else
+			catch (COMException e)
 			{
-				_dte.ExecuteCommand(NewVerticalTabGroupCommand);
+				Debug.WriteLine(e.Message);
+				Debug.WriteLine(e.StackTrace);
 			}
 		}
 
@@ -158,7 +172,7 @@ namespace DreamWorks.TddHelper.Implementation
 
 		internal bool ActivateFirstDocument()
 		{
-			foreach (Window window in _dte.Windows)
+			foreach (EnvDTE.Window window in _dte.Windows)
 			{
 				// document in the first tab well has Left==32
 				if (window.Kind == Document && window.Left == 32)
@@ -170,7 +184,6 @@ namespace DreamWorks.TddHelper.Implementation
 			}
 			return false;
 		}
-
 
 		public void GetCSharpFilesFromSolution()
 		{
@@ -268,14 +281,7 @@ namespace DreamWorks.TddHelper.Implementation
 				return string.Empty;
 			var testFileName = csFile.Substring(0, idx) + TestDotCs;
 
-			foreach (var fullPathToFile in _fileList)
-			{
-				var fileName = Path.GetFileName(fullPathToFile);
-				if (String.Equals(fileName, testFileName, StringComparison.OrdinalIgnoreCase))
-					if (File.Exists(fullPathToFile))
-						return fullPathToFile;
-			}
-			return string.Empty;
+			return Find(testFileName);
 		}
 
 		public string FindPathImplementationFile(string csFile)
@@ -285,14 +291,46 @@ namespace DreamWorks.TddHelper.Implementation
 				return string.Empty;
 			var implFile = csFile.Substring(0, idx) + CsharpFileExtension;
 
+			return Find(implFile);
+		}
+
+		private string Find(string searchedFile)
+		{
+			var candidateList = new List<string>();
 			foreach (var fullPathToFile in _fileList)
 			{
 				var fileName = Path.GetFileName(fullPathToFile);
-				if (String.Equals(fileName, implFile, StringComparison.OrdinalIgnoreCase))
+				if (String.Equals(fileName, searchedFile, StringComparison.OrdinalIgnoreCase))
+				{
 					if (File.Exists(fullPathToFile))
-						return fullPathToFile;
+						candidateList.Add(fullPathToFile);
+				}
+			}
+
+			if (candidateList.Count == 0)
+				return string.Empty;
+			if (candidateList.Count == 1)
+				return candidateList[0];
+			if (candidateList.Count > 1)
+			{
+				var resolveFileConflictDialog = new ResolveFileConflictDialog(candidateList);
+				SetModalDialogOwner(resolveFileConflictDialog);
+
+				var dlgResult = resolveFileConflictDialog.ShowDialog();
+				if (dlgResult.HasValue && dlgResult == true)
+					return resolveFileConflictDialog.ViewModel.SelectedFile.Path;
+				return string.Empty;
 			}
 			return string.Empty;
+		}
+
+		private void SetModalDialogOwner(Window targetWindow)
+		{
+			IntPtr hWnd;
+			_shell.GetDialogOwnerHwnd(out hWnd);
+			// ReSharper disable once PossibleNullReferenceException
+			var parent = HwndSource.FromHwnd(hWnd).RootVisual;
+			targetWindow.Owner = (Window)parent;
 		}
 	}
 }

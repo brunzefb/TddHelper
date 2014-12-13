@@ -1,5 +1,4 @@
-﻿// Copyright AB SCIEX 2014. All rights reserved.
-
+﻿
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using DreamWorks.TddHelper.Implementation;
@@ -8,6 +7,7 @@ using DreamWorks.TddHelper.ViewModel;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Newtonsoft.Json;
 
 namespace DreamWorks.TddHelper
@@ -32,9 +32,10 @@ namespace DreamWorks.TddHelper
 		{
 			base.Initialize();
 			var dte = (DTE2)GetService(typeof(DTE));
+			var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
 			LoadOptions();
 			_tabJumper = new TabJumper(dte);
-			_solutionHelper = new TestLocator(dte);
+			_solutionHelper = new TestLocator(dte, uiShell);
 			
 			var menuCommandService =
 				GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
@@ -69,5 +70,27 @@ namespace DreamWorks.TddHelper
 			}
 			StaticOptions.TddHelper = options;
 		}
+		/*
+				private void VsShowMessageBox(string message)
+				{
+					var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
+					uiShell.GetDialogOwnerHwnd()
+					var clsid = Guid.Empty;
+					int result;
+					ErrorHandler.ThrowOnFailure(uiShell.ShowMessageBox(
+						0,
+						ref clsid,
+						Resources.AppTitle,
+						message,
+						string.Empty,
+						0,
+						OLEMSGBUTTON.OLEMSGBUTTON_OK,
+						OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
+						OLEMSGICON.OLEMSGICON_INFO,
+						0,
+						out result));
+				}
+		 */
+	
 	}
 }
