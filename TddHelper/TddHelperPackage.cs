@@ -57,8 +57,7 @@ namespace DreamWorks.TddHelper
 			var menuItemLocateTest = new MenuCommand(_solutionHelper.OpenTestOrImplementation,
 				cmdIdLocateTest);
 			menuCommandService.AddCommand(menuItemLocateTest);
-
-			
+		
 		}
 
 		private static void LoadOptions()
@@ -70,6 +69,7 @@ namespace DreamWorks.TddHelper
 			}
 			StaticOptions.TddHelper = options;
 		}
+
 		/*
 				private void VsShowMessageBox(string message)
 				{

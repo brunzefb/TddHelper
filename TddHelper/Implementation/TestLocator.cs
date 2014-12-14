@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using DreamWorks.TddHelper.Model;
 using DreamWorks.TddHelper.View;
 using EnvDTE;
 using EnvDTE80;
@@ -36,8 +37,7 @@ namespace DreamWorks.TddHelper.Implementation
 		private string _implementationPath;
 		private readonly IVsUIShell _shell;
 		private string _solutionId;
-
-
+		
 		public TestLocator(DTE2 dte, IVsUIShell shell)
 		{
 			_dte = dte;
@@ -314,16 +314,37 @@ namespace DreamWorks.TddHelper.Implementation
 			if (candidateList.Count == 1)
 				return candidateList[0];
 			if (candidateList.Count > 1)
-			{
-				var resolveFileConflictDialog = new ResolveFileConflictDialog(candidateList);
-				SetModalDialogOwner(resolveFileConflictDialog);
-
-				var dlgResult = resolveFileConflictDialog.ShowDialog();
-				if (dlgResult.HasValue && dlgResult == true)
-					return resolveFileConflictDialog.ViewModel.SelectedFile.Path;
-				return string.Empty;
-			}
+				return ResolveConflicts(searchedFile, candidateList);
 			return string.Empty;
+		}
+
+		private string ResolveConflicts(string searchedFile, IEnumerable<string> candidateList)
+		{
+			var targetFile = FindTargetFileInCache(searchedFile);
+
+			if (!string.IsNullOrEmpty(targetFile))
+				return targetFile;
+
+			var resolveFileConflictDialog = new ResolveFileConflictDialog(candidateList);
+			SetModalDialogOwner(resolveFileConflictDialog);
+
+			var dlgResult = resolveFileConflictDialog.ShowDialog();
+			if (dlgResult.HasValue && dlgResult == true)
+				return resolveFileConflictDialog.ViewModel.SelectedFile.Path;
+			return string.Empty;
+		}
+
+		private string FindTargetFileInCache(string searchedFile)
+		{
+			string targetFile;
+			var cachedFile = new CachedFileAssociations(_solutionId);
+			var isTest =
+				searchedFile.ToLower().EndsWith(StaticOptions.TddHelper.TestFileSuffix.ToLower());
+			if (isTest)
+				targetFile = cachedFile.ImplementationFromTest(searchedFile);
+			else
+				targetFile = cachedFile.TestFromImplementation(searchedFile);
+			return targetFile;
 		}
 
 		private void SetModalDialogOwner(Window targetWindow)

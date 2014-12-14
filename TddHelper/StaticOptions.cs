@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+﻿
 using DreamWorks.TddHelper.ViewModel;
 
 namespace DreamWorks.TddHelper
