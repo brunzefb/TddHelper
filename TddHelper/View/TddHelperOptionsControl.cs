@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Windows.Forms;
 using DreamWorks.TddHelper.ViewModel;
+using GalaSoft.MvvmLight.Messaging;
 using MvvmFx.Windows.Data;
 using Newtonsoft.Json;
 
 namespace DreamWorks.TddHelper.View
 {
+	public class OptionsClearCache
+	{
+	}
+
 	public partial class TddHelperOptionsControl : UserControl
 	{
 		private readonly BindingManager _bindingManager;
@@ -29,7 +34,6 @@ namespace DreamWorks.TddHelper.View
 				_bindingsAdded = true;
 			}
 			UpdateUI();
-		
 		}
 
 		public OptionsViewModel OptionsViewModel
@@ -65,9 +69,12 @@ namespace DreamWorks.TddHelper.View
 
 		void ClearcacheButton_Click(object sender, EventArgs e)
 		{
-			MessageBox.Show(OptionsPage, 
+			var result = MessageBox.Show(OptionsPage, 
 				Resources.TddHelperOptionsControl_ConfirmClearCacheMessage, 
-				Resources.TddHelper_App_Name, MessageBoxButtons.OK);
+				Resources.TddHelper_App_Name, MessageBoxButtons.YesNo);
+			if (result == DialogResult.Yes)
+				Messenger.Default.Send(new OptionsClearCache());
+
 		}
 
 		private void BindCheckboxes()

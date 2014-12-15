@@ -36,12 +36,14 @@ namespace DreamWorks.TddHelper.Implementation
 		private string _unitTestPath;
 		private string _implementationPath;
 		private readonly IVsUIShell _shell;
-		private string _solutionId;
+		
+		private readonly CachedFileAssociations _cachedFileAssociations;
 		
 		public TestLocator(DTE2 dte, IVsUIShell shell)
 		{
 			_dte = dte;
 			_shell = shell;
+			_cachedFileAssociations = new CachedFileAssociations(string.Empty);
 		}
 
 		internal void OpenTestOrImplementation(object sender, EventArgs e)
@@ -189,7 +191,8 @@ namespace DreamWorks.TddHelper.Implementation
 		public void GetCSharpFilesFromSolution()
 		{
 			var solution = _dte.Solution;
-			_solutionId = solution.ExtenderCATID;
+			
+			_cachedFileAssociations.UpdateSolutionId(solution.ExtenderCATID;);
 			var solutionProjects = solution.Projects;
 
 			if (solution == null || solutionProjects == null)
@@ -337,13 +340,13 @@ namespace DreamWorks.TddHelper.Implementation
 		private string FindTargetFileInCache(string searchedFile)
 		{
 			string targetFile;
-			var cachedFile = new CachedFileAssociations(_solutionId);
+			
 			var isTest =
 				searchedFile.ToLower().EndsWith(StaticOptions.TddHelper.TestFileSuffix.ToLower());
 			if (isTest)
-				targetFile = cachedFile.ImplementationFromTest(searchedFile);
+				targetFile = _cachedFileAssociations.ImplementationFromTest(searchedFile);
 			else
-				targetFile = cachedFile.TestFromImplementation(searchedFile);
+				targetFile = _cachedFileAssociations.TestFromImplementation(searchedFile);
 			return targetFile;
 		}
 

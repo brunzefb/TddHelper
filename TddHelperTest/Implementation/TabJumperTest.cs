@@ -5,7 +5,7 @@ using EnvDTE80;
 using Moq;
 using NUnit.Framework;
 
-namespace TddHelperTest
+namespace TddHelperTest.Implementation
 {
 	[TestFixture]
 	public class TabJumperTest

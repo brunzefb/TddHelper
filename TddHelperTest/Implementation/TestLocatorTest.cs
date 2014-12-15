@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using DreamWorks.TddHelper.Implementation;
 using EnvDTE;
@@ -9,7 +8,7 @@ using Moq;
 using NUnit.Framework;
 using Constants = EnvDTE.Constants;
 
-namespace TddHelperTest
+namespace TddHelperTest.Implementation
 {
 	[TestFixture]
 	public class TestLocatorTest

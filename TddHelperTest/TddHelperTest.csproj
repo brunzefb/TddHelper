@@ -68,9 +68,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\CachedFileAssociationsTest.cs" />
     <Compile Include="OptionsViewModelTest.cs" />
-    <Compile Include="TabJumperTest.cs" />
-    <Compile Include="TestLocatorTest.cs" />
+    <Compile Include="Implementation\TabJumperTest.cs" />
+    <Compile Include="Implementation\TestLocatorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

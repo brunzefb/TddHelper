@@ -1,7 +1,8 @@
 ﻿// Copyright AB SCIEX 2014. All rights reserved.
 
 using System.Collections.Generic;
-
+using DreamWorks.TddHelper.View;
+using GalaSoft.MvvmLight.Messaging;
 using Newtonsoft.Json;
 
 namespace DreamWorks.TddHelper.Model
@@ -12,7 +13,7 @@ namespace DreamWorks.TddHelper.Model
 
 	internal class CachedFileAssociations
 	{
-		private readonly string _solutionGuid;
+		private string _solutionGuid;
 
 		public Dictionary<string, ImplementationToTest> Associations { get; set; }
 
@@ -20,17 +21,33 @@ namespace DreamWorks.TddHelper.Model
 		{
 			_solutionGuid = id;
 			Associations = new Dictionary<string, ImplementationToTest>();
-			if (!string.IsNullOrEmpty(TddSettings.Default.FileAssociations))
-			{
-				var instance =
-					JsonConvert.DeserializeObject<CachedFileAssociations>(
-						TddSettings.Default.FileAssociations);
-				Associations = instance.Associations;
-			}
+			Messenger.Default.Register<OptionsClearCache>(this, OnCacheCleared);
 		}
 
+		private void OnCacheCleared(OptionsClearCache action)
+		{
+			Associations.Clear();
+		}
+
+		public void UpdateSolutionId(string id)
+		{
+			_solutionGuid = id;
+		}
+
+		public void Load()
+		{
+			if (string.IsNullOrEmpty(_solutionGuid))
+				return;
+			if (string.IsNullOrEmpty(TddSettings.Default.FileAssociations)) return;
+			var instance =
+				JsonConvert.DeserializeObject<CachedFileAssociations>(
+					TddSettings.Default.FileAssociations);
+			Associations = instance.Associations;
+		}
 		public void Save()
 		{
+			if (string.IsNullOrEmpty(_solutionGuid))
+				return;
 			TddSettings.Default.FileAssociations = JsonConvert.SerializeObject(this);
 			TddSettings.Default.Save();
 		}
@@ -40,11 +57,12 @@ namespace DreamWorks.TddHelper.Model
 			TddSettings.Default.FileAssociations = string.Empty;
 			TddSettings.Default.Save();
 			Associations.Clear();
-
 		}
 
 		public void AddAssociation(string implementation, string test)
 		{
+			if (string.IsNullOrEmpty(_solutionGuid))
+				return;
 			ImplementationToTest implementationToTest;
 			if (Associations.ContainsKey(_solutionGuid))
 			{
@@ -56,7 +74,7 @@ namespace DreamWorks.TddHelper.Model
 				Associations.Add(_solutionGuid, implementationToTest);
 			}
 
-			if (!implementationToTest.ContainsKey(_solutionGuid))
+			if (!implementationToTest.ContainsKey(implementation))
 				implementationToTest.Add(implementation, test);
 			else
 				implementationToTest[implementation] = test;
@@ -64,6 +82,8 @@ namespace DreamWorks.TddHelper.Model
 
 		public string ImplementationFromTest(string test)
 		{
+			if (string.IsNullOrEmpty(_solutionGuid))
+				return string.IsNullOrEmpty();
 			ImplementationToTest implementationToTest;
 			if (Associations.ContainsKey(_solutionGuid))
 			{
@@ -74,7 +94,7 @@ namespace DreamWorks.TddHelper.Model
 
 			foreach (var implementationKey in implementationToTest.Keys)
 			{
-				if (implementationToTest[implementationKey].ToLower() == test)
+				if (implementationToTest[implementationKey] == test)
 					return implementationKey;
 			}
 			return string.Empty;
@@ -82,6 +102,8 @@ namespace DreamWorks.TddHelper.Model
 
 		public string TestFromImplementation(string implementation)
 		{
+			if (string.IsNullOrEmpty(_solutionGuid))
+				return string.Empty;
 			ImplementationToTest implementationToTest;
 			if (Associations.ContainsKey(_solutionGuid))
 			{
