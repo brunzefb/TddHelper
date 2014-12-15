@@ -44,6 +44,7 @@ namespace DreamWorks.TddHelper.Model
 					TddSettings.Default.FileAssociations);
 			Associations = instance.Associations;
 		}
+		
 		public void Save()
 		{
 			if (string.IsNullOrEmpty(_solutionGuid))
@@ -83,7 +84,7 @@ namespace DreamWorks.TddHelper.Model
 		public string ImplementationFromTest(string test)
 		{
 			if (string.IsNullOrEmpty(_solutionGuid))
-				return string.IsNullOrEmpty();
+				return string.Empty;
 			ImplementationToTest implementationToTest;
 			if (Associations.ContainsKey(_solutionGuid))
 			{

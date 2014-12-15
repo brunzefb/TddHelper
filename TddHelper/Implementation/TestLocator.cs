@@ -192,7 +192,7 @@ namespace DreamWorks.TddHelper.Implementation
 		{
 			var solution = _dte.Solution;
 			
-			_cachedFileAssociations.UpdateSolutionId(solution.ExtenderCATID;);
+			_cachedFileAssociations.UpdateSolutionId(solution.ExtenderCATID);
 			var solutionProjects = solution.Projects;
 
 			if (solution == null || solutionProjects == null)
