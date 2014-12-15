@@ -10,8 +10,8 @@
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="12" />
-			<RowDefinition Height="57*" />
-			<RowDefinition Height="224*" />
+			<RowDefinition Height="67*" />
+			<RowDefinition Height="214*" />
 			<RowDefinition Height="38*" />
 			<RowDefinition Height="12" />
 		</Grid.RowDefinitions>
@@ -26,7 +26,7 @@
 				   Grid.RowSpan="3">
 			There is more than one matching file. You need to choose the file you wish to open.  The system will remember your choice, and open 
 			the same file the next time.  File matches are remembered per solution. 
-			You can clear the remebered file associations using the clear cache button found
+			You can clear the remembered file associations for your open solution using the clear cache button found
 			in the options page.
 		</TextBlock>
 		<ListBox Grid.Row="2"
@@ -39,7 +39,8 @@
 		<StackPanel HorizontalAlignment="Right"
 					Orientation="Horizontal"
 					Grid.Row="3"
-					Grid.Column="1">
+					Grid.Column="1"
+					Width="180">
 			<Button MinWidth="80"
 					Command="{Binding OkCommand}"
 					Margin="5,8,5,8">OK</Button>

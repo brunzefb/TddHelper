@@ -26,6 +26,13 @@ namespace DreamWorks.TddHelper.Model
 
 		private void OnCacheCleared(OptionsClearCache action)
 		{
+			ClearCache();
+		}
+
+		public void ClearCache()
+		{
+			TddSettings.Default.FileAssociations = string.Empty;
+			TddSettings.Default.Save();
 			Associations.Clear();
 		}
 
@@ -51,13 +58,6 @@ namespace DreamWorks.TddHelper.Model
 				return;
 			TddSettings.Default.FileAssociations = JsonConvert.SerializeObject(this);
 			TddSettings.Default.Save();
-		}
-
-		public void ClearCache()
-		{
-			TddSettings.Default.FileAssociations = string.Empty;
-			TddSettings.Default.Save();
-			Associations.Clear();
 		}
 
 		public void AddAssociation(string implementation, string test)

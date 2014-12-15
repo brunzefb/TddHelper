@@ -22,7 +22,7 @@ namespace DreamWorks.TddHelper
 	{
 		private TabJumper _tabJumper;
 		private TestLocator _solutionHelper;
-		
+	
 
 		public TddHelperPackage()
 		{

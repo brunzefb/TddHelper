@@ -14,7 +14,7 @@ namespace DreamWorks.TddHelper.View
 	public partial class TddHelperOptionsControl : UserControl
 	{
 		private readonly BindingManager _bindingManager;
-		private OptionsViewModel _optionsViewModel;
+		private readonly OptionsViewModel _optionsViewModel;
 		private static bool _bindingsAdded;
 
 		public TddHelperOptionsControl()
