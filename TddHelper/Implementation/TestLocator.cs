@@ -82,8 +82,17 @@ namespace DreamWorks.TddHelper.Implementation
 		private void Load()
 		{
 			if (!File.Exists(_unitTestPath) || !File.Exists(_implementationPath))
-				return;
+			{
+				string selectedProject = string.Empty;
+				var associateTestProjectDialog = new AssociateTestProject(new List<string>{"Project1", "Project2", "ReallyReallyReallyLongLongLongProject.csproj"}, "Current.csproj");
+				SetModalDialogOwner(associateTestProjectDialog);
 
+				var dlgResult = associateTestProjectDialog.ShowDialog();
+				if (dlgResult.HasValue && dlgResult == true)
+					 selectedProject = associateTestProjectDialog.SelectedProject;
+				Debug.WriteLine(selectedProject);
+				return;
+			}
 			SaveAndUnloadDocuments();
 
 			if (StaticOptions.TddHelper.NoSplit)
@@ -161,7 +170,6 @@ namespace DreamWorks.TddHelper.Implementation
 				document.Close();
 			}
 		}
-
 
 		private Document GetDocumentForPath(string targetPath)
 		{

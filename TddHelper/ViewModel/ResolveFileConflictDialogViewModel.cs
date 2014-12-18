@@ -18,6 +18,7 @@ namespace DreamWorks.TddHelper.ViewModel
 
 	public class ResolveFileConflictDialogViewModel : ViewModelBase
 	{
+		private const int MaxPathCharacters = 90;
 		private readonly RelayCommand _okCommand;
 		private readonly RelayCommand _cancelCommand;
 		private readonly ICanClose _view;
@@ -34,7 +35,7 @@ namespace DreamWorks.TddHelper.ViewModel
 			{
 				var display = new DisplayPathHelper();
 				display.Path = file;
-				display.DisplayPath = Util.ShortenPath(file, 90);
+				display.DisplayPath = Util.ShortenPath(file, MaxPathCharacters);
 				list.Add(display);
 			}
 			_fileList = new ObservableCollection<DisplayPathHelper>(list);
@@ -64,8 +65,7 @@ namespace DreamWorks.TddHelper.ViewModel
 		{
 			_view.CloseWindow();
 		}
-
-
+		
 		public DisplayPathHelper SelectedFile
 		{
 			get { return _selectedFile; }

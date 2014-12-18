@@ -27,7 +27,7 @@
 			There is more than one matching file. You need to choose the file you wish to open.  The system will remember your choice, and open 
 			the same file the next time.  File matches are remembered per solution. 
 			You can clear the remembered file associations for your open solution using the clear cache button found
-			in the options page.
+			in the Visual Studio options page (TddHelper section).
 		</TextBlock>
 		<ListBox Grid.Row="2"
 				 Grid.Column="1"

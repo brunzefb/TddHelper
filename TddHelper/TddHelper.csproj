@@ -171,6 +171,7 @@
       <DependentUpon>TddSettings.settings</DependentUpon>
     </Compile>
     <Compile Include="Util.cs" />
+    <Compile Include="ViewModel\AssociateTestProjectViewModel.cs" />
     <Compile Include="ViewModel\OptionsViewModel.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -181,6 +182,9 @@
     <Compile Include="Implementation\TestLocator.cs" />
     <Compile Include="Implementation\TabJumper.cs" />
     <Compile Include="ViewModel\ResolveFileConflictDialogViewModel.cs" />
+    <Compile Include="View\AssociateTestProject.xaml.cs">
+      <DependentUpon>AssociateTestProject.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ICanClose.cs" />
     <Compile Include="View\OptionsPageCustom.cs">
       <SubType>Component</SubType>
@@ -246,6 +250,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="View\AssociateTestProject.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\ResolveFileConflictDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
