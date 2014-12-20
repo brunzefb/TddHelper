@@ -31,9 +31,12 @@ namespace DreamWorks.TddHelper.Model
 
 		public void ClearCache()
 		{
-			TddSettings.Default.FileAssociations = string.Empty;
-			TddSettings.Default.Save();
-			Associations.Clear();
+			if (Associations.ContainsKey(_solutionGuid))
+			{
+				var implementationToTest = Associations[_solutionGuid];
+				implementationToTest.Clear();
+			}
+			Save();
 		}
 
 		public void UpdateSolutionId(string id)

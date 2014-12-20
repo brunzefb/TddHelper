@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Documents;
+
 using DreamWorks.TddHelper.ViewModel;
 
 namespace DreamWorks.TddHelper.View

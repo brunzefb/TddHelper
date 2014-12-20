@@ -81,16 +81,11 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private void Load()
 		{
-			if (!File.Exists(_unitTestPath) || !File.Exists(_implementationPath))
+			if (!File.Exists(_implementationPath))
+				return;
+			if (!File.Exists(_unitTestPath))
 			{
-				string selectedProject = string.Empty;
-				var associateTestProjectDialog = new AssociateTestProject(new List<string>{"Project1", "Project2", "ReallyReallyReallyLongLongLongProject.csproj"}, "Current.csproj");
-				SetModalDialogOwner(associateTestProjectDialog);
-
-				var dlgResult = associateTestProjectDialog.ShowDialog();
-				if (dlgResult.HasValue && dlgResult == true)
-					 selectedProject = associateTestProjectDialog.SelectedProject;
-				Debug.WriteLine(selectedProject);
+				TestFileWasNotFound();
 				return;
 			}
 			SaveAndUnloadDocuments();
@@ -99,6 +94,25 @@ namespace DreamWorks.TddHelper.Implementation
 				LoadDocumentsIntoOneTabWell();
 			else
 				LoadAndPlaceImplementationAndTest();
+		}
+
+		private void TestFileWasNotFound()
+		{
+			string selectedProject = string.Empty;
+			var associateTestProjectDialog =
+				new AssociateTestProject(
+					new List<string>
+					{
+						"Project1",
+						"Project2",
+						"ReallyReallyReallyLongLongLongProject.csproj"
+					}, "Current.csproj");
+			SetModalDialogOwner(associateTestProjectDialog);
+
+			var dlgResult = associateTestProjectDialog.ShowDialog();
+			if (dlgResult.HasValue && dlgResult == true)
+				selectedProject = associateTestProjectDialog.SelectedProject;
+			Debug.WriteLine(selectedProject);
 		}
 
 		private void LoadAndPlaceImplementationAndTest()
