@@ -18,7 +18,7 @@ namespace DreamWorks.TddHelper.Implementation
 	{
 		private readonly List<ProjectItem> _projectItemList = new List<ProjectItem>();
 		private readonly List<ProjectItem> _subItemList = new List<ProjectItem>();
-		private readonly List<string> _fileList = new List<string>();
+		private readonly Dictionary<string, string> _fileToProjectDictionary = new Dictionary<string, string>();
 		public const string FullPathPropertyName = "FullPath";
 		private const string CsprojExtension = ".csproj";
 		private const string CsharpFileExtension = ".cs";
@@ -38,6 +38,7 @@ namespace DreamWorks.TddHelper.Implementation
 		private bool _isSourcePathTest;
 		private readonly CachedFileAssociations _cachedFileAssociations;
 		private readonly CachedProjectAssociations _cachedProjectAssociations;
+		private readonly List<string> _projectPathsList = new List<string>();
 		
 		public TestLocator(DTE2 dte, IVsUIShell shell)
 		{
@@ -83,13 +84,13 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private void Load()
 		{
-			if (!File.Exists(_implementationPath))
+			if(!TryCreateTargetPath())
 				return;
-			if (!File.Exists(_unitTestPath))
-			{
-				TestFileWasNotFound();
+	
+			
+			if(!TryCreateTargetPath())
 				return;
-			}
+			
 			SaveAndUnloadDocuments();
 
 			if (StaticOptions.TddHelper.NoSplit)
@@ -98,23 +99,61 @@ namespace DreamWorks.TddHelper.Implementation
 				LoadAndPlaceImplementationAndTest();
 		}
 
-		private void TestFileWasNotFound()
+		private bool TryCreateTargetPath()
 		{
-			string selectedProject = string.Empty;
-			var associateTestProjectDialog =
-				new AssociateTestProject(
-					new List<string>
-					{
-						"Project1",
-						"Project2",
-						"ReallyReallyReallyLongLongLongProject.csproj"
-					}, "Current.csproj");
+			var projectForTargetPath = GetProjectForTargetPath();
+			if (string.IsNullOrEmpty(projectForTargetPath))
+				return false;
+			return false;
+		}
+
+		private string GetProjectForTargetPath()
+		{
+			// one of these two will not be there
+			string unitTestProject = string.Empty;
+			string implementationProject = string.Empty;
+
+			if (_fileToProjectDictionary.ContainsKey(_unitTestPath))
+				unitTestProject = _fileToProjectDictionary[_unitTestPath];
+			if (_fileToProjectDictionary.ContainsKey(_implementationPath))
+				implementationProject = _fileToProjectDictionary[_implementationPath];
+
+			if (_isSourcePathTest && !string.IsNullOrEmpty(unitTestProject))
+			{
+				return GetAssociatedTargetProject(unitTestProject);
+			}
+			if (!_isSourcePathTest && !string.IsNullOrEmpty(implementationProject))
+			{
+				return GetAssociatedTargetProject(implementationProject);
+			}
+			Debug.Assert(false, "Should not happen");
+			return string.Empty;
+		}
+
+		private string GetAssociatedTargetProject(string sourceProject)
+		{
+			string targetProject;
+
+			// check the cache first
+			if (_isSourcePathTest)
+				targetProject = _cachedProjectAssociations.ImplementationProjectFromTestProject(sourceProject);
+			else
+				targetProject = _cachedProjectAssociations.TestProjectFromImplementationProject(sourceProject);
+
+			if (!string.IsNullOrEmpty(targetProject)) 
+				return targetProject;
+
+			// ask user in which project they want to create missing test/implementation
+			var associateTestProjectDialog = new AssociateTestProject(_projectPathsList, sourceProject, 
+				_cachedProjectAssociations, _isSourcePathTest);
 			SetModalDialogOwner(associateTestProjectDialog);
 
 			var dlgResult = associateTestProjectDialog.ShowDialog();
 			if (dlgResult.HasValue && dlgResult == true)
-				selectedProject = associateTestProjectDialog.SelectedProject;
-			Debug.WriteLine(selectedProject);
+			{
+				targetProject = associateTestProjectDialog.SelectedProject;
+			}
+			return targetProject;
 		}
 
 		private void LoadAndPlaceImplementationAndTest()
@@ -223,7 +262,8 @@ namespace DreamWorks.TddHelper.Implementation
 			if (solution == null || solutionProjects == null)
 				return;
 
-			_fileList.Clear();
+			_fileToProjectDictionary.Clear();
+			_projectPathsList.Clear();
 
 			foreach (var p in solutionProjects)
 			{
@@ -239,6 +279,8 @@ namespace DreamWorks.TddHelper.Implementation
 				if (!project.FileName.EndsWith(CsprojExtension))
 					continue;
 
+				_projectPathsList.Add(project.FullName);
+
 				_projectItemList.Clear();
 				foreach (ProjectItem item in project.ProjectItems)
 				{
@@ -248,13 +290,13 @@ namespace DreamWorks.TddHelper.Implementation
 					_projectItemList.AddRange(_subItemList);
 				}
 				foreach (var item in _projectItemList)
-					GetFilesFromProjectItem(item);
+					GetFilesFromProjectItem(item, project);
 			}
 		}
 
-		public List<string> ProjectFiles
+		public Dictionary<string,string> FilesToProjectDictionary
 		{
-			get { return _fileList; }
+			get { return _fileToProjectDictionary; }
 		}
 
 		private ProjectItem RecursiveGetProjectItem(ProjectItem item)
@@ -269,7 +311,7 @@ namespace DreamWorks.TddHelper.Implementation
 			return item;
 		}
 
-		private void GetFilesFromProjectItem(ProjectItem item)
+		private void GetFilesFromProjectItem(ProjectItem item, Project project)
 		{
 			if (item.FileCount == 0)
 				return;
@@ -277,18 +319,13 @@ namespace DreamWorks.TddHelper.Implementation
 			{
 				var filePath = item.get_FileNames(0);
 				if (filePath.ToLower().EndsWith(CsharpFileExtension))
-					_fileList.Add(filePath);
-				return;
+					_fileToProjectDictionary.Add(filePath, project.FullName);
+				
 			}
 
-			for (short i = 0; i < item.FileCount; i++)
-			{
-				if (item.FileNames[i].ToLower().EndsWith(CsharpFileExtension) &&
-				    item.Document != null)
-				{
-					_fileList.Add(Path.Combine(item.Document.Path, item.Name));
-				}
-			}
+			//should not happen more than one file per item
+			Debug.Assert(item.FileCount <= 1);
+
 		}
 
 		private bool HasProperty(Properties properties, string propertyName)
@@ -327,7 +364,7 @@ namespace DreamWorks.TddHelper.Implementation
 		private string Find(string searchedFile)
 		{
 			var candidateList = new List<string>();
-			foreach (var fullPathToFile in _fileList)
+			foreach (var fullPathToFile in _fileToProjectDictionary.Keys)
 			{
 				var fileName = Path.GetFileName(fullPathToFile);
 				if (String.Equals(fileName, searchedFile, StringComparison.OrdinalIgnoreCase))
@@ -357,17 +394,17 @@ namespace DreamWorks.TddHelper.Implementation
 			SetModalDialogOwner(resolveFileConflictDialog);
 
 			var dlgResult = resolveFileConflictDialog.ShowDialog();
-			if (dlgResult.HasValue && dlgResult == true)
-			{
-				if (_isSourcePathTest)
-					_cachedFileAssociations.AddAssociation(resolveFileConflictDialog.ViewModel.SelectedFile.Path, searchedFile);
-				else
-					_cachedFileAssociations.AddAssociation(searchedFile, resolveFileConflictDialog.ViewModel.SelectedFile.Path);
-				_cachedFileAssociations.Save();
+			if (!dlgResult.HasValue || dlgResult != true) 
+				return string.Empty;
+
+			var selectedFilePath = resolveFileConflictDialog.ViewModel.SelectedFile.Path;
+			if (_isSourcePathTest)
+				_cachedFileAssociations.AddAssociation(selectedFilePath, searchedFile);
+			else
+				_cachedFileAssociations.AddAssociation(searchedFile, selectedFilePath);
+			_cachedFileAssociations.Save();
 				
-				return resolveFileConflictDialog.ViewModel.SelectedFile.Path;
-			}
-			return string.Empty;
+			return selectedFilePath;
 		}
 
 		private string FindTargetFileInCache(string searchedFile)

@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System.Windows;
-
+using DreamWorks.TddHelper.Model;
 using DreamWorks.TddHelper.ViewModel;
 
 namespace DreamWorks.TddHelper.View
@@ -13,10 +13,12 @@ namespace DreamWorks.TddHelper.View
 	{
 		private readonly AssociateTestProjectViewModel _viewModel;
 
-		public AssociateTestProject(List<string> projectList, string currentProject)
+		public AssociateTestProject(List<string> projectList, string currentProject, 
+			CachedProjectAssociations cachedProjectAssociations, bool isSourcePathTest)
 		{
 			InitializeComponent();
-			_viewModel = new AssociateTestProjectViewModel(this, projectList, currentProject);
+			_viewModel = new AssociateTestProjectViewModel(this, projectList, currentProject, 
+				cachedProjectAssociations, isSourcePathTest);
 			DataContext = ViewModel;
 		}
 

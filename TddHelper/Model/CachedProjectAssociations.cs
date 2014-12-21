@@ -1,14 +1,13 @@
-﻿// Copyright AB SCIEX 2014. All rights reserved.
-
+﻿
 using System.Collections.Generic;
-using DreamWorks.TddHelper.View;
+
 using GalaSoft.MvvmLight.Messaging;
 using Newtonsoft.Json;
 
 namespace DreamWorks.TddHelper.Model
 {
 	
-	internal class CachedProjectAssociations
+	public class CachedProjectAssociations
 	{
 		private string _solutionGuid;
 

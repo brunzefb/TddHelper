@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows.Input;
+using DreamWorks.TddHelper.Model;
 using DreamWorks.TddHelper.View;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -16,19 +18,24 @@ namespace DreamWorks.TddHelper.ViewModel
 		private string _newProjectName;
 		private ObservableCollection<string> _projects;
 		private string _selectedProject;
+		private readonly CachedProjectAssociations _cachedProjectAssociations;
+		private readonly bool _isSourcePathTest;
 
-		public AssociateTestProjectViewModel(ICanClose view, List<string> projectList, string currentProject)
+		public AssociateTestProjectViewModel(ICanClose view, List<string> projectList, 
+			string currentProject, CachedProjectAssociations cachedProjectAssociations, bool isSourcePathTest)
 		{
 			_view = view;
 			_okCommand = new RelayCommand(OnOk, IsOKEnabled);
 			_cancelCommand = new RelayCommand(OnCancel);
 			Projects = new ObservableCollection<string>(projectList);
 			CurrentProject = currentProject;
+			_cachedProjectAssociations = cachedProjectAssociations;
+			_isSourcePathTest = isSourcePathTest;
 		}
 
 		private bool IsOKEnabled()
 		{
-			return true;
+			return !string.IsNullOrEmpty(_selectedProject);
 		}
 
 		public ICommand CancelCommand
@@ -43,7 +50,7 @@ namespace DreamWorks.TddHelper.ViewModel
 
 		public string CurrentProject
 		{
-			get { return _currentProject; }
+			get { return Path.GetFileNameWithoutExtension(_currentProject); }
 			set
 			{
 				_currentProject = value;
@@ -66,8 +73,7 @@ namespace DreamWorks.TddHelper.ViewModel
 		public ObservableCollection<string> Projects
 		{
 			get { return _projects; }
-			set
-			{
+			set{
 				_projects = value;
 				RaisePropertyChanged(() => Projects);
 			}
@@ -80,6 +86,7 @@ namespace DreamWorks.TddHelper.ViewModel
 			{
 				_selectedProject = value;
 				NewProjectName = string.Empty;
+				_okCommand.RaiseCanExecuteChanged();
 				RaisePropertyChanged(() => SelectedProject);
 			}
 		}
@@ -91,6 +98,11 @@ namespace DreamWorks.TddHelper.ViewModel
 
 		private void OnOk()
 		{
+			if (_isSourcePathTest)
+				_cachedProjectAssociations.AddAssociation(SelectedProject, CurrentProject);
+			else
+				_cachedProjectAssociations.AddAssociation(CurrentProject, SelectedProject);
+			_cachedProjectAssociations.Save();
 			_view.CloseWindow();
 		}
 

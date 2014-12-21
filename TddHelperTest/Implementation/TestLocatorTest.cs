@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using DreamWorks.TddHelper.Implementation;
 using EnvDTE;
 using EnvDTE80;
@@ -150,7 +151,7 @@ namespace TddHelperTest.Implementation
 		{
 			
 			_testLocator.GetCSharpFilesFromSolution();
-			Assert.That(_testLocator.ProjectFiles.Count, Is.EqualTo(12));
+			Assert.That(_testLocator.FilesToProjectDictionary.Count, Is.EqualTo(12));
 		}
 
 		[Test]
@@ -158,22 +159,22 @@ namespace TddHelperTest.Implementation
 		{
 			_mockSolution.Setup(sol => sol.Projects).Returns(() => (Projects)null);
 			_testLocator.GetCSharpFilesFromSolution();
-			Assert.That(_testLocator.ProjectFiles.Count, Is.EqualTo(0));
+			Assert.That(_testLocator.FilesToProjectDictionary.Count, Is.EqualTo(0));
 
 			_mockSolution.Setup(sol => sol.Projects).Returns(() => _mockProjects.Object);
 			_mockProjects.Setup(projects => projects.GetEnumerator()).Returns(NullProjectList());
 			_testLocator.GetCSharpFilesFromSolution();
-			Assert.That(_testLocator.ProjectFiles.Count, Is.EqualTo(0));
+			Assert.That(_testLocator.FilesToProjectDictionary.Count, Is.EqualTo(0));
 			_mockProjects.Setup(projects => projects.GetEnumerator()).Returns(ProjectList);
 
 			_mockProps.Setup(prop => prop.GetEnumerator()).Returns(PropertyListNull);
 			_testLocator.GetCSharpFilesFromSolution();
-			Assert.That(_testLocator.ProjectFiles.Count, Is.EqualTo(0));
+			Assert.That(_testLocator.FilesToProjectDictionary.Count, Is.EqualTo(0));
 			_mockProps.Setup(prop => prop.GetEnumerator()).Returns(PropertyList);
 
 			_mockProjects.Setup(projects => projects.GetEnumerator()).Returns(ProjectVbList);
 			_testLocator.GetCSharpFilesFromSolution();
-			Assert.That(_testLocator.ProjectFiles.Count, Is.EqualTo(0));
+			Assert.That(_testLocator.FilesToProjectDictionary.Count, Is.EqualTo(0));
 			_mockProjects.Setup(projects => projects.GetEnumerator()).Returns(ProjectList);
 
 		}
@@ -221,7 +222,7 @@ namespace TddHelperTest.Implementation
 		{
 			_testLocator.GetCSharpFilesFromSolution();
 			Assert.That(_testLocator.FindPathToTestFile("foobar"), Is.Empty);
-			var list = _testLocator.ProjectFiles;
+			var list = _testLocator.FilesToProjectDictionary.Keys.ToList();
 			var fullPathToTest = list[3];
 			var index = fullPathToTest.LastIndexOf("Test", System.StringComparison.Ordinal);
 			var fullPathToImpl = fullPathToTest.Substring(0, index) + ".cs";
