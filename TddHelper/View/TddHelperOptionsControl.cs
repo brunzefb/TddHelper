@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using DreamWorks.TddHelper.Model;
 using DreamWorks.TddHelper.ViewModel;
 using GalaSoft.MvvmLight.Messaging;
 using MvvmFx.Windows.Data;
@@ -7,10 +8,6 @@ using Newtonsoft.Json;
 
 namespace DreamWorks.TddHelper.View
 {
-	public class OptionsClearCache
-	{
-	}
-
 	public partial class TddHelperOptionsControl : UserControl
 	{
 		private readonly BindingManager _bindingManager;
@@ -65,6 +62,7 @@ namespace DreamWorks.TddHelper.View
 			BindRadioButtons();
 			BindCheckboxes();
 			ClearcacheButton.Click += ClearcacheButton_Click;
+			clearProjectCacheButton.Click += ClearProjectcacheButton_Click;
 		}
 
 		void ClearcacheButton_Click(object sender, EventArgs e)
@@ -73,7 +71,17 @@ namespace DreamWorks.TddHelper.View
 				Resources.TddHelperOptionsControl_ConfirmClearCacheMessage, 
 				Resources.TddHelper_App_Name, MessageBoxButtons.YesNo);
 			if (result == DialogResult.Yes)
-				Messenger.Default.Send(new OptionsClearCache());
+				Messenger.Default.Send(new OptionsClearFileAssociationsCache());
+
+		}
+
+		void ClearProjectcacheButton_Click(object sender, EventArgs e)
+		{
+			var result = MessageBox.Show(OptionsPage,
+				Resources.TddHelperOptionsControl_ConfirmClearCacheMessage,
+				Resources.TddHelper_App_Name, MessageBoxButtons.YesNo);
+			if (result == DialogResult.Yes)
+				Messenger.Default.Send(new OptionsClearProjectAssociationsCache());
 
 		}
 
@@ -132,5 +140,6 @@ namespace DreamWorks.TddHelper.View
 					(ProjectSuffixEdit, t => t.Text, _optionsViewModel,
 						o => o.ProjectSuffix));
 		}
+
 	}
 }

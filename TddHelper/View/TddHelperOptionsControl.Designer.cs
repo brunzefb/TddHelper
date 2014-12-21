@@ -45,6 +45,7 @@
 			this.CleanCheckbox = new System.Windows.Forms.CheckBox();
 			this.ClearcacheButton = new System.Windows.Forms.Button();
 			this.buttonToolTip = new System.Windows.Forms.ToolTip(this.components);
+			this.clearProjectCacheButton = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -201,21 +202,35 @@
 			// 
 			// ClearcacheButton
 			// 
-			this.ClearcacheButton.Location = new System.Drawing.Point(320, -1);
+			this.ClearcacheButton.Location = new System.Drawing.Point(277, -1);
 			this.ClearcacheButton.Name = "ClearcacheButton";
-			this.ClearcacheButton.Size = new System.Drawing.Size(75, 23);
+			this.ClearcacheButton.Size = new System.Drawing.Size(118, 23);
 			this.ClearcacheButton.TabIndex = 11;
-			this.ClearcacheButton.Text = "Clear cac&he";
+			this.ClearcacheButton.Text = "Clear file cac&he";
 			this.buttonToolTip.SetToolTip(this.ClearcacheButton, "This will clear out all remembered file\r\nassociations between Test and Implementa" +
         "tion\r\nFiles.  The storage is solution-specific, using this\r\nclears out all previ" +
         "ous choices.");
 			this.ClearcacheButton.UseVisualStyleBackColor = true;
+			
+			// 
+			// clearProjectCacheButton
+			// 
+			this.clearProjectCacheButton.Location = new System.Drawing.Point(277, 27);
+			this.clearProjectCacheButton.Name = "clearProjectCacheButton";
+			this.clearProjectCacheButton.Size = new System.Drawing.Size(118, 23);
+			this.clearProjectCacheButton.TabIndex = 14;
+			this.clearProjectCacheButton.Text = "Clear project cac&he";
+			this.buttonToolTip.SetToolTip(this.clearProjectCacheButton, "This will clear out all remembered project\r\nassociations between Test and Impleme" +
+        "ntation.  The storage is solution-specific, clearing only applies to currently l" +
+        "oaded solution.");
+			this.clearProjectCacheButton.UseVisualStyleBackColor = true;
 			// 
 			// TddHelperOptionsControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Window;
+			this.Controls.Add(this.clearProjectCacheButton);
 			this.Controls.Add(this.ClearcacheButton);
 			this.Controls.Add(this.CleanCheckbox);
 			this.Controls.Add(this.MakeFriendAssemblyCheckbox);
@@ -255,5 +270,6 @@
 		private System.Windows.Forms.CheckBox CleanCheckbox;
 		private System.Windows.Forms.Button ClearcacheButton;
 		private System.Windows.Forms.ToolTip buttonToolTip;
+		private System.Windows.Forms.Button clearProjectCacheButton;
 	}
 }

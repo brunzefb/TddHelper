@@ -22,7 +22,6 @@ namespace DreamWorks.TddHelper.Implementation
 		public const string FullPathPropertyName = "FullPath";
 		private const string CsprojExtension = ".csproj";
 		private const string CsharpFileExtension = ".cs";
-
 		private const string TestDotCs = "test.cs";
 		private const char Period = '.';
 		private const string Document = "Document";
@@ -36,14 +35,18 @@ namespace DreamWorks.TddHelper.Implementation
 		private string _unitTestPath;
 		private string _implementationPath;
 		private readonly IVsUIShell _shell;
-		
+		private bool _isSourcePathTest;
 		private readonly CachedFileAssociations _cachedFileAssociations;
+		private readonly CachedProjectAssociations _cachedProjectAssociations;
 		
 		public TestLocator(DTE2 dte, IVsUIShell shell)
 		{
 			_dte = dte;
 			_shell = shell;
 			_cachedFileAssociations = new CachedFileAssociations(string.Empty);
+			_cachedProjectAssociations = new CachedProjectAssociations(string.Empty);
+			_cachedFileAssociations.Load();
+			_cachedProjectAssociations.Load();
 		}
 
 		internal void OpenTestOrImplementation(object sender, EventArgs e)
@@ -53,8 +56,7 @@ namespace DreamWorks.TddHelper.Implementation
 				return;
 
 			var sourcePath = _dte.ActiveWindow.Document.FullName;
-			var isSourcePathTest =
-				sourcePath.ToLower().EndsWith(StaticOptions.TddHelper.TestFileSuffix.ToLower());
+			_isSourcePathTest = sourcePath.ToLower().EndsWith(StaticOptions.TddHelper.TestFileSuffix.ToLower());
 			var isCs = sourcePath.ToLower().EndsWith(CsharpFileExtension);
 
 			if (!isCs)
@@ -65,7 +67,7 @@ namespace DreamWorks.TddHelper.Implementation
 			var fileName = Path.GetFileName(sourcePath);
 			_implementationPath = string.Empty;
 			_unitTestPath = string.Empty;
-			if (!isSourcePathTest)
+			if (!_isSourcePathTest)
 			{
 				_unitTestPath = FindPathToTestFile(fileName);
 				_implementationPath = sourcePath;
@@ -215,6 +217,7 @@ namespace DreamWorks.TddHelper.Implementation
 			var solution = _dte.Solution;
 			
 			_cachedFileAssociations.UpdateSolutionId(solution.ExtenderCATID);
+			_cachedProjectAssociations.UpdateSolutionId(solution.ExtenderCATID);
 			var solutionProjects = solution.Projects;
 
 			if (solution == null || solutionProjects == null)
@@ -355,7 +358,15 @@ namespace DreamWorks.TddHelper.Implementation
 
 			var dlgResult = resolveFileConflictDialog.ShowDialog();
 			if (dlgResult.HasValue && dlgResult == true)
+			{
+				if (_isSourcePathTest)
+					_cachedFileAssociations.AddAssociation(resolveFileConflictDialog.ViewModel.SelectedFile.Path, searchedFile);
+				else
+					_cachedFileAssociations.AddAssociation(searchedFile, resolveFileConflictDialog.ViewModel.SelectedFile.Path);
+				_cachedFileAssociations.Save();
+				
 				return resolveFileConflictDialog.ViewModel.SelectedFile.Path;
+			}
 			return string.Empty;
 		}
 

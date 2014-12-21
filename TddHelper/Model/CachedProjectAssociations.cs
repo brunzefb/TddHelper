@@ -1,24 +1,27 @@
-﻿
+﻿// Copyright AB SCIEX 2014. All rights reserved.
+
 using System.Collections.Generic;
+using DreamWorks.TddHelper.View;
 using GalaSoft.MvvmLight.Messaging;
 using Newtonsoft.Json;
 
 namespace DreamWorks.TddHelper.Model
 {
-	internal class CachedFileAssociations
+	
+	internal class CachedProjectAssociations
 	{
 		private string _solutionGuid;
 
 		public Dictionary<string, ImplementationToTest> Associations { get; set; }
 
-		public CachedFileAssociations(string id)
+		public CachedProjectAssociations(string id)
 		{
 			_solutionGuid = id;
 			Associations = new Dictionary<string, ImplementationToTest>();
-			Messenger.Default.Register<OptionsClearFileAssociationsCache>(this, OnCacheCleared);
+			Messenger.Default.Register<OptionsClearProjectAssociationsCache>(this, OnCacheCleared);
 		}
 
-		private void OnCacheCleared(OptionsClearFileAssociationsCache action)
+		private void OnCacheCleared(OptionsClearProjectAssociationsCache action)
 		{
 			ClearCache();
 		}
@@ -42,10 +45,10 @@ namespace DreamWorks.TddHelper.Model
 		{
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return;
-			if (string.IsNullOrEmpty(TddSettings.Default.FileAssociations)) return;
+			if (string.IsNullOrEmpty(TddSettings.Default.ProjectAssociations)) return;
 			var instance =
 				JsonConvert.DeserializeObject<CachedFileAssociations>(
-					TddSettings.Default.FileAssociations);
+					TddSettings.Default.ProjectAssociations);
 			Associations = instance.Associations;
 		}
 		
@@ -57,7 +60,7 @@ namespace DreamWorks.TddHelper.Model
 			TddSettings.Default.Save();
 		}
 
-		public void AddAssociation(string implementation, string test)
+		public void AddAssociation(string implementationProject, string testProject)
 		{
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return;
@@ -72,13 +75,13 @@ namespace DreamWorks.TddHelper.Model
 				Associations.Add(_solutionGuid, implementationToTest);
 			}
 
-			if (!implementationToTest.ContainsKey(implementation))
-				implementationToTest.Add(implementation, test);
+			if (!implementationToTest.ContainsKey(implementationProject))
+				implementationToTest.Add(implementationProject, testProject);
 			else
-				implementationToTest[implementation] = test;
+				implementationToTest[implementationProject] = testProject;
 		}
 
-		public string ImplementationFromTest(string test)
+		public string ImplementationProjectFromTestProject(string testProject)
 		{
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return string.Empty;
@@ -92,13 +95,13 @@ namespace DreamWorks.TddHelper.Model
 
 			foreach (var implementationKey in implementationToTest.Keys)
 			{
-				if (implementationToTest[implementationKey] == test)
+				if (implementationToTest[implementationKey] == testProject)
 					return implementationKey;
 			}
 			return string.Empty;
 		}
 
-		public string TestFromImplementation(string implementation)
+		public string TestProjectFromImplementationProject(string implementation)
 		{
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return string.Empty;

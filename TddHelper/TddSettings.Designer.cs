@@ -46,5 +46,17 @@ namespace DreamWorks.TddHelper {
                 this["FileAssociations"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ProjectAssociations {
+            get {
+                return ((string)(this["ProjectAssociations"]));
+            }
+            set {
+                this["ProjectAssociations"] = value;
+            }
+        }
     }
 }
