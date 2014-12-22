@@ -35,7 +35,7 @@ namespace DreamWorks.TddHelper.View
 
 		public string SelectedProject
 		{
-			get { return _viewModel.SelectedProject; }
+			get { return _viewModel.SelectedProject.Path; }
 		}
 
 		public string NewProjectName

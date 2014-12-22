@@ -35,7 +35,7 @@ namespace DreamWorks.TddHelper.ViewModel
 			{
 				var display = new DisplayPathHelper();
 				display.Path = file;
-				display.DisplayPath = Util.ShortenPath(file, MaxPathCharacters);
+				display.DisplayPath = Util.ShortenPath(RelativePathHelper.GetRelativePath(file), MaxPathCharacters);
 				list.Add(display);
 			}
 			_fileList = new ObservableCollection<DisplayPathHelper>(list);

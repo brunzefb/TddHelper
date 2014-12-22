@@ -255,14 +255,16 @@ namespace DreamWorks.TddHelper.Implementation
 		{
 			var solution = _dte.Solution;
 			
-			_cachedFileAssociations.UpdateSolutionId(solution.ExtenderCATID);
-			_cachedProjectAssociations.UpdateSolutionId(solution.ExtenderCATID);
-			var solutionProjects = solution.Projects;
-
-			if (solution == null || solutionProjects == null)
+			if (solution == null || solution.Projects == null)
 				return;
 
+			var solutionProjects = solution.Projects;
+			RelativePathHelper.BasePath = Path.GetDirectoryName(solution.FullName);
+
+			_cachedFileAssociations.UpdateSolutionId(solution.ExtenderCATID);
+			_cachedProjectAssociations.UpdateSolutionId(solution.ExtenderCATID);
 			_fileToProjectDictionary.Clear();
+			
 			_projectPathsList.Clear();
 
 			foreach (var p in solutionProjects)

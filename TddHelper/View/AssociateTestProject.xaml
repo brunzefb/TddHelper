@@ -48,7 +48,8 @@
 				 Grid.ColumnSpan="2"
 				 VerticalAlignment="Stretch"
 				 ItemsSource="{Binding Projects}"
-				 SelectedValue="{Binding SelectedProject}"
+				 DisplayMemberPath="DisplayPath"
+				 SelectedValue="{Binding SelectedProject, Mode=TwoWay }"
 				 />
 		
 		<TextBlock Grid.Column="1"
