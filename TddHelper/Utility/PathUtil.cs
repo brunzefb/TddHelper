@@ -1,11 +1,9 @@
-﻿
-
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 
-namespace DreamWorks.TddHelper
+namespace DreamWorks.TddHelper.Utility
 {
-	internal class Util
+	internal class PathUtil
 	{
 
 		// lifted from http://stackoverflow.com/questions/1764204/how-to-display-abbreviated-path-names-in-net

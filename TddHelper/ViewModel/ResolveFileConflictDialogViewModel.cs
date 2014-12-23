@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Windows.Threading;
+using DreamWorks.TddHelper.Utility;
 using DreamWorks.TddHelper.View;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -35,7 +36,7 @@ namespace DreamWorks.TddHelper.ViewModel
 			{
 				var display = new DisplayPathHelper();
 				display.Path = file;
-				display.DisplayPath = Util.ShortenPath(RelativePathHelper.GetRelativePath(file), MaxPathCharacters);
+				display.DisplayPath = PathUtil.ShortenPath(RelativePathHelper.GetRelativePath(file), MaxPathCharacters);
 				list.Add(display);
 			}
 			_fileList = new ObservableCollection<DisplayPathHelper>(list);

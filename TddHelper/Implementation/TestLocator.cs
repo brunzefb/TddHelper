@@ -2,10 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using DreamWorks.TddHelper.Model;
+using DreamWorks.TddHelper.Utility;
 using DreamWorks.TddHelper.View;
 using EnvDTE;
 using EnvDTE80;
@@ -32,6 +34,7 @@ namespace DreamWorks.TddHelper.Implementation
 		private const string WindowMoveToNextTabGroupCommand = "Window.MoveToNextTabGroup";
 		private const string FileSaveAll = "File.SaveAll";
 		private const string WindowCloseAllDocuments = "Window.CloseAllDocuments";
+		private const string RelativePathToClassTemplate = @"ItemTemplates\CSharp\Code\1033\Class\Class.vstemplate";
 		private string _unitTestPath;
 		private string _implementationPath;
 		private readonly IVsUIShell _shell;
@@ -86,10 +89,6 @@ namespace DreamWorks.TddHelper.Implementation
 		{
 			if(!TryCreateTargetPath())
 				return;
-	
-			
-			if(!TryCreateTargetPath())
-				return;
 			
 			SaveAndUnloadDocuments();
 
@@ -104,7 +103,34 @@ namespace DreamWorks.TddHelper.Implementation
 			var projectForTargetPath = GetProjectForTargetPath();
 			if (string.IsNullOrEmpty(projectForTargetPath))
 				return false;
+
+			var visualStudioIdeFolder = VisualStudioHelper.GetVisualStudioInstallationDir(VisualStudioVersion.Vs2013);
+			if (string.IsNullOrEmpty(visualStudioIdeFolder))
+				return false;
+
+			var classTemplate = Path.Combine(visualStudioIdeFolder,RelativePathToClassTemplate);
+			if (!File.Exists(classTemplate))
+				return false;
+
+			var project = ProjectFromPath(projectForTargetPath);
+			if (project == null)
+				return false;
+			
+		
+			var folderItem = project.ProjectItems.AddFolder("MyNewNewFolder3");
+			var newItem = folderItem.ProjectItems.AddFromTemplate(classTemplate, "MyNewClass3.cs");
 			return false;
+		}
+
+		Project ProjectFromPath(string path)
+		{
+			foreach (Project project in _dte.Solution.Projects)
+			{
+
+				if (string.Equals(project.FullName, path, StringComparison.CurrentCultureIgnoreCase))
+					return project;
+			}
+			return null;
 		}
 
 		private string GetProjectForTargetPath()
