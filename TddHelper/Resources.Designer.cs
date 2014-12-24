@@ -79,11 +79,20 @@ namespace DreamWorks.TddHelper {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to clear the remembered associations between tests and implementation (current solution only)?.
+        ///   Looks up a localized string similar to Are you sure you want to clear the remembered file associations between tests and implementation (current solution only)?.
         /// </summary>
         internal static string TddHelperOptionsControl_ConfirmClearCacheMessage {
             get {
                 return ResourceManager.GetString("TddHelperOptionsControl_ConfirmClearCacheMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to clear the remembered project associations between test projects and implementation projects (current solution only)?.
+        /// </summary>
+        internal static string TddHelperOptionsControl_ConfirmClearCacheProjectMessage {
+            get {
+                return ResourceManager.GetString("TddHelperOptionsControl_ConfirmClearCacheProjectMessage", resourceCulture);
             }
         }
     }

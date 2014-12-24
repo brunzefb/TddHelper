@@ -124,6 +124,9 @@
     <value>Tdd Helper</value>
   </data>
   <data name="TddHelperOptionsControl_ConfirmClearCacheMessage" xml:space="preserve">
-    <value>Are you sure you want to clear the remembered associations between tests and implementation (current solution only)?</value>
+    <value>Are you sure you want to clear the remembered file associations between tests and implementation (current solution only)?</value>
+  </data>
+  <data name="TddHelperOptionsControl_ConfirmClearCacheProjectMessage" xml:space="preserve">
+    <value>Are you sure you want to clear the remembered project associations between test projects and implementation projects (current solution only)?</value>
   </data>
 </root>

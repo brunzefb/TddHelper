@@ -78,11 +78,10 @@ namespace DreamWorks.TddHelper.View
 		void ClearProjectcacheButton_Click(object sender, EventArgs e)
 		{
 			var result = MessageBox.Show(OptionsPage,
-				Resources.TddHelperOptionsControl_ConfirmClearCacheMessage,
+				Resources.TddHelperOptionsControl_ConfirmClearCacheProjectMessage,
 				Resources.TddHelper_App_Name, MessageBoxButtons.YesNo);
 			if (result == DialogResult.Yes)
 				Messenger.Default.Send(new OptionsClearProjectAssociationsCache());
-
 		}
 
 		private void BindCheckboxes()

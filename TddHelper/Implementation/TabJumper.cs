@@ -1,6 +1,4 @@
-﻿// Copyright AB SCIEX 2014. All rights reserved.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using EnvDTE;
 using EnvDTE80;
