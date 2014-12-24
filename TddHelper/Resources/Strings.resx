@@ -132,4 +132,7 @@
   <data name="ConfirmFileCreation" xml:space="preserve">
     <value>About to create a test/implementation file. Proceed?</value>
   </data>
+  <data name="AllowCreateProject" xml:space="preserve">
+    <value>About to create a test/implementation project. Proceed?</value>
+  </data>
 </root>

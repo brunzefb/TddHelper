@@ -71,7 +71,13 @@
 					HorizontalAlignment="Right"
 					VerticalAlignment="Top"
 					Grid.RowSpan="2">
-			<Button Content="OK"
+			<Button Content="_Create New Project"
+					Margin="10,0,0,0"
+					MinWidth="60"
+					HorizontalAlignment="Left"
+					Command="{Binding CreateNewProjectCommand}"
+					VerticalAlignment="Top" />
+			<Button Content="_Use Selected Project"
 					Margin="10,0,0,0"
 					MinWidth="60"
 					HorizontalAlignment="Left"

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows.Input;
 using System.Windows.Threading;
 using DreamWorks.TddHelper.Model;
@@ -15,6 +16,7 @@ namespace DreamWorks.TddHelper.ViewModel
 	{
 		private readonly RelayCommand _okCommand;
 		private readonly RelayCommand _cancelCommand;
+		private readonly RelayCommand _createNewProjectCommand;
 		private readonly ICanClose _view;
 		private readonly string _currentProject;
 		private string _newProjectName;
@@ -22,6 +24,7 @@ namespace DreamWorks.TddHelper.ViewModel
 		private readonly CachedProjectAssociations _cachedProjectAssociations;
 		private readonly bool _isSourcePathTest;
 		private readonly ObservableCollection<DisplayPathHelper> _projectList;
+		public bool RequestCreateProject { get; set; }
 
 		public AssociateTestProjectViewModel(ICanClose view, IEnumerable<string> projectList, 
 			string currentProject, CachedProjectAssociations cachedProjectAssociations, bool isSourcePathTest)
@@ -29,6 +32,7 @@ namespace DreamWorks.TddHelper.ViewModel
 			_view = view;
 			_okCommand = new RelayCommand(OnOk, IsOKEnabled);
 			_cancelCommand = new RelayCommand(OnCancel);
+			_createNewProjectCommand = new RelayCommand(OnCreateNewProject, IsNewProjectCreationAllowed);
 
 			var list = new List<DisplayPathHelper>();
 			foreach (var project in projectList)
@@ -46,6 +50,21 @@ namespace DreamWorks.TddHelper.ViewModel
 			_isSourcePathTest = isSourcePathTest;
 		}
 
+		private bool IsNewProjectCreationAllowed()
+		{
+			return _projectList.Any(x=>
+			{
+				var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(x.Path);
+				return fileNameWithoutExtension != null && fileNameWithoutExtension.Contains(_newProjectName);
+			});
+		}
+
+		private void OnCreateNewProject()
+		{
+			RequestCreateProject = true;
+			_view.CloseWindow();
+		}
+
 		private bool IsOKEnabled()
 		{
 			return _selectedProject != null;
@@ -54,6 +73,11 @@ namespace DreamWorks.TddHelper.ViewModel
 		public ICommand CancelCommand
 		{
 			get { return _cancelCommand; }
+		}
+
+		public ICommand CreateNewProjectCommand
+		{
+			get { return _createNewProjectCommand; }
 		}
 
 		public ICommand OkCommand
@@ -73,6 +97,7 @@ namespace DreamWorks.TddHelper.ViewModel
 			set
 			{
 				_newProjectName = value;
+				_createNewProjectCommand.RaiseCanExecuteChanged();
 				RaisePropertyChanged(() => NewProjectName);
 			}
 		}
