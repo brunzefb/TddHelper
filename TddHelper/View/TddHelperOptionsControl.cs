@@ -1,6 +1,9 @@
-﻿using System;
+﻿// Copyright AB SCIEX 2014. All rights reserved.
+
+using System;
 using System.Windows.Forms;
 using DreamWorks.TddHelper.Model;
+using DreamWorks.TddHelper.Resources;
 using DreamWorks.TddHelper.ViewModel;
 using GalaSoft.MvvmLight.Messaging;
 using MvvmFx.Windows.Data;
@@ -50,7 +53,8 @@ namespace DreamWorks.TddHelper.View
 			// deserialization bypasses the property sets, thats why we have to update the UI
 			if (!string.IsNullOrEmpty(TddSettings.Default.Settings))
 			{
-				var fromDisk = JsonConvert.DeserializeObject<OptionsViewModel>(TddSettings.Default.Settings);
+				var fromDisk =
+					JsonConvert.DeserializeObject<OptionsViewModel>(TddSettings.Default.Settings);
 				_optionsViewModel.Clone(fromDisk);
 			}
 			_optionsViewModel.UpdateUI();
@@ -65,21 +69,20 @@ namespace DreamWorks.TddHelper.View
 			clearProjectCacheButton.Click += ClearProjectcacheButton_Click;
 		}
 
-		void ClearcacheButton_Click(object sender, EventArgs e)
-		{
-			var result = MessageBox.Show(OptionsPage, 
-				Resources.TddHelperOptionsControl_ConfirmClearCacheMessage, 
-				Resources.TddHelper_App_Name, MessageBoxButtons.YesNo);
-			if (result == DialogResult.Yes)
-				Messenger.Default.Send(new OptionsClearFileAssociationsCache());
-
-		}
-
-		void ClearProjectcacheButton_Click(object sender, EventArgs e)
+		private void ClearcacheButton_Click(object sender, EventArgs e)
 		{
 			var result = MessageBox.Show(OptionsPage,
-				Resources.TddHelperOptionsControl_ConfirmClearCacheProjectMessage,
-				Resources.TddHelper_App_Name, MessageBoxButtons.YesNo);
+				Strings.TddHelperOptionsControl_ConfirmClearCacheMessage,
+				Strings.TddHelper_App_Name, MessageBoxButtons.YesNo);
+			if (result == DialogResult.Yes)
+				Messenger.Default.Send(new OptionsClearFileAssociationsCache());
+		}
+
+		private void ClearProjectcacheButton_Click(object sender, EventArgs e)
+		{
+			var result = MessageBox.Show(OptionsPage,
+				Strings.TddHelperOptionsControl_ConfirmClearCacheProjectMessage,
+				Strings.TddHelper_App_Name, MessageBoxButtons.YesNo);
 			if (result == DialogResult.Yes)
 				Messenger.Default.Send(new OptionsClearProjectAssociationsCache());
 		}
@@ -139,6 +142,5 @@ namespace DreamWorks.TddHelper.View
 					(ProjectSuffixEdit, t => t.Text, _optionsViewModel,
 						o => o.ProjectSuffix));
 		}
-
 	}
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using DreamWorks.TddHelper.Model;
+using DreamWorks.TddHelper.Resources;
 using DreamWorks.TddHelper.Utility;
 using DreamWorks.TddHelper.View;
 using EnvDTE;
@@ -36,6 +37,7 @@ namespace DreamWorks.TddHelper.Implementation
 		private const string FileSaveAll = "File.SaveAll";
 		private const string WindowCloseAllDocuments = "Window.CloseAllDocuments";
 		private const string RelativePathToClassTemplate = @"ItemTemplates\CSharp\Code\1033\Class\Class.vstemplate";
+		private const string RelativePathToClassLibraryProjectTemplate = @"ProjectTemplates\CSharp\Windows\1033\ClassLibrary\csClassLibrary.vstemplate";
 		private string _sourcePath;
 		private string _targetPath;
 		private string _targetFileName;
@@ -119,6 +121,13 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private bool TryToCreateNewTargetClass()
 		{
+			if (!StaticOptions.TddHelper.AutoCreateTestFile)
+			{
+				const int noDontCreateFile = 7;  // winuser.h - IDNO
+				var result = ViewUtil.VsShowMessageBox(_shell, Strings.ConfirmFileCreation);
+				if (result == noDontCreateFile)
+					return false;
+			}
 			var targetProjectPath = GetAssociatedTargetProjectPath();
 			if (string.IsNullOrEmpty(targetProjectPath))
 				return false;
@@ -140,7 +149,6 @@ namespace DreamWorks.TddHelper.Implementation
 
 			return CreateTargetClassInTargetProject(targetProject, classTemplate);
 		}
-
 
 		private bool CreateTargetClassInTargetProject(Project targetProject,
 			string classTemplate)
@@ -190,14 +198,12 @@ namespace DreamWorks.TddHelper.Implementation
 			// at the correct level.
 			foreach (ProjectItem item in items)
 			{
-				if (item.Name == _targetFileName)
-				{
-					if (item.Document != null)
-					{
-						_targetPath = item.Document.FullName;
-						return;
-					}
-				}
+				if (item.Name != _targetFileName) 
+					continue;
+				if (item.Document == null) 
+					continue;
+				_targetPath = item.Document.FullName;
+				return;
 			}
 			Debug.Assert(false);
 		}
@@ -269,16 +275,64 @@ namespace DreamWorks.TddHelper.Implementation
 
 			// ask user in which project they want to create missing test/implementation
 			var associateTestProjectDialog = new AssociateTestProject(_projectPathsList,
-				sourceProjectPath,
-				_cachedProjectAssociations, _isSourcePathTest);
+									sourceProjectPath,
+									_cachedProjectAssociations, _isSourcePathTest);
 			SetModalDialogOwner(associateTestProjectDialog);
 
 			var dlgResult = associateTestProjectDialog.ShowDialog();
-			if (dlgResult.HasValue && dlgResult == true)
+			if (!dlgResult.HasValue || dlgResult != true) 
+				return null;
+			if (!associateTestProjectDialog.ViewModel.RequestCreateProject)
+				return associateTestProjectDialog.SelectedProject;
+
+			if (!StaticOptions.TddHelper.AutoCreateTestProject)
 			{
-				targetProjectPath = associateTestProjectDialog.SelectedProject;
+				const int noDontCreateProject = 7; // winuser.h - IDNO
+				var result = ViewUtil.VsShowMessageBox(_shell, Strings.AllowCreateProject);
+				if (result == noDontCreateProject)
+					return null;
 			}
-			return targetProjectPath;
+			var projectName = associateTestProjectDialog.ViewModel.NewProjectName;
+			if (!CreateProject(projectName))
+				return null;
+			return PathForProject(projectName);
+		}
+
+		private bool CreateProject(string projectName)
+		{
+			if (string.IsNullOrEmpty(_dte.Solution.FullName))
+				return false;
+			var directoryName = Path.GetDirectoryName(_dte.Solution.FullName);
+			if (directoryName == null) 
+				return false;
+			var targetDir = Path.Combine(directoryName, projectName);
+			// ReSharper disable once AssignNullToNotNullAttribute
+			targetDir = Path.Combine(Path.GetDirectoryName(targetDir),
+				Path.GetFileNameWithoutExtension(targetDir));
+			if (Directory.Exists(targetDir))
+				return false;
+			Directory.CreateDirectory(targetDir);
+			var visualStudioIdeFolder =
+				VisualStudioHelper.GetVisualStudioInstallationDir(VisualStudioVersion.Vs2013);
+			if (string.IsNullOrEmpty(visualStudioIdeFolder))
+				return false;
+			var classTemplate = Path.Combine(visualStudioIdeFolder, RelativePathToClassLibraryProjectTemplate);
+			if (!File.Exists(classTemplate))
+				return false;
+			if (!projectName.ToLowerInvariant().EndsWith(CsprojExtension))
+				projectName += CsprojExtension;
+			_dte.Solution.AddFromTemplate(classTemplate, targetDir, projectName, false);
+			return true;
+		}
+
+		private string PathForProject(string project)
+		{
+			foreach (Project p in _dte.Solution.Projects)
+			{
+				if (p.Name.Contains(project))
+					return p.FullName;
+			}
+			return null;
 		}
 
 		private string GetSourceProjectPath()
@@ -307,10 +361,6 @@ namespace DreamWorks.TddHelper.Implementation
 					_dte.ExecuteCommand(OpenFileCommand, _sourcePath);
 					_dte.ExecuteCommand(OpenFileCommand, _targetPath);
 				}
-
-				//var doc = GetDocumentForPath(_targetPath);
-				//if (doc != null)
-				//	doc.Activate();
 
 				if (ViewUtil.IsMoreThanOneTabWellShown())
 				{

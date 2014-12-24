@@ -13,7 +13,7 @@ namespace DreamWorks.TddHelper.View
 	{
 		private readonly AssociateTestProjectViewModel _viewModel;
 
-		public AssociateTestProject(List<string> projectList, string currentProject, 
+		public AssociateTestProject(IEnumerable<string> projectList, string currentProject, 
 			CachedProjectAssociations cachedProjectAssociations, bool isSourcePathTest)
 		{
 			InitializeComponent();

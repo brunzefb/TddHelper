@@ -129,4 +129,7 @@
   <data name="TddHelperOptionsControl_ConfirmClearCacheProjectMessage" xml:space="preserve">
     <value>Are you sure you want to clear the remembered project associations between test projects and implementation projects (current solution only)?</value>
   </data>
+  <data name="ConfirmFileCreation" xml:space="preserve">
+    <value>About to create a test/implementation file. Proceed?</value>
+  </data>
 </root>

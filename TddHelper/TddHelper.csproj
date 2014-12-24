@@ -177,10 +177,10 @@
     <Compile Include="Utility\VisualStudioHelper.cs" />
     <Compile Include="ViewModel\AssociateTestProjectViewModel.cs" />
     <Compile Include="ViewModel\OptionsViewModel.cs" />
-    <Compile Include="Resources.Designer.cs">
+    <Compile Include="Resources\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
+      <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Implementation\TestLocator.cs" />
@@ -210,15 +210,15 @@
     <Compile Include="View\ViewUtil.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
+    <EmbeddedResource Include="Resources\Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="View\TddHelperOptionsControl.resx">
       <DependentUpon>TddHelperOptionsControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="VSPackage.resx">
+    <EmbeddedResource Include="Resources\VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
     </EmbeddedResource>

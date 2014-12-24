@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
+using DreamWorks.TddHelper.Resources;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -14,22 +15,23 @@ namespace DreamWorks.TddHelper.View
 		private const string PartTabPanel = "PART_TabPanel";
 		private static int _tabPanelCount;
 
-		public static void VsShowMessageBox(IVsUIShell uiShell, string message)
+		public static int VsShowMessageBox(IVsUIShell uiShell, string message)
 		{
 			var clsid = Guid.Empty;
 			int result;
 			ErrorHandler.ThrowOnFailure(uiShell.ShowMessageBox(
 				0,
 				ref clsid,
-				Resources.AppTitle,
+				Strings.AppTitle,
 				message,
 				string.Empty,
 				0,
-				OLEMSGBUTTON.OLEMSGBUTTON_OK,
+				OLEMSGBUTTON.OLEMSGBUTTON_YESNO,
 				OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
 				OLEMSGICON.OLEMSGICON_INFO,
 				0,
 				out result));
+			return result;
 		}
 
 		public static bool IsMoreThanOneTabWellShown()
