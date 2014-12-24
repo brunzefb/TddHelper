@@ -52,11 +52,14 @@ namespace DreamWorks.TddHelper.ViewModel
 
 		private bool IsNewProjectCreationAllowed()
 		{
-			return !_projectList.Any(x=>
+			if (string.IsNullOrEmpty(_newProjectName) || _newProjectName.Contains("."))
+				return false;
+			return !_projectList.Any(x =>
 			{
 				var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(x.Path);
 				var newProjectWithoutExt = Path.GetFileNameWithoutExtension(_newProjectName);
-				return fileNameWithoutExtension != null && fileNameWithoutExtension.Equals(newProjectWithoutExt);
+				return fileNameWithoutExtension != null &&
+				       fileNameWithoutExtension.Equals(newProjectWithoutExt);
 			});
 		}
 

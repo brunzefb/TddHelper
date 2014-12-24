@@ -246,8 +246,13 @@ namespace DreamWorks.TddHelper.Implementation
 		{
 			foreach (Project project in _dte.Solution.Projects)
 			{
-				if (string.Equals(project.FullName, path, StringComparison.CurrentCultureIgnoreCase))
-					return project;
+				try
+				{
+					if (!string.IsNullOrEmpty(project.FullName) && 
+					    string.Equals(project.FullName, path, StringComparison.CurrentCultureIgnoreCase))
+						return project;
+				}
+				catch {}
 			}
 			return null;
 		}

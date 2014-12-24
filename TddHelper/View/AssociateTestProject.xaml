@@ -20,7 +20,7 @@
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="12" />
-			<ColumnDefinition Width="141" />
+			<ColumnDefinition Width="159" />
 			<ColumnDefinition />
 			<ColumnDefinition Width="12" />
 		</Grid.ColumnDefinitions>
@@ -29,10 +29,12 @@
 			   Grid.Row="1"
 			   Grid.Column="1"
 			   HorizontalAlignment="Left"
-			   VerticalAlignment="Top" />
+			   VerticalAlignment="Top"
+			   Height="16"
+			   Width="82" />
 		<TextBlock Margin="0,0,0,0"
 				   TextWrapping="Wrap"
-				   Text="Select the project containing Unit Tests that target your current project"
+				   Text="Select the target project:"
 				   Grid.Row="2"
 				   Grid.ColumnSpan="2"
 				   Grid.Column="1"></TextBlock>
@@ -41,7 +43,8 @@
 				   Text="{Binding CurrentProject}"
 				   VerticalAlignment="Top"
 				   Grid.Row="1"
-				   Grid.Column="2"></TextBlock>
+				   Grid.Column="2"
+				   Height="16"></TextBlock>
 		<ListBox HorizontalAlignment="Stretch"
 				 Grid.Row="3"
 				 Grid.Column="1"
@@ -49,28 +52,33 @@
 				 VerticalAlignment="Stretch"
 				 ItemsSource="{Binding Projects}"
 				 DisplayMemberPath="DisplayPath"
-				 SelectedValue="{Binding SelectedProject, Mode=TwoWay }"
-				 />
-		
+				 SelectedValue="{Binding SelectedProject, Mode=TwoWay }" />
+
 		<TextBlock Grid.Column="1"
 				   Margin="0,3,0,0"
 				   HorizontalAlignment="Left"
 				   Grid.Row="5"
 				   TextWrapping="Wrap"
-				   Text="Create New Test Project:"
-				   VerticalAlignment="Top" />
+				   Text="Create New Target Project:"
+				   VerticalAlignment="Top"
+				   Height="16"
+				   Width="159" />
 		<TextBox Margin="0"
 				 Grid.Column="2"
 				 HorizontalAlignment="Stretch"
 				 Grid.Row="5"
 				 Text="{Binding NewProjectName, UpdateSourceTrigger=PropertyChanged}"
-				 VerticalAlignment="Top" />
+				 VerticalAlignment="Top"
+				 Height="22" />
 		<StackPanel Orientation="Horizontal"
-					Grid.Column="2"
+					Grid.Column="1"
 					Grid.Row="6"
 					HorizontalAlignment="Right"
 					VerticalAlignment="Top"
-					Grid.RowSpan="2">
+					Grid.RowSpan="2"
+					Grid.ColumnSpan="2"
+					Height="22"
+					Width="312">
 			<Button Content="_Create New Project"
 					Margin="10,0,0,0"
 					MinWidth="60"
