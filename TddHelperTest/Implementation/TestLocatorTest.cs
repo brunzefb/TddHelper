@@ -201,38 +201,7 @@ namespace TddHelperTest.Implementation
 			yield return null;
 		}
 
-		[Test]
-		public void FindPathToImpl()
-		{
-			const string testFileName = @"c:\temp\file1.cs";
-			if (File.Exists(testFileName))
-				File.Delete(testFileName);
-			
-			_testLocator.GetCSharpFilesFromSolution();
-			Assert.That(_testLocator.FindPathImplementationFile("foobar"), Is.Empty);
-			var testFile = _testLocator.FindPathImplementationFile("file1Test.cs");
-			Assert.That(testFile, Is.Empty); // file does not exist
-			File.Create(testFileName);
-			testFile = _testLocator.FindPathImplementationFile("file1Test.cs");
-			Assert.That(testFile, Is.SamePath(testFileName));
-		}
-
-		[Test]
-		public void FindPathToTest()
-		{
-			_testLocator.GetCSharpFilesFromSolution();
-			Assert.That(_testLocator.FindPathToTestFile("foobar"), Is.Empty);
-			var list = _testLocator.FilesToProjectDictionary.Keys.ToList();
-			var fullPathToTest = list[3];
-			var index = fullPathToTest.LastIndexOf("Test", System.StringComparison.Ordinal);
-			var fullPathToImpl = fullPathToTest.Substring(0, index) + ".cs";
-			var impl = _testLocator.FindPathToTestFile(Path.GetFileName(fullPathToImpl));
-			Assert.That(impl, Is.Empty); // file does not exist
-			File.Create(fullPathToTest);
-			var foundFile = _testLocator.FindPathToTestFile(Path.GetFileName(fullPathToImpl));
-			Assert.That(fullPathToTest, Is.SamePath(foundFile));
-		}
-
+		
 		[Test]
 		public void OpenTestOrImplementation_Happy_Implementation()
 		{

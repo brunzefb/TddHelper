@@ -28,6 +28,24 @@ namespace DreamWorks.TddHelper
 			return path.ToString();
 		}
 
+		public static string GetRelativePath(string fromPath, string toPath)
+		{
+			int fromAttr = GetPathAttribute(fromPath);
+			int toAttr = GetPathAttribute(toPath);
+
+			var path = new StringBuilder(260); // MAX_PATH
+			if (PathRelativePathTo(
+				path,
+				BasePath,
+				fromAttr,
+				toPath,
+				toAttr) == 0)
+			{
+				throw new ArgumentException("Paths must have a common prefix");
+			}
+			return path.ToString();
+		}
+
 		private static int GetPathAttribute(string path)
 		{
 			var di = new DirectoryInfo(path);

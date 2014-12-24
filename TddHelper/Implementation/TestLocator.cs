@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using DreamWorks.TddHelper.Model;
@@ -152,20 +153,55 @@ namespace DreamWorks.TddHelper.Implementation
 				return true;
 			}
 
-			var savedPath = RelativePathHelper.BasePath;
-			RelativePathHelper.BasePath = Path.GetDirectoryName(sourceProject.FullName);
-			var relative = RelativePathHelper.GetRelativePath(Path.GetDirectoryName(_sourcePath));
-			RelativePathHelper.BasePath = savedPath;
-			var trimmed = relative.TrimStart(new[] {'.', '\\'});
-			if (trimmed.Contains("\\"))
+			var relative = RelativePathHelper.GetRelativePath(sourceProject.FullName, Path.GetDirectoryName(_sourcePath));
+			var trimmed = relative.TrimStart(new[] { '.', Path.DirectorySeparatorChar });
+
+			if (string.IsNullOrEmpty(trimmed) || !trimmed.Contains(Path.DirectorySeparatorChar.ToString()))
 			{
-				var folderArray = trimmed.Split(new[] {'\\'});
+				targetProject.ProjectItems.AddFromTemplate(classTemplate, _targetFileName);
+				return true;
 			}
 
+			var folderArray = trimmed.Split(new[] { Path.DirectorySeparatorChar });
+			var folderStack = StackFromArray(folderArray);
 
-			//var folderItem = targetProject.ProjectItems.AddFolder("MyNewNewFolder3");
-			//var newItem = folderItem.ProjectItems.AddFromTemplate(classTemplate, "MyNewClass3.cs");
+			AddOrGetProjectFolderItem(targetProject.ProjectItems, folderStack);
+			LastProjectItem.ProjectItems.AddFromTemplate(classTemplate, _targetFileName);
 			return true;
+		}
+
+		private static Stack<string> StackFromArray(string[] folderArray)
+		{
+			var folderStack = new Stack<string>();
+			// stack is LIFO, so we must add in reverse order
+			for (var i = folderArray.Length - 1; i > 0; i--)
+				folderStack.Push(folderArray[i]);
+			return folderStack;
+		}
+
+		private static ProjectItem LastProjectItem;
+		private static void AddOrGetProjectFolderItem(ProjectItems projectItems, Stack<string> folderStack )
+		{
+			while (folderStack.Count > 0)
+			{
+				var currentFolder = folderStack.Pop();
+
+				if (ContainsItem(currentFolder, projectItems))
+				{
+					LastProjectItem = projectItems.Item(currentFolder);
+					AddOrGetProjectFolderItem(LastProjectItem.ProjectItems, folderStack);
+				}
+				else
+				{
+					LastProjectItem = projectItems.AddFolder(currentFolder);
+					AddOrGetProjectFolderItem(LastProjectItem.ProjectItems, folderStack);
+				}
+			}
+		}
+
+		private static bool ContainsItem(string itemName, ProjectItems items)
+		{
+			return items.Cast<ProjectItem>().Any(item => item.Name == itemName);
 		}
 
 		private Project ProjectFromPath(string path)
