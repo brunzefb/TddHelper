@@ -13,6 +13,7 @@ using DreamWorks.TddHelper.View;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell.Interop;
+using VSLangProj80;
 using Window = System.Windows.Window;
 
 namespace DreamWorks.TddHelper.Implementation
@@ -332,6 +333,43 @@ namespace DreamWorks.TddHelper.Implementation
 
 			AddProjectAssociationToCache(newlyCreatedProject);
 			RemoveClass1File(newlyCreatedProject);
+			AddProjectReferenceToImplementationProject(newlyCreatedProject);
+		}
+
+		private void AddProjectReferenceToImplementationProject(Project newlyCreatedProject)
+		{
+			if (!StaticOptions.TddHelper.CreateReference)
+				return;
+			var vsProject = newlyCreatedProject.Object as VSProject2;
+			if (vsProject == null)
+				return;
+			var refs = vsProject.References;
+			if (refs == null)
+				return;
+			string sourceProjectPath = GetSourceProjectPath();
+			var sourceProject = ProjectFromPath(sourceProjectPath);
+			if (sourceProject == null)
+				return;
+
+			if (_isSourcePathTest)
+			{
+				// newly created project is implementation, so add
+				// a reference to the newly created to the test *source"
+				// project
+				vsProject = sourceProject.Object as VSProject2;
+				if (vsProject == null)
+					return;
+				refs = vsProject.References;
+				if (refs == null)
+					return;
+				refs.AddProject(newlyCreatedProject);
+			}
+			else
+			{
+				// newly created project is test, so we must add
+				// a reference to the implementation (source) project
+				refs.AddProject(sourceProject);
+			}
 		}
 
 		private void RemoveClass1File(Project newlyCreatedProject)
