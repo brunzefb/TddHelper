@@ -178,7 +178,7 @@ namespace DreamWorks.TddHelper.Implementation
 			AddOrGetProjectFolderItem(targetProject.ProjectItems, folderStack);
 			LastProjectItem.ProjectItems.AddFromTemplate(classTemplate, _targetFileName);
 
-			SetTargetPathWithAddedItem(targetProject.ProjectItems);
+			SetTargetPathWithAddedItem(LastProjectItem.ProjectItems);
 			return true;
 		}
 
