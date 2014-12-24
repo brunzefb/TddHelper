@@ -36,8 +36,10 @@ namespace DreamWorks.TddHelper.Implementation
 		private const string WindowMoveToNextTabGroupCommand = "Window.MoveToNextTabGroup";
 		private const string FileSaveAll = "File.SaveAll";
 		private const string WindowCloseAllDocuments = "Window.CloseAllDocuments";
-		private const string RelativePathToClassTemplate = @"ItemTemplates\CSharp\Code\1033\Class\Class.vstemplate";
-		private const string RelativePathToClassLibraryProjectTemplate = @"ProjectTemplates\CSharp\Windows\1033\ClassLibrary\csClassLibrary.vstemplate";
+		private const string ClassLibraryProjectTemplateName = "ClassLibrary.zip";
+		private const string CSharpLanguageName = "CSharp";
+		private const string ClassItemTemplateName = "Class.zip";
+		private const string Class1ItemCreatedByTemplate = "Class1.cs";
 		private string _sourcePath;
 		private string _targetPath;
 		private string _targetFileName;
@@ -136,29 +138,27 @@ namespace DreamWorks.TddHelper.Implementation
 				VisualStudioHelper.GetVisualStudioInstallationDir(VisualStudioVersion.Vs2013);
 			if (string.IsNullOrEmpty(visualStudioIdeFolder))
 				return false;
-
-			// this is (at time of writing 11/2014) pretty poorly documented - 
-			// you must pass a .vstemplate file to the ProjectItems.AddFromTemplate API.
-			var classTemplate = Path.Combine(visualStudioIdeFolder, RelativePathToClassTemplate);
-			if (!File.Exists(classTemplate))
+			
+			var solution = _dte.Solution as Solution2;
+			if (solution == null)
 				return false;
-
+			var templatePath = solution.GetProjectItemTemplate(ClassItemTemplateName, CSharpLanguageName);
 			var targetProject = ProjectFromPath(targetProjectPath);
 			if (targetProject == null)
 				return false;
 
-			return CreateTargetClassInTargetProject(targetProject, classTemplate);
+			return CreateTargetClassInTargetProject(targetProject, templatePath);
 		}
 
 		private bool CreateTargetClassInTargetProject(Project targetProject,
-			string classTemplate)
+			string classTemplatePath)
 		{
 			var sourceProjectPath = GetSourceProjectPath();
 			Project sourceProject = ProjectFromPath(sourceProjectPath);
 
 			if (!StaticOptions.TddHelper.MirrorProjectFolders)
 			{
-				targetProject.ProjectItems.AddFromTemplate(classTemplate, _targetFileName);
+				targetProject.ProjectItems.AddFromTemplate(classTemplatePath, _targetFileName);
 				SetTargetPathWithAddedItem(LastProjectItem.ProjectItems);
 				return true;
 			}
@@ -167,14 +167,12 @@ namespace DreamWorks.TddHelper.Implementation
 								Path.GetDirectoryName(_sourcePath));
 			var trimmed = relative.TrimStart(new[] { '.', Path.DirectorySeparatorChar });
 
-			
-
 			// If we just have a single item without dir separator chars
 			// then there is no folder structure to create
 			if (string.IsNullOrEmpty(trimmed) || 
 				!trimmed.Contains(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
 			{
-				targetProject.ProjectItems.AddFromTemplate(classTemplate, _targetFileName);
+				targetProject.ProjectItems.AddFromTemplate(classTemplatePath, _targetFileName);
 				SetTargetPathWithAddedItem(targetProject.ProjectItems);
 				return true;
 			}
@@ -185,7 +183,7 @@ namespace DreamWorks.TddHelper.Implementation
 
 			// add folders recursively if they don't exist
 			AddOrGetProjectFolderItem(targetProject.ProjectItems, folderStack);
-			LastProjectItem.ProjectItems.AddFromTemplate(classTemplate, _targetFileName);
+			LastProjectItem.ProjectItems.AddFromTemplate(classTemplatePath, _targetFileName);
 
 			SetTargetPathWithAddedItem(LastProjectItem.ProjectItems);
 			return true;
@@ -300,37 +298,70 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private bool CreateProject(string projectName)
 		{
-			if (string.IsNullOrEmpty(_dte.Solution.FullName))
+			var solution = _dte.Solution as Solution2;
+			if (solution == null || string.IsNullOrEmpty(solution.FileName))
 				return false;
-			var directoryName = Path.GetDirectoryName(_dte.Solution.FullName);
+			var directoryName = Path.GetDirectoryName(solution.FileName);
 			if (directoryName == null) 
 				return false;
 			var targetDir = Path.Combine(directoryName, projectName);
-			// ReSharper disable once AssignNullToNotNullAttribute
-			targetDir = Path.Combine(Path.GetDirectoryName(targetDir),
-				Path.GetFileNameWithoutExtension(targetDir));
+			if (!targetDir.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
+				targetDir += Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
 			if (Directory.Exists(targetDir))
 				return false;
-			Directory.CreateDirectory(targetDir);
-			var visualStudioIdeFolder =
-				VisualStudioHelper.GetVisualStudioInstallationDir(VisualStudioVersion.Vs2013);
-			if (string.IsNullOrEmpty(visualStudioIdeFolder))
-				return false;
-			var classTemplate = Path.Combine(visualStudioIdeFolder, RelativePathToClassLibraryProjectTemplate);
-			if (!File.Exists(classTemplate))
-				return false;
-			if (!projectName.ToLowerInvariant().EndsWith(CsprojExtension))
-				projectName += CsprojExtension;
-			_dte.Solution.AddFromTemplate(classTemplate, targetDir, projectName, false);
+			string newProjectName = projectName;
+			var projectItemTemplate = solution.GetProjectTemplate(ClassLibraryProjectTemplateName, CSharpLanguageName);
+			solution.AddFromTemplate(projectItemTemplate, targetDir, newProjectName, false);
+			PostCreateProject(newProjectName);
 			return true;
+		}
+
+		private void PostCreateProject(string newProjectName)
+		{
+			Project newlyCreatedProject = null;
+			foreach (Project project in _dte.Solution.Projects)
+			{
+				if (project.Name == newProjectName)
+				{
+					newlyCreatedProject = project;
+					break;
+				}
+			}
+			if (newlyCreatedProject == null)
+				return;
+
+			AddProjectAssociationToCache(newlyCreatedProject);
+			RemoveClass1File(newlyCreatedProject);
+		}
+
+		private void RemoveClass1File(Project newlyCreatedProject)
+		{
+			ProjectItem projectItem = null;
+			if (ContainsItem(Class1ItemCreatedByTemplate, newlyCreatedProject.ProjectItems))
+				projectItem = newlyCreatedProject.ProjectItems.Item(Class1ItemCreatedByTemplate);
+			if (projectItem != null)
+				projectItem.Delete();
+		}
+
+		private void AddProjectAssociationToCache(Project newlyCreated)
+		{
+			var newlyCreatedTargetProjectPath = newlyCreated.FullName;
+			var sourceProjectPath = GetSourceProjectPath();
+			if (_isSourcePathTest)
+				_cachedProjectAssociations.AddAssociation(newlyCreatedTargetProjectPath,
+					sourceProjectPath);
+			else
+				_cachedProjectAssociations.AddAssociation(sourceProjectPath,
+					newlyCreatedTargetProjectPath);
+			_cachedProjectAssociations.Save();
 		}
 
 		private string PathForProject(string project)
 		{
-			foreach (Project p in _dte.Solution.Projects)
+			foreach (Project proj in _dte.Solution.Projects)
 			{
-				if (p.Name.Contains(project))
-					return p.FullName;
+				if (proj.Name.Contains(project))
+					return proj.FullName;
 			}
 			return null;
 		}

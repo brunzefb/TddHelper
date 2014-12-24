@@ -52,10 +52,11 @@ namespace DreamWorks.TddHelper.ViewModel
 
 		private bool IsNewProjectCreationAllowed()
 		{
-			return _projectList.Any(x=>
+			return !_projectList.Any(x=>
 			{
 				var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(x.Path);
-				return fileNameWithoutExtension != null && fileNameWithoutExtension.Contains(_newProjectName);
+				var newProjectWithoutExt = Path.GetFileNameWithoutExtension(_newProjectName);
+				return fileNameWithoutExtension != null && fileNameWithoutExtension.Equals(newProjectWithoutExt);
 			});
 		}
 
