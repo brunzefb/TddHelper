@@ -66,7 +66,7 @@ namespace DreamWorks.TddHelper
 		private const int FileAttributeDirectory = 0x10;
 		private const int FileAttributeNormal = 0x80;
 
-		[DllImport("shlwapi.dll", SetLastError = true)]
+		[DllImport("shlwapi.dll", CharSet= CharSet.Unicode, SetLastError = true)]
 		private static extern int PathRelativePathTo(StringBuilder pszPath,
 			string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
 	}

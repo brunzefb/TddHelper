@@ -151,6 +151,7 @@ namespace DreamWorks.TddHelper.Implementation
 			if (!StaticOptions.TddHelper.MirrorProjectFolders)
 			{
 				targetProject.ProjectItems.AddFromTemplate(classTemplate, _targetFileName);
+				SetTargetPathWithAddedItem(LastProjectItem.ProjectItems);
 				return true;
 			}
 
