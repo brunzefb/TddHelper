@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -153,27 +154,58 @@ namespace DreamWorks.TddHelper.Implementation
 				return true;
 			}
 
-			var relative = RelativePathHelper.GetRelativePath(sourceProject.FullName, Path.GetDirectoryName(_sourcePath));
+			var relative = RelativePathHelper.GetRelativePath(Path.GetDirectoryName(sourceProject.FullName),
+								Path.GetDirectoryName(_sourcePath));
 			var trimmed = relative.TrimStart(new[] { '.', Path.DirectorySeparatorChar });
 
-			if (string.IsNullOrEmpty(trimmed) || !trimmed.Contains(Path.DirectorySeparatorChar.ToString()))
+			
+
+			// If we just have a single item without dir separator chars
+			// then there is no folder structure to create
+			if (string.IsNullOrEmpty(trimmed) || 
+				!trimmed.Contains(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
 			{
 				targetProject.ProjectItems.AddFromTemplate(classTemplate, _targetFileName);
+				SetTargetPathWithAddedItem(targetProject.ProjectItems);
 				return true;
 			}
 
+			// get a stack
 			var folderArray = trimmed.Split(new[] { Path.DirectorySeparatorChar });
 			var folderStack = StackFromArray(folderArray);
 
+			// add folders recursively if they don't exist
 			AddOrGetProjectFolderItem(targetProject.ProjectItems, folderStack);
 			LastProjectItem.ProjectItems.AddFromTemplate(classTemplate, _targetFileName);
+
+			SetTargetPathWithAddedItem(targetProject.ProjectItems);
 			return true;
+		}
+
+		private void SetTargetPathWithAddedItem(ProjectItems items)
+		{
+			// AddFromTemplate returns null, according to MSDN :-(
+			// since we just added the item, it must be there and
+			// at the correct level.
+			foreach (ProjectItem item in items)
+			{
+				if (item.Name == _targetFileName)
+				{
+					if (item.Document != null)
+					{
+						_targetPath = item.Document.FullName;
+						return;
+					}
+				}
+			}
+			Debug.Assert(false);
 		}
 
 		private static Stack<string> StackFromArray(string[] folderArray)
 		{
 			var folderStack = new Stack<string>();
 			// stack is LIFO, so we must add in reverse order
+			// we omit the first folder passed in due to string processing.
 			for (var i = folderArray.Length - 1; i > 0; i--)
 				folderStack.Push(folderArray[i]);
 			return folderStack;
@@ -189,12 +221,12 @@ namespace DreamWorks.TddHelper.Implementation
 				if (ContainsItem(currentFolder, projectItems))
 				{
 					LastProjectItem = projectItems.Item(currentFolder);
-					AddOrGetProjectFolderItem(LastProjectItem.ProjectItems, folderStack);
+					AddOrGetProjectFolderItem(LastProjectItem.ProjectItems, folderStack); // recurse
 				}
 				else
 				{
 					LastProjectItem = projectItems.AddFolder(currentFolder);
-					AddOrGetProjectFolderItem(LastProjectItem.ProjectItems, folderStack);
+					AddOrGetProjectFolderItem(LastProjectItem.ProjectItems, folderStack); // recurse
 				}
 			}
 		}
