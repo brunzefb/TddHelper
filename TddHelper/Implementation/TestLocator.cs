@@ -13,6 +13,7 @@ using DreamWorks.TddHelper.View;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell.Interop;
+using NuGet.VisualStudio;
 using VSLangProj80;
 using Window = System.Windows.Window;
 
@@ -50,11 +51,13 @@ namespace DreamWorks.TddHelper.Implementation
 		private readonly CachedFileAssociations _cachedFileAssociations;
 		private readonly CachedProjectAssociations _cachedProjectAssociations;
 		private readonly List<string> _projectPathsList = new List<string>();
+		private IVsPackageInstaller _packageInstaller;
 
-		public TestLocator(DTE2 dte, IVsUIShell shell)
+		public TestLocator(DTE2 dte, IVsUIShell shell, IVsPackageInstaller packageInstaller)
 		{
 			_dte = dte;
 			_shell = shell;
+			_packageInstaller = packageInstaller;
 			_cachedFileAssociations = new CachedFileAssociations(string.Empty);
 			_cachedProjectAssociations = new CachedProjectAssociations(string.Empty);
 			_cachedFileAssociations.Load();
@@ -374,6 +377,7 @@ namespace DreamWorks.TddHelper.Implementation
 				// newly created project is test, so we must add
 				// a reference to the implementation (source) project
 				refs.AddProject(sourceProject);
+				_packageInstaller.InstallPackage(null, newlyCreatedProject, "nUnit", new Version(2,6,3),  false);		
 			}
 		}
 

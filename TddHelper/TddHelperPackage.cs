@@ -6,9 +6,12 @@ using DreamWorks.TddHelper.View;
 using DreamWorks.TddHelper.ViewModel;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Newtonsoft.Json;
+using NuGet.VisualStudio;
+using NuGet.VisualStudio11;
 
 namespace DreamWorks.TddHelper
 {
@@ -31,11 +34,15 @@ namespace DreamWorks.TddHelper
 		protected override void Initialize()
 		{
 			base.Initialize();
+
+			var componentModel = (IComponentModel)GetService(typeof(SComponentModel));
+			var packageInstaller = componentModel.GetService<IVsPackageInstaller>();
+			
 			var dte = (DTE2)GetService(typeof(DTE));
 			var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
 			LoadOptions();
 			_tabJumper = new TabJumper(dte);
-			_solutionHelper = new TestLocator(dte, uiShell);
+			_solutionHelper = new TestLocator(dte, uiShell, packageInstaller);
 			
 			var menuCommandService =
 				GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
