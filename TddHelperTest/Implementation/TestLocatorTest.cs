@@ -44,7 +44,7 @@ namespace TddHelperTest.Implementation
 		[SetUp]
 		public void SetUp()
 		{
-			_testLocator = new TestLocator(_mockDte.Object, _mockUiShell.Object);
+			_testLocator = new TestLocator(_mockDte.Object, _mockUiShell.Object, null);
 		}
 
 		private Queue<Project> GetProjectQueue()
