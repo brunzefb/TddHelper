@@ -78,7 +78,7 @@ namespace DreamWorks.TddHelper.Implementation
 
 			_isSourcePathTest =
 				_sourcePath.ToLowerInvariant()
-					.EndsWith(StaticOptions.TddHelper.TestFileSuffix.ToLowerInvariant());
+					.EndsWith(StaticOptions.MainOptions.TestFileSuffix.ToLowerInvariant());
 
 			GetCSharpFilesFromSolution();
 
@@ -94,7 +94,7 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private string GetTargetFileName()
 		{
-			if (!StaticOptions.TddHelper.TestFileSuffix.Contains(CsharpFileExtension))
+			if (!StaticOptions.MainOptions.TestFileSuffix.Contains(CsharpFileExtension))
 				return string.Empty;
 
 			var sourceFileName = Path.GetFileName(_sourcePath);
@@ -102,7 +102,7 @@ namespace DreamWorks.TddHelper.Implementation
 			int index;
 			if (_isSourcePathTest)
 			{
-				index = sourceFileName.LastIndexOf(StaticOptions.TddHelper.TestFileSuffix,
+				index = sourceFileName.LastIndexOf(StaticOptions.MainOptions.TestFileSuffix,
 					StringComparison.OrdinalIgnoreCase);
 				if (index == -1)
 					return string.Empty;
@@ -111,7 +111,7 @@ namespace DreamWorks.TddHelper.Implementation
 			index = sourceFileName.LastIndexOf(Period);
 			if (index == -1)
 				return string.Empty;
-			return sourceFileName.Substring(0, index) + StaticOptions.TddHelper.TestFileSuffix;
+			return sourceFileName.Substring(0, index) + StaticOptions.MainOptions.TestFileSuffix;
 		}
 
 		private void Load()
@@ -121,7 +121,7 @@ namespace DreamWorks.TddHelper.Implementation
 
 			SaveAndUnloadDocuments();
 
-			if (StaticOptions.TddHelper.NoSplit)
+			if (StaticOptions.MainOptions.NoSplit)
 				LoadDocumentsIntoOneTabWell();
 			else
 				LoadAndPlaceImplementationAndTest();
@@ -129,7 +129,7 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private bool TryToCreateNewTargetClass()
 		{
-			if (!StaticOptions.TddHelper.AutoCreateTestFile)
+			if (!StaticOptions.MainOptions.AutoCreateTestFile)
 			{
 				const int noDontCreateFile = 7;  // winuser.h - IDNO
 				var result = ViewUtil.VsShowMessageBox(_shell, Strings.ConfirmFileCreation);
@@ -162,7 +162,7 @@ namespace DreamWorks.TddHelper.Implementation
 			var sourceProjectPath = GetSourceProjectPath();
 			Project sourceProject = ProjectFromPath(sourceProjectPath);
 
-			if (!StaticOptions.TddHelper.MirrorProjectFolders)
+			if (!StaticOptions.MainOptions.MirrorProjectFolders)
 			{
 				targetProject.ProjectItems.AddFromTemplate(classTemplatePath, _targetFileName);
 				SetTargetPathWithAddedItem(targetProject.ProjectItems);
@@ -340,7 +340,7 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private void AddProjectReferenceToImplementationProject(Project newlyCreatedProject)
 		{
-			if (!StaticOptions.TddHelper.CreateReference)
+			if (!StaticOptions.MainOptions.CreateReference)
 				return;
 			var vsProject = newlyCreatedProject.Object as VSProject2;
 			if (vsProject == null)
@@ -372,7 +372,7 @@ namespace DreamWorks.TddHelper.Implementation
 				// a reference to the implementation (source) project
 				refs.AddProject(sourceProject);
 				_packageInstaller.InstallPackage(null, newlyCreatedProject, "nUnit", new Version(2,6,3),  false);
-				if (StaticOptions.TddHelper.MakeFriendAssembly)
+				if (StaticOptions.MainOptions.MakeFriendAssembly)
 				{
 					MakeFriendAssembly(sourceProject, newlyCreatedProject);
 					MakeNewAssemblyStrongNamed(sourceProject, newlyCreatedProject);
@@ -524,7 +524,7 @@ namespace DreamWorks.TddHelper.Implementation
 
 			try
 			{
-				if (StaticOptions.TddHelper.UnitTestLeft ^ _isSourcePathTest)
+				if (StaticOptions.MainOptions.UnitTestLeft ^ _isSourcePathTest)
 				{
 					_dte.ExecuteCommand(OpenFileCommand, _targetPath);
 					_dte.ExecuteCommand(OpenFileCommand, _sourcePath);
@@ -562,7 +562,7 @@ namespace DreamWorks.TddHelper.Implementation
 			var sourceDocument = GetDocumentForPath(_sourcePath);
 			var targetDocument = GetDocumentForPath(_targetPath);
 
-			if (StaticOptions.TddHelper.Clean)
+			if (StaticOptions.MainOptions.Clean)
 			{
 				_dte.ExecuteCommand(FileSaveAll);
 				_dte.ExecuteCommand(WindowCloseAllDocuments);
@@ -667,7 +667,7 @@ namespace DreamWorks.TddHelper.Implementation
 			string targetFile;
 
 			var isTest =
-				_targetFileName.ToLower().EndsWith(StaticOptions.TddHelper.TestFileSuffix.ToLower());
+				_targetFileName.ToLower().EndsWith(StaticOptions.MainOptions.TestFileSuffix.ToLower());
 			if (isTest)
 				targetFile = _cachedFileAssociations.ImplementationFromTest(_targetFileName);
 			else

@@ -15,18 +15,18 @@ namespace DreamWorks.TddHelper.View
 	[Guid(GuidList.guidAddReferencesOptionsPage)]
     public class AddReferenceOptions : DialogPage
     {
-        private AssemblyAddReferenceOptionsControl _optionsControl;
+        private AssemblyAddReferenceOptionsControl _addReferencesOptionsControl;
 
 	    protected override void OnActivate(CancelEventArgs e)
 	    {
 		    base.OnActivate(e);
-			_optionsControl.OnLoad(this, e);
+			_addReferencesOptionsControl.OnLoad(this, e);
 	    }
 
 	    protected override void OnClosed(EventArgs e)
 	    {
 		    base.OnClosed(e);
-		    _optionsControl.Save();
+		    _addReferencesOptionsControl.Save();
 		   
 	    }
 
@@ -40,13 +40,13 @@ namespace DreamWorks.TddHelper.View
         {
             get
             {
-                if (_optionsControl == null)
+                if (_addReferencesOptionsControl == null)
                 {
-					_optionsControl = new AssemblyAddReferenceOptionsControl();
-                    _optionsControl.Location = new Point(0, 0);
-                    _optionsControl.OptionsPage = this;
+					_addReferencesOptionsControl = new AssemblyAddReferenceOptionsControl();
+                    _addReferencesOptionsControl.Location = new Point(0, 0);
+                    _addReferencesOptionsControl.AddReferenceOptionsPage = this;
                 }
-                return _optionsControl;
+                return _addReferencesOptionsControl;
             }
         }
 
@@ -61,10 +61,10 @@ namespace DreamWorks.TddHelper.View
         {
             if (disposing)
             {
-                if (_optionsControl != null)
+                if (_addReferencesOptionsControl != null)
                 {
-                    _optionsControl.Dispose();
-                    _optionsControl = null;
+                    _addReferencesOptionsControl.Dispose();
+                    _addReferencesOptionsControl = null;
                 }
             }
             base.Dispose(disposing);

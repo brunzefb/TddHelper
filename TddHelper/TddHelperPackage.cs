@@ -75,7 +75,7 @@ namespace DreamWorks.TddHelper
 			{
 				options = JsonConvert.DeserializeObject<OptionsViewModel>(TddSettings.Default.Settings);
 			}
-			StaticOptions.TddHelper = options;
+			StaticOptions.MainOptions = options;
 		}
 
 		/*

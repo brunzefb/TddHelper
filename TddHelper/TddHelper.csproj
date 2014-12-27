@@ -221,6 +221,7 @@
     <Compile Include="Utility\PathUtil.cs" />
     <Compile Include="Utility\VisualStudioHelper.cs" />
     <Compile Include="ViewModel\AssociateTestProjectViewModel.cs" />
+    <Compile Include="ViewModel\AddReferencesOptionsViewModel.cs" />
     <Compile Include="ViewModel\OptionsViewModel.cs" />
     <Compile Include="Resources\Strings.Designer.cs">
       <AutoGen>True</AutoGen>

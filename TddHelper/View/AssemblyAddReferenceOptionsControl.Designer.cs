@@ -30,9 +30,9 @@
 		{
 			this.UseNuGetRadio = new System.Windows.Forms.RadioButton();
 			this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-			this.useFileRadio = new System.Windows.Forms.RadioButton();
+			this.UseFileRadio = new System.Windows.Forms.RadioButton();
 			this.label1 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
+			this.LabelAssembly = new System.Windows.Forms.Label();
 			this.BrowseButton = new System.Windows.Forms.Button();
 			this.label3 = new System.Windows.Forms.Label();
 			this.PackageIdTextBox = new System.Windows.Forms.TextBox();
@@ -60,32 +60,32 @@
 			// 
 			this.openFileDialog.FileName = "openFileDialog";
 			// 
-			// useFileRadio
+			// UseFileRadio
 			// 
-			this.useFileRadio.AutoSize = true;
-			this.useFileRadio.Location = new System.Drawing.Point(4, 111);
-			this.useFileRadio.Name = "useFileRadio";
-			this.useFileRadio.Size = new System.Drawing.Size(315, 21);
-			this.useFileRadio.TabIndex = 10;
-			this.useFileRadio.Text = "&Set Unit Test Assembly to add to Test Project";
-			this.useFileRadio.UseVisualStyleBackColor = true;
+			this.UseFileRadio.AutoSize = true;
+			this.UseFileRadio.Location = new System.Drawing.Point(4, 111);
+			this.UseFileRadio.Name = "UseFileRadio";
+			this.UseFileRadio.Size = new System.Drawing.Size(315, 21);
+			this.UseFileRadio.TabIndex = 10;
+			this.UseFileRadio.Text = "&Set Unit Test Assembly to add to Test Project";
+			this.UseFileRadio.UseVisualStyleBackColor = true;
 			// 
 			// label1
 			// 
 			this.label1.AutoSize = true;
 			this.label1.Location = new System.Drawing.Point(36, 139);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(198, 17);
+			this.label1.Size = new System.Drawing.Size(206, 17);
 			this.label1.TabIndex = 11;
-			this.label1.Text = "Unit Test Framwork Assembly:";
+			this.label1.Text = "Unit Test Framework Assembly:";
 			// 
-			// label2
+			// LabelAssembly
 			// 
-			this.label2.Location = new System.Drawing.Point(240, 139);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(189, 23);
-			this.label2.TabIndex = 12;
-			this.label2.Text = "[Browse to Select Assembly]";
+			this.LabelAssembly.Location = new System.Drawing.Point(240, 139);
+			this.LabelAssembly.Name = "LabelAssembly";
+			this.LabelAssembly.Size = new System.Drawing.Size(189, 23);
+			this.LabelAssembly.TabIndex = 12;
+			this.LabelAssembly.Text = "__A";
 			// 
 			// BrowseButton
 			// 
@@ -111,7 +111,6 @@
 			this.PackageIdTextBox.Name = "PackageIdTextBox";
 			this.PackageIdTextBox.Size = new System.Drawing.Size(161, 22);
 			this.PackageIdTextBox.TabIndex = 3;
-			this.PackageIdTextBox.Text = "nUnit";
 			// 
 			// label4
 			// 
@@ -128,7 +127,6 @@
 			this.VersionMajorTextBox.Name = "VersionMajorTextBox";
 			this.VersionMajorTextBox.Size = new System.Drawing.Size(26, 22);
 			this.VersionMajorTextBox.TabIndex = 6;
-			this.VersionMajorTextBox.Text = "2";
 			// 
 			// VersionMinorTextBox
 			// 
@@ -136,7 +134,6 @@
 			this.VersionMinorTextBox.Name = "VersionMinorTextBox";
 			this.VersionMinorTextBox.Size = new System.Drawing.Size(26, 22);
 			this.VersionMinorTextBox.TabIndex = 7;
-			this.VersionMinorTextBox.Text = "6";
 			// 
 			// VersionBuildTextBox
 			// 
@@ -144,7 +141,6 @@
 			this.VersionBuildTextBox.Name = "VersionBuildTextBox";
 			this.VersionBuildTextBox.Size = new System.Drawing.Size(26, 22);
 			this.VersionBuildTextBox.TabIndex = 8;
-			this.VersionBuildTextBox.Text = "3";
 			// 
 			// label5
 			// 
@@ -177,9 +173,9 @@
 			this.Controls.Add(this.PackageIdTextBox);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.BrowseButton);
-			this.Controls.Add(this.label2);
+			this.Controls.Add(this.LabelAssembly);
 			this.Controls.Add(this.label1);
-			this.Controls.Add(this.useFileRadio);
+			this.Controls.Add(this.UseFileRadio);
 			this.Controls.Add(this.UseNuGetRadio);
 			this.Name = "AssemblyAddReferenceOptionsControl";
 			this.Size = new System.Drawing.Size(548, 354);
@@ -192,9 +188,9 @@
 
 		private System.Windows.Forms.RadioButton UseNuGetRadio;
 		private System.Windows.Forms.OpenFileDialog openFileDialog;
-		private System.Windows.Forms.RadioButton useFileRadio;
+		private System.Windows.Forms.RadioButton UseFileRadio;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label LabelAssembly;
 		private System.Windows.Forms.Button BrowseButton;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TextBox PackageIdTextBox;

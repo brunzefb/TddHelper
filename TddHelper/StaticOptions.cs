@@ -5,6 +5,7 @@ namespace DreamWorks.TddHelper
 {
 	public static class StaticOptions
 	{
-		public static OptionsViewModel TddHelper {get;set;}
+		public static OptionsViewModel MainOptions {get;set;}
+		public static AddReferencesOptionsViewModel ReferencesOptions { get; set; }
 	}
 }

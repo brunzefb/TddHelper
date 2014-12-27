@@ -45,7 +45,7 @@ namespace DreamWorks.TddHelper.View
 		{
 			TddSettings.Default.Settings = JsonConvert.SerializeObject(_optionsViewModel);
 			TddSettings.Default.Save();
-			StaticOptions.TddHelper = _optionsViewModel;
+			StaticOptions.MainOptions = _optionsViewModel;
 		}
 
 		private void UpdateUI()
