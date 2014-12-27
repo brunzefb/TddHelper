@@ -262,7 +262,6 @@ namespace DreamWorks.TddHelper.Implementation
 			return null;
 		}
 
-
 		private string GetAssociatedTargetProjectPath()
 		{
 			string targetProjectPath;
@@ -381,8 +380,32 @@ namespace DreamWorks.TddHelper.Implementation
 				refs.AddProject(sourceProject);
 				_packageInstaller.InstallPackage(null, newlyCreatedProject, "nUnit", new Version(2,6,3),  false);
 				if (StaticOptions.TddHelper.MakeFriendAssembly)
+				{
 					MakeFriendAssembly(sourceProject, newlyCreatedProject);
+					MakeNewAssemblyStrongNamed(sourceProject, newlyCreatedProject);
+				}
 			}
+		}
+
+		private void MakeNewAssemblyStrongNamed(Project sourceProject, Project newlyCreatedProject)
+		{
+			var fullPathToSnk = GetFullPathToSnkFile(sourceProject);
+			if (string.IsNullOrEmpty(fullPathToSnk))
+				return;
+			var folderToNewProj = Path.GetDirectoryName(newlyCreatedProject.FullName);
+			var fullTargetPath = Path.Combine(folderToNewProj, Path.GetFileName(fullPathToSnk));
+			File.Copy(fullPathToSnk, fullTargetPath, true);
+
+			// make it signed.
+			var newProj = newlyCreatedProject.Object as VSProject2;
+			if (newProj == null)
+				return;
+			var props = newProj.Project.Properties;
+			if (props == null)
+				return;
+			props.Item("SignAssembly").Value = true;
+			props.Item("AssemblyOriginatorKeyFile").Value = Path.GetFileName(fullPathToSnk);
+			newlyCreatedProject.Save();
 		}
 
 		private void MakeFriendAssembly(Project sourceProject, Project newlyCreatedProject)
