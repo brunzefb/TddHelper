@@ -5,14 +5,15 @@ namespace DreamWorks.TddHelper.ViewModel
 {
 	public class AddReferencesOptionsViewModel : ViewModelBase
 	{
+		private const string BrowseToSelect = "[Browse to Select Assembly]";
 		private bool _useNuGet = true;
 		private bool _useFileAssembly;
-		private string _assemblyPath = "[Browse to Select Assembly]";
+		private string _assemblyPath = BrowseToSelect;
 		private string _packageId = "nUnit";
 		private string _versionMajor = "2";
 		private string _versionMinor = "6";
 		private string _versionBuild = "3";
-		private string _viewAssemblyPath = "[Browse to Select Assembly]";
+		private string _viewAssemblyPath = BrowseToSelect;
 
 		public AddReferencesOptionsViewModel Clone(AddReferencesOptionsViewModel other)
 		{
@@ -23,6 +24,7 @@ namespace DreamWorks.TddHelper.ViewModel
 			_versionMinor = other.VersionMinor;
 			_versionBuild = other.VersionBuild;
 			_assemblyPath = other.AssemblyPath;
+			_viewAssemblyPath = other.ViewAssemblyPath;
 			return this;
 		}
 
@@ -94,7 +96,9 @@ namespace DreamWorks.TddHelper.ViewModel
 				_assemblyPath = value;
 				if (!string.IsNullOrEmpty(value))
 					_viewAssemblyPath = Path.GetFileName(value);
-				RaisePropertyChanged(() => AssemblyPath);
+				else
+					_viewAssemblyPath = BrowseToSelect;
+				RaisePropertyChanged(() => ViewAssemblyPath);
 			}
 		}
 
@@ -102,7 +106,6 @@ namespace DreamWorks.TddHelper.ViewModel
 		{
 			get { return _viewAssemblyPath; }
 		}
-
 
 		public void UpdateUI()
 		{
@@ -112,7 +115,7 @@ namespace DreamWorks.TddHelper.ViewModel
 			RaisePropertyChanged(() => VersionMajor);
 			RaisePropertyChanged(() => VersionMinor);
 			RaisePropertyChanged(() => VersionBuild);
-			RaisePropertyChanged(() => AssemblyPath);
+			RaisePropertyChanged(() => ViewAssemblyPath);
 		}
 	}
 }

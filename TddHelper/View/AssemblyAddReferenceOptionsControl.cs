@@ -70,8 +70,12 @@ namespace DreamWorks.TddHelper.View
 			openFileDialog.RestoreDirectory = true;
 			DialogResult dr = openFileDialog.ShowDialog(this);
 			if (dr != DialogResult.OK || !openFileDialog.CheckFileExists)
+			{
+				_viewModel.AssemblyPath = string.Empty;
 				return;
+			}
 			_viewModel.AssemblyPath = openFileDialog.FileName;
+			UseFileRadio.Checked = true;
 		}
 
 		private void BindRadioButtons()
