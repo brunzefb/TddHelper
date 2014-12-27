@@ -53,7 +53,7 @@ namespace DreamWorks.TddHelper.Implementation
 		private readonly CachedFileAssociations _cachedFileAssociations;
 		private readonly CachedProjectAssociations _cachedProjectAssociations;
 		private readonly List<string> _projectPathsList = new List<string>();
-		private IVsPackageInstaller _packageInstaller;
+		private readonly IVsPackageInstaller _packageInstaller;
 
 		public TestLocator(DTE2 dte, IVsUIShell shell, IVsPackageInstaller packageInstaller)
 		{
@@ -371,7 +371,29 @@ namespace DreamWorks.TddHelper.Implementation
 				// newly created project is test, so we must add
 				// a reference to the implementation (source) project
 				refs.AddProject(sourceProject);
-				_packageInstaller.InstallPackage(null, newlyCreatedProject, "nUnit", new Version(2,6,3),  false);
+				if (StaticOptions.ReferencesOptions.UseNuGet && !string.IsNullOrEmpty(StaticOptions.ReferencesOptions.PackageId))
+				{
+					int verMajor = 1;
+					int verMinor = 0;
+					int verBuild = 0;
+					int.TryParse(StaticOptions.ReferencesOptions.VersionMajor, out verMajor);
+					int.TryParse(StaticOptions.ReferencesOptions.VersionMinor, out verMinor);
+					int.TryParse(StaticOptions.ReferencesOptions.VersionBuild, out verBuild);
+					try
+					{
+						_packageInstaller.InstallPackage(null, newlyCreatedProject,
+							StaticOptions.ReferencesOptions.PackageId,
+							new Version(verMajor, verMinor, verBuild),
+							false);
+					}
+					catch
+					{
+					}
+				}
+				if (StaticOptions.ReferencesOptions.UseFileAssembly && File.Exists(StaticOptions.ReferencesOptions.AssemblyPath))
+				{
+					refs.Add(StaticOptions.ReferencesOptions.AssemblyPath);
+				}
 				if (StaticOptions.MainOptions.MakeFriendAssembly)
 				{
 					MakeFriendAssembly(sourceProject, newlyCreatedProject);
@@ -441,7 +463,6 @@ namespace DreamWorks.TddHelper.Implementation
 				sw.WriteLine(patchString);
 			}
 		}
-
 		
 		private static string GetFullPathToSnkFile(Project sourceProject)
 		{
@@ -609,12 +630,10 @@ namespace DreamWorks.TddHelper.Implementation
 			return false;
 		}
 
-
 		public Dictionary<string, string> FilesToProjectDictionary
 		{
 			get { return _fileToProjectDictionary; }
 		}
-
 
 		private string FindExistingFileWithConflictResolution()
 		{
