@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Interop;
 using DreamWorks.TddHelper.Model;
 using DreamWorks.TddHelper.Resources;
@@ -14,6 +15,7 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell.Interop;
 using NuGet.VisualStudio;
+using SnkHelper;
 using VSLangProj80;
 using Window = System.Windows.Window;
 
@@ -377,8 +379,85 @@ namespace DreamWorks.TddHelper.Implementation
 				// newly created project is test, so we must add
 				// a reference to the implementation (source) project
 				refs.AddProject(sourceProject);
-				_packageInstaller.InstallPackage(null, newlyCreatedProject, "nUnit", new Version(2,6,3),  false);		
+				_packageInstaller.InstallPackage(null, newlyCreatedProject, "nUnit", new Version(2,6,3),  false);
+				if (StaticOptions.TddHelper.MakeFriendAssembly)
+					MakeFriendAssembly(sourceProject, newlyCreatedProject);
 			}
+		}
+
+		private void MakeFriendAssembly(Project sourceProject, Project newlyCreatedProject)
+		{
+			// the way to get the sign info out of the project is not very well documented...
+			var fullPathToSnk = GetFullPathToSnkFile(sourceProject);
+			if (string.IsNullOrEmpty(fullPathToSnk))
+				return;
+			var publicKeyAsString = Helper.PublicKeyFromSnkFile(fullPathToSnk);
+			if (string.IsNullOrEmpty(publicKeyAsString))
+				return;
+			string assemblyName = newlyCreatedProject.Name;
+			if (string.IsNullOrEmpty(publicKeyAsString))
+				return;
+			var patchString = GetInternalsVisibleToString(assemblyName, publicKeyAsString);
+			PatchSourceAssemblyInfoCsWithInternalsVisibleTo(sourceProject, patchString);
+		}
+
+		private void PatchSourceAssemblyInfoCsWithInternalsVisibleTo(Project sourceProject, string patchString)
+		{
+			string fullPathToAssemblyInfoCs = string.Empty;
+			foreach (var fullPathToFile in _fileToProjectDictionary.Keys)
+			{
+				var fileName = Path.GetFileName(fullPathToFile);
+				if (String.Equals(fileName, "AssemblyInfo.cs", StringComparison.OrdinalIgnoreCase))
+				{
+					if (File.Exists(fullPathToFile) &&
+					    _fileToProjectDictionary[fullPathToFile] == sourceProject.FullName)
+					{
+						fullPathToAssemblyInfoCs = fullPathToFile;
+						break;
+					}
+				}
+			}
+			if (string.IsNullOrEmpty(fullPathToAssemblyInfoCs))
+				return;
+			using (var sw = File.AppendText(fullPathToAssemblyInfoCs))
+			{
+				sw.WriteLine("\r\n");
+				sw.WriteLine(patchString);
+			}
+		}
+
+		
+		private static string GetFullPathToSnkFile(Project sourceProject)
+		{
+			var sourceProj = sourceProject.Object as VSProject2;
+			if (sourceProj == null)
+				return null;
+			var props = sourceProj.Project.Properties;
+			if (props == null)
+				return null;
+			var isSigned = props.Item("SignAssembly").Value as bool?;
+			var keyFile = props.Item("AssemblyOriginatorKeyFile").Value as string;
+			var projectDirectoryName = Path.GetDirectoryName(sourceProject.FullName);
+			string fullPathToSnk = Path.Combine(projectDirectoryName, keyFile);
+			if (!isSigned.HasValue || !isSigned.Value)
+				return null;
+			if (!File.Exists(fullPathToSnk))
+				return null;
+			return fullPathToSnk;
+		}
+
+		private string GetInternalsVisibleToString(string assemblyName, string publicKey)
+		{
+			var sb = new StringBuilder();
+			for (int i = 0; i < publicKey.Length; i += 80)
+			{
+				if (i < 240)
+					sb.AppendFormat("\t\t\"{0}\" + \r\n", publicKey.Substring(i, 80));
+				else
+					sb.AppendFormat("\t\t\"{0}\" \r\n", publicKey.Substring(i));
+			}
+			const string template = "[assembly: InternalsVisibleTo (\r\n" + "\t\"{0}, PublicKey=\" + \r\n{1}" + ")]";
+			return string.Format(template, assemblyName, sb.ToString());
 		}
 
 		private void RemoveClass1File(Project newlyCreatedProject)

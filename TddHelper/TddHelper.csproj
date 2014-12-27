@@ -310,6 +310,12 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StrongNameHelper\StrongNameHelper.vcxproj">
+      <Project>{74ec1b4e-6675-491e-aa5d-c9790c7eb3f6}</Project>
+      <Name>StrongNameHelper</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>
