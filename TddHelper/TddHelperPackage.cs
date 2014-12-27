@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Newtonsoft.Json;
 using NuGet.VisualStudio;
-using NuGet.VisualStudio11;
+
 
 namespace DreamWorks.TddHelper
 {
@@ -20,12 +20,13 @@ namespace DreamWorks.TddHelper
 	[ProvideMenuResource("Menus.ctmenu", 1)]
 	[ProvideOptionPage(typeof(OptionsPageCustom), "Tdd Helper", "TddHelper", 100, 102, true,
 		new[] {"Change Tdd Helper options"})]
+	[ProvideOptionPage(typeof(AddReferenceOptions), "Tdd Helper", "TestAssemblyReference", 100, 113, true,
+		new[] { "Change Tdd Helper reference options" })]
 	[Guid(GuidList.guidTddHelperPkgString)]
 	public sealed class TddHelperPackage : Package
 	{
 		private TabJumper _tabJumper;
 		private TestLocator _solutionHelper;
-	
 
 		public TddHelperPackage()
 		{

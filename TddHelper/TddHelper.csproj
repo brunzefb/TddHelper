@@ -231,12 +231,21 @@
     <Compile Include="Implementation\TestLocator.cs" />
     <Compile Include="Implementation\TabJumper.cs" />
     <Compile Include="ViewModel\ResolveFileConflictDialogViewModel.cs" />
+    <Compile Include="View\AssemblyAddReferenceOptionsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="View\AssemblyAddReferenceOptionsControl.Designer.cs">
+      <DependentUpon>AssemblyAddReferenceOptionsControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\AssociateTestProject.xaml.cs">
       <DependentUpon>AssociateTestProject.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ICanClose.cs" />
     <Compile Include="Model\OptionsClearFileAssociationsCache.cs" />
     <Compile Include="Model\OptionsClearProjectAssociationsCache.cs" />
+    <Compile Include="View\AddReferencesOptions.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="View\OptionsPageCustom.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -259,6 +268,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\AssemblyAddReferenceOptionsControl.resx">
+      <DependentUpon>AssemblyAddReferenceOptionsControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="View\TddHelperOptionsControl.resx">
       <DependentUpon>TddHelperOptionsControl.cs</DependentUpon>

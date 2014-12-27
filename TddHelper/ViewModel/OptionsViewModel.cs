@@ -6,7 +6,6 @@ namespace DreamWorks.TddHelper.ViewModel
 	{
 		private string _testFileSuffix = "Test.cs";
 		private string _projectSuffix = "Test.csproj";
-		private bool _autoCreateTestProject;
 		private bool _autoCreateTestFile;
 		private bool _mirrorProjectFolders;
 		private bool _createReference;
@@ -21,7 +20,6 @@ namespace DreamWorks.TddHelper.ViewModel
 			_testFileSuffix = other.TestFileSuffix;
 			_projectSuffix = other.ProjectSuffix;
 			_autoCreateTestFile = other.AutoCreateTestFile;
-			_autoCreateTestProject = other.AutoCreateTestProject;
 			_mirrorProjectFolders = MirrorProjectFolders;
 			_createReference = other.CreateReference;
 			_makeFriendAssembly = other.MakeFriendAssembly;
@@ -79,16 +77,6 @@ namespace DreamWorks.TddHelper.ViewModel
 			{
 				_projectSuffix = value;
 				RaisePropertyChanged(() => ProjectSuffix);
-			}
-		}
-
-		public bool AutoCreateTestProject
-		{
-			get { return _autoCreateTestProject; }
-			set
-			{
-				_autoCreateTestProject = value;
-				RaisePropertyChanged(() => AutoCreateTestProject);
 			}
 		}
 
@@ -150,7 +138,6 @@ namespace DreamWorks.TddHelper.ViewModel
 			RaisePropertyChanged(() => UnitTestRight);
 			RaisePropertyChanged(() => NoSplit);
 			RaisePropertyChanged(() => AutoCreateTestFile);
-			RaisePropertyChanged(() => AutoCreateTestProject);
 			RaisePropertyChanged(() => CreateReference);
 			RaisePropertyChanged(() => MakeFriendAssembly);
 			RaisePropertyChanged(() => MirrorProjectFolders);

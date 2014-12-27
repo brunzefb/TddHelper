@@ -91,10 +91,6 @@ namespace DreamWorks.TddHelper.View
 		{
 			_bindingManager.Bindings.Add(
 				new TypedBinding<CheckBox, OptionsViewModel>
-					(AutoCreateProjectCheckbox, c => c.Checked, _optionsViewModel,
-						o => o.AutoCreateTestProject));
-			_bindingManager.Bindings.Add(
-				new TypedBinding<CheckBox, OptionsViewModel>
 					(AutoCreateFileCheckbox, c => c.Checked, _optionsViewModel,
 						o => o.AutoCreateTestFile));
 			_bindingManager.Bindings.Add(

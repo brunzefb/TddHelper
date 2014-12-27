@@ -34,9 +34,6 @@ namespace TddHelperTest
 			_optionsViewModel.ProjectSuffix = "ee";
 			Assert.That(_optionsViewModel.ProjectSuffix, Is.EqualTo("ee"));
 
-			_optionsViewModel.AutoCreateTestProject = true;
-			Assert.IsTrue(_optionsViewModel.AutoCreateTestProject);
-
 			_optionsViewModel.AutoCreateTestFile = true;
 			Assert.IsTrue(_optionsViewModel.AutoCreateTestFile);
 

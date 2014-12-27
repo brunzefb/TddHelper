@@ -293,13 +293,6 @@ namespace DreamWorks.TddHelper.Implementation
 			if (!associateTestProjectDialog.ViewModel.RequestCreateProject)
 				return associateTestProjectDialog.SelectedProject;
 
-			if (!StaticOptions.TddHelper.AutoCreateTestProject)
-			{
-				const int noDontCreateProject = 7; // winuser.h - IDNO
-				var result = ViewUtil.VsShowMessageBox(_shell, Strings.AllowCreateProject);
-				if (result == noDontCreateProject)
-					return null;
-			}
 			var projectName = associateTestProjectDialog.ViewModel.NewProjectName;
 			if (!CreateProject(projectName))
 				return null;
