@@ -5,13 +5,10 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using DreamWorks.TddHelper.Model;
 using DreamWorks.TddHelper.Resources;
 using DreamWorks.TddHelper.View;
 using EnvDTE;
 using EnvDTE80;
-using Microsoft.VisualStudio.Shell.Interop;
-using NuGet.VisualStudio;
 
 namespace DreamWorks.TddHelper.Implementation
 {
@@ -20,16 +17,10 @@ namespace DreamWorks.TddHelper.Implementation
 		private const string CSharpLanguageName = "CSharp";
 		private const string ClassItemTemplateName = "Class.zip";
 
-		private static string SourcePath;
-		private static string TargetFileName;
-		private static string TargetPath;
 		private static ProjectItem LastProjectItem;
 	
-		private static bool TryToCreateNewTargetClass(string sourcePath, string targetFileName)
+		public static bool TryToCreateNewTargetClass()
 		{
-			SourcePath = sourcePath;
-			TargetFileName = targetFileName;
-
 			if (!StaticOptions.MainOptions.AutoCreateTestFile)
 			{
 				const int noDontCreateFile = 7; // winuser.h - IDNO
@@ -80,18 +71,18 @@ namespace DreamWorks.TddHelper.Implementation
 		private static bool CreateTargetClassInTargetProject(Project targetProject,
 			string classTemplatePath)
 		{
-			var sourceProjectPath = Access.ProjectModel.ProjectPathFromFilePath(SourcePath);
+			var sourceProjectPath = Access.ProjectModel.ProjectPathFromFilePath(SourceTargetInfo.SourcePath);
 			Project sourceProject = ProjectFromPath(sourceProjectPath);
 
 			if (!StaticOptions.MainOptions.MirrorProjectFolders)
 			{
-				targetProject.ProjectItems.AddFromTemplate(classTemplatePath, TargetFileName);
+				targetProject.ProjectItems.AddFromTemplate(classTemplatePath, SourceTargetInfo.TargetFileName);
 				SetTargetPathWithAddedItem(targetProject.ProjectItems);
 				return true;
 			}
 
 			var relative = RelativePathHelper.GetRelativePath(Path.GetDirectoryName(sourceProject.FullName),
-				Path.GetDirectoryName(SourcePath));
+				Path.GetDirectoryName(SourceTargetInfo.SourcePath));
 			var trimmed = relative.TrimStart(new[] { '.', Path.DirectorySeparatorChar });
 
 			// If we just have a single item without dir separator chars
@@ -99,7 +90,7 @@ namespace DreamWorks.TddHelper.Implementation
 			if (string.IsNullOrEmpty(trimmed) ||
 				!trimmed.Contains(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
 			{
-				targetProject.ProjectItems.AddFromTemplate(classTemplatePath, TargetFileName);
+				targetProject.ProjectItems.AddFromTemplate(classTemplatePath, SourceTargetInfo.TargetFileName);
 				SetTargetPathWithAddedItem(targetProject.ProjectItems);
 				return true;
 			}
@@ -110,7 +101,7 @@ namespace DreamWorks.TddHelper.Implementation
 
 			// add folders recursively if they don't exist
 			AddOrGetProjectFolderItem(targetProject.ProjectItems, folderStack);
-			LastProjectItem.ProjectItems.AddFromTemplate(classTemplatePath, TargetFileName);
+			LastProjectItem.ProjectItems.AddFromTemplate(classTemplatePath, SourceTargetInfo.TargetFileName);
 
 			SetTargetPathWithAddedItem(LastProjectItem.ProjectItems);
 			return true;
@@ -156,11 +147,11 @@ namespace DreamWorks.TddHelper.Implementation
 			// at the correct level.
 			foreach (ProjectItem item in items)
 			{
-				if (item.Name != TargetFileName)
+				if (item.Name != SourceTargetInfo.TargetFileName)
 					continue;
 				if (item.Document == null)
 					continue;
-				TargetPath = item.Document.FullName;
+				SourceTargetInfo.TargetPath = item.Document.FullName;
 				return;
 			}
 			Debug.Assert(false);
@@ -169,16 +160,13 @@ namespace DreamWorks.TddHelper.Implementation
 		private static string GetAssociatedTargetProjectPath()
 		{
 			string targetProjectPath;
-			string sourceProjectPath = Access.ProjectModel.ProjectPathFromFilePath(SourcePath);
+			string sourceProjectPath = Access.ProjectModel.ProjectPathFromFilePath(SourceTargetInfo.SourcePath);
 
 			if (string.IsNullOrEmpty(sourceProjectPath))
 				return null;
 
 			// check the cache first
-			var isSourcePathTest =
-				SourcePath.ToLowerInvariant()
-					.EndsWith(StaticOptions.MainOptions.TestFileSuffix.ToLowerInvariant());
-			if (isSourcePathTest)
+			if (SourceTargetInfo.IsSourcePathTest)
 				targetProjectPath =
 					Access.ProjectModel.ImplementationProjectFromTestProject(sourceProjectPath);
 			else

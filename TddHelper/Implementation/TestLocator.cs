@@ -46,9 +46,9 @@ namespace DreamWorks.TddHelper.Implementation
 			SourceTargetInfo.TargetPath = FindExistingFileWithConflictResolution();
 			if (SourceTargetInfo.TargetPath == null) // dialog cancelled
 				return;
-			//if (SourceTargetInfo.TargetPath == string.Empty) // not found
-			//	if (!TryToCreateNewTargetClass())
-			//		return;
+			if (SourceTargetInfo.TargetPath == string.Empty) // not found
+				if (!CreateClassHelper.TryToCreateNewTargetClass())
+					return;
 			Load();
 		}
 
