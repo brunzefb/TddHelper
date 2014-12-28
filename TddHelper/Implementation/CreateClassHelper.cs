@@ -52,6 +52,7 @@ namespace DreamWorks.TddHelper.Implementation
 						string.Equals(project.FullName, path, StringComparison.CurrentCultureIgnoreCase))
 						return project;
 				}
+				// ReSharper disable once EmptyGeneralCatchClause
 				catch
 				{
 				}

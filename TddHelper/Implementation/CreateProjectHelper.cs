@@ -193,16 +193,20 @@ namespace DreamWorks.TddHelper.Implementation
 		private static void MakeFriendAssembly(Project sourceProject, Project newlyCreatedProject)
 		{
 			// the way to get the sign info out of the project is not very well documented...
+			string patchString = string.Empty;
 			var fullPathToSnk = GetFullPathToSnkFile(sourceProject);
-			if (string.IsNullOrEmpty(fullPathToSnk))
-				return;
-			var publicKeyAsString = Helper.PublicKeyFromSnkFile(fullPathToSnk);
-			if (string.IsNullOrEmpty(publicKeyAsString))
-				return;
-			string assemblyName = newlyCreatedProject.Name;
-			if (string.IsNullOrEmpty(publicKeyAsString))
-				return;
-			var patchString = GetInternalsVisibleToString(assemblyName, publicKeyAsString);
+			if (!string.IsNullOrEmpty(fullPathToSnk))
+			{
+				var publicKeyAsString = Helper.PublicKeyFromSnkFile(fullPathToSnk);
+				if (string.IsNullOrEmpty(publicKeyAsString))
+					return;
+				string assemblyName = newlyCreatedProject.Name;
+				if (string.IsNullOrEmpty(publicKeyAsString))
+					return;
+				patchString = GetInternalsVisibleToString(assemblyName, publicKeyAsString);
+			}
+			else
+				patchString = string.Format("[assembly: InternalsVisibleTo (\"{0}\")]", newlyCreatedProject.Name);
 			PatchSourceAssemblyInfoCsWithInternalsVisibleTo(sourceProject, patchString);
 		}
 
