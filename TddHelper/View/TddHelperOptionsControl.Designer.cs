@@ -39,7 +39,7 @@
 			this.UnitTestRightRadio = new System.Windows.Forms.RadioButton();
 			this.UnitTestLeftRadio = new System.Windows.Forms.RadioButton();
 			this.AutoCreateFileCheckbox = new System.Windows.Forms.CheckBox();
-			this.MirrorProjectFoldersChecbox = new System.Windows.Forms.CheckBox();
+			this.MirrorProjectFoldersCheckbox = new System.Windows.Forms.CheckBox();
 			this.CreateReferenceCheckbox = new System.Windows.Forms.CheckBox();
 			this.MakeFriendAssemblyCheckbox = new System.Windows.Forms.CheckBox();
 			this.CleanCheckbox = new System.Windows.Forms.CheckBox();
@@ -155,17 +155,17 @@
 			this.AutoCreateFileCheckbox.Text = "Create Class Automatically [Leave unchecked to be prompted]";
 			this.AutoCreateFileCheckbox.UseVisualStyleBackColor = true;
 			// 
-			// MirrorProjectFoldersChecbox
+			// MirrorProjectFoldersCheckbox
 			// 
-			this.MirrorProjectFoldersChecbox.AutoSize = true;
-			this.MirrorProjectFoldersChecbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.MirrorProjectFoldersChecbox.Location = new System.Drawing.Point(0, 238);
-			this.MirrorProjectFoldersChecbox.Margin = new System.Windows.Forms.Padding(4);
-			this.MirrorProjectFoldersChecbox.Name = "MirrorProjectFoldersChecbox";
-			this.MirrorProjectFoldersChecbox.Size = new System.Drawing.Size(339, 22);
-			this.MirrorProjectFoldersChecbox.TabIndex = 4;
-			this.MirrorProjectFoldersChecbox.Text = "&Mirror Project Folders when creating Class File";
-			this.MirrorProjectFoldersChecbox.UseVisualStyleBackColor = true;
+			this.MirrorProjectFoldersCheckbox.AutoSize = true;
+			this.MirrorProjectFoldersCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.MirrorProjectFoldersCheckbox.Location = new System.Drawing.Point(0, 238);
+			this.MirrorProjectFoldersCheckbox.Margin = new System.Windows.Forms.Padding(4);
+			this.MirrorProjectFoldersCheckbox.Name = "MirrorProjectFoldersCheckbox";
+			this.MirrorProjectFoldersCheckbox.Size = new System.Drawing.Size(339, 22);
+			this.MirrorProjectFoldersCheckbox.TabIndex = 4;
+			this.MirrorProjectFoldersCheckbox.Text = "&Mirror Project Folders when creating Class File";
+			this.MirrorProjectFoldersCheckbox.UseVisualStyleBackColor = true;
 			// 
 			// CreateReferenceCheckbox
 			// 
@@ -239,7 +239,7 @@
 			this.Controls.Add(this.CleanCheckbox);
 			this.Controls.Add(this.MakeFriendAssemblyCheckbox);
 			this.Controls.Add(this.CreateReferenceCheckbox);
-			this.Controls.Add(this.MirrorProjectFoldersChecbox);
+			this.Controls.Add(this.MirrorProjectFoldersCheckbox);
 			this.Controls.Add(this.AutoCreateFileCheckbox);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.ProjectSuffixEdit);
@@ -267,7 +267,7 @@
 		private System.Windows.Forms.RadioButton UnitTestRightRadio;
 		private System.Windows.Forms.RadioButton UnitTestLeftRadio;
 		private System.Windows.Forms.CheckBox AutoCreateFileCheckbox;
-		private System.Windows.Forms.CheckBox MirrorProjectFoldersChecbox;
+		private System.Windows.Forms.CheckBox MirrorProjectFoldersCheckbox;
 		private System.Windows.Forms.CheckBox CreateReferenceCheckbox;
 		private System.Windows.Forms.CheckBox MakeFriendAssemblyCheckbox;
 		private System.Windows.Forms.CheckBox CleanCheckbox;

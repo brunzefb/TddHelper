@@ -93,7 +93,7 @@ namespace DreamWorks.TddHelper.View
 						o => o.AutoCreateTestFile));
 			_bindingManager.Bindings.Add(
 				new TypedBinding<CheckBox, OptionsViewModel>
-					(MirrorProjectFoldersChecbox, c => c.Checked, _optionsViewModel,
+					(MirrorProjectFoldersCheckbox, c => c.Checked, _optionsViewModel,
 						o => o.MirrorProjectFolders));
 			_bindingManager.Bindings.Add(
 				new TypedBinding<CheckBox, OptionsViewModel>

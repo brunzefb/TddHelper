@@ -16,7 +16,7 @@ namespace DreamWorks.TddHelper
 			int toAttr = GetPathAttribute(toPath);
 
 			var path = new StringBuilder(260); // MAX_PATH
-			if (PathRelativePathTo(
+			if (NativeMethods.PathRelativePathTo(
 				path,
 				BasePath,
 				fromAttr,
@@ -34,7 +34,7 @@ namespace DreamWorks.TddHelper
 			int toAttr = GetPathAttribute(toPath);
 
 			var path = new StringBuilder(260); // MAX_PATH
-			if (PathRelativePathTo(
+			if (NativeMethods.PathRelativePathTo(
 				path,
 				BasePath,
 				fromAttr,
@@ -66,8 +66,12 @@ namespace DreamWorks.TddHelper
 		private const int FileAttributeDirectory = 0x10;
 		private const int FileAttributeNormal = 0x80;
 
-		[DllImport("shlwapi.dll", CharSet= CharSet.Unicode, SetLastError = true)]
-		private static extern int PathRelativePathTo(StringBuilder pszPath,
-			string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
+		private static class NativeMethods
+		{
+			[DllImport("shlwapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+			internal static extern int PathRelativePathTo(StringBuilder pszPath,
+				string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
+			
+		}
 	}
 }

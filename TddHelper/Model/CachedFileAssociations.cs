@@ -9,7 +9,7 @@ namespace DreamWorks.TddHelper.Model
 	{
 		private string _solutionGuid;
 
-		public Dictionary<string, ImplementationToTest> Associations { get; set; }
+		internal Dictionary<string, ImplementationToTest> Associations { get; set; }
 
 		public CachedFileAssociations(string id)
 		{

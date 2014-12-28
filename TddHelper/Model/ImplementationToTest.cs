@@ -2,7 +2,7 @@
 
 namespace DreamWorks.TddHelper.Model
 {
-	public class ImplementationToTest : Dictionary<string, string>
+	internal class ImplementationToTest : Dictionary<string, string>
 	{
 	}
 }

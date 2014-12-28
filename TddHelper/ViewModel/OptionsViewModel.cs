@@ -6,14 +6,14 @@ namespace DreamWorks.TddHelper.ViewModel
 	{
 		private string _testFileSuffix = "Test.cs";
 		private string _projectSuffix = "Test.csproj";
-		private bool _autoCreateTestFile;
-		private bool _mirrorProjectFolders;
-		private bool _createReference;
+		private bool _autoCreateTestFile = true;
+		private bool _mirrorProjectFolders = true;
+		private bool _createReference = true;
 		private bool _makeFriendAssembly;
 		private bool _unitTestLeft = true;
 		private bool _unitTestRight;
 		private bool _noSplitWindow;
-		private bool _clean;
+		private bool _clean = true;
 
 		public OptionsViewModel Clone(OptionsViewModel other)
 		{

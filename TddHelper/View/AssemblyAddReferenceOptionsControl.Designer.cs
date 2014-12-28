@@ -16,6 +16,7 @@
 			if (disposing && (components != null))
 			{
 				components.Dispose();
+				_bindingManager.Dispose();
 			}
 			base.Dispose(disposing);
 		}

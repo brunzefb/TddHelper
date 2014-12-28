@@ -94,6 +94,11 @@ namespace DreamWorks.TddHelper.Implementation
 			if (SourceTargetInfo.IsSourcePathTest)
 			{
 				AddImplementationReferenceToTestProject(newlyCreatedProject, sourceProject);
+				if (StaticOptions.MainOptions.MakeFriendAssembly)
+				{
+					MakeFriendAssembly(sourceProject, newlyCreatedProject);
+				}
+				MakeNewAssemblyStrongNamed(sourceProject, newlyCreatedProject);
 			}
 			else
 			{
@@ -112,9 +117,10 @@ namespace DreamWorks.TddHelper.Implementation
 			AddTestFrameworkReferenceWithNuGet(testProject);
 			AddTestFramworkReferenceWithFile(testProjectRefs);
 
-			if (!StaticOptions.MainOptions.MakeFriendAssembly)
-				return;
-			MakeFriendAssembly(sourceProject, testProject);
+			if (StaticOptions.MainOptions.MakeFriendAssembly)
+			{
+				MakeFriendAssembly(testProject, sourceProject);
+			}
 			MakeNewAssemblyStrongNamed(sourceProject, testProject);
 		}
 
