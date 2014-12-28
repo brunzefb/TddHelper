@@ -12,7 +12,6 @@ namespace TddHelperTest.Model
 		public void SetUp()
 		{
 			_t = new CachedFileAssociations("123");
-			
 		}
 
 		[Test]

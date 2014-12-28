@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Threading;
-using DreamWorks.TddHelper.Model;
+using DreamWorks.TddHelper.Implementation;
 using DreamWorks.TddHelper.View;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -21,21 +21,17 @@ namespace DreamWorks.TddHelper.ViewModel
 		private readonly string _currentProject;
 		private string _newProjectName;
 		private DisplayPathHelper _selectedProject;
-		private readonly CachedProjectAssociations _cachedProjectAssociations;
-		private readonly bool _isSourcePathTest;
 		private readonly ObservableCollection<DisplayPathHelper> _projectList;
 		public bool RequestCreateProject { get; set; }
-
-		public AssociateTestProjectViewModel(ICanClose view, IEnumerable<string> projectList, 
-			string currentProject, CachedProjectAssociations cachedProjectAssociations, bool isSourcePathTest)
+		
+		public AssociateTestProjectViewModel(ICanClose view, string currentProject)
 		{
 			_view = view;
 			_okCommand = new RelayCommand(OnOk, IsOKEnabled);
 			_cancelCommand = new RelayCommand(OnCancel);
 			_createNewProjectCommand = new RelayCommand(OnCreateNewProject, IsNewProjectCreationAllowed);
-
 			var list = new List<DisplayPathHelper>();
-			foreach (var project in projectList)
+			foreach (var project in Access.ProjectModel.ProjectPathsList)
 			{
 				var display = new DisplayPathHelper
 				{
@@ -46,8 +42,7 @@ namespace DreamWorks.TddHelper.ViewModel
 			}
 			_projectList = new ObservableCollection<DisplayPathHelper>(list);	
 			_currentProject = currentProject;
-			_cachedProjectAssociations = cachedProjectAssociations;
-			_isSourcePathTest = isSourcePathTest;
+			
 		}
 
 		private bool IsNewProjectCreationAllowed()
@@ -146,11 +141,10 @@ namespace DreamWorks.TddHelper.ViewModel
 
 		private void OnOk()
 		{
-			if (_isSourcePathTest)
-				_cachedProjectAssociations.AddAssociation(SelectedProject.Path, _currentProject);
+			if (SourceTargetInfo.IsSourcePathTest)
+				Access.ProjectModel.AddProjectAssociationToCache(SelectedProject.Path, _currentProject);
 			else
-				_cachedProjectAssociations.AddAssociation(_currentProject, SelectedProject.Path);
-			_cachedProjectAssociations.Save();
+				Access.ProjectModel.AddProjectAssociationToCache(_currentProject, SelectedProject.Path);
 			_view.CloseWindow();
 		}
 

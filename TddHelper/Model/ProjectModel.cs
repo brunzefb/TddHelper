@@ -1,15 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Linq;
 using EnvDTE;
 using EnvDTE80;
 
 namespace DreamWorks.TddHelper.Model
 {
-	internal class ProjectModel
+	public interface IProjectModel
+	{
+		string ImplementationProjectFromTestProject(string sourceProject);
+		string TestProjectFromImplementationProject(string sourceProject);
+		List<string> ProjectPathsList { get; }
+		List<string> CsharpFilesInProject { get; }
+		void AddFileAssociationToCache(string implementation, string test);
+		void AddProjectAssociationToCache(string implementation, string test);
+		string FindTargetFileInCache(string targetFileName);
+		string ProjectPathFromFilePath(string path);
+		void GetCSharpFilesFromSolution();
+	}
+
+	public class ProjectModel : IProjectModel
 	{
 		private readonly DTE2 _dte;
 		private readonly CachedFileAssociations _cachedFileAssociations;
@@ -24,30 +35,54 @@ namespace DreamWorks.TddHelper.Model
 		public const string FullPathPropertyName = "FullPath";
 		private const string CsprojExtension = ".csproj";
 		private const string CsharpFileExtension = ".cs";
-		private static readonly ManualResetEvent BusyEvent = new ManualResetEvent(false);
-
 
 		public ProjectModel(DTE2 dte)
 		{
 			_dte = dte;
-
 			_cachedFileAssociations = new CachedFileAssociations(string.Empty);
 			_cachedProjectAssociations = new CachedProjectAssociations(string.Empty);
 			_cachedFileAssociations.Load();
 			_cachedProjectAssociations.Load();
-
 			SubscribeToSolutionEvents();
-			var task = Task.Run(new Action(GetCSharpFilesFromSolution));
+		}
+
+		public List<string> ProjectPathsList 
+		{
+			get
+			{
+				return _projectPathsList;
+			}
+		}
+
+		public List<string> CsharpFilesInProject
+		{
+			get { return _fileToProjectDictionary.Keys.ToList(); }
+		}
+
+		public void AddFileAssociationToCache(string implementation, string test)
+		{
+			_cachedFileAssociations.AddAssociation(implementation, test);
+			_cachedFileAssociations.Save();
+		}
+
+		public void AddProjectAssociationToCache(string implementation, string test)
+		{
+			_cachedProjectAssociations.AddAssociation(implementation, test);
+			_cachedProjectAssociations.Save();
+		}
+
+		public string ProjectPathFromFilePath(string path )
+		{
+			if (!string.IsNullOrEmpty(path) &&
+				_fileToProjectDictionary.ContainsKey(path))
+			{
+				return _fileToProjectDictionary[path];
+			}
+			return string.Empty;
 		}
 
 		private void SubscribeToSolutionEvents()
 		{
-			_dte.Events.SolutionEvents.ProjectAdded += SolutionEvents_ProjectAdded;
-			_dte.Events.SolutionEvents.ProjectRemoved += SolutionEvents_ProjectRemoved;
-			_dte.Events.SolutionEvents.ProjectRenamed += SolutionEvents_ProjectRenamed;
-			_dte.Events.SolutionItemsEvents.ItemAdded += SolutionItemsEvents_ItemAdded;
-			_dte.Events.SolutionItemsEvents.ItemRemoved += SolutionItemsEvents_ItemRemoved;
-			_dte.Events.SolutionItemsEvents.ItemRenamed += SolutionItemsEvents_ItemRenamed;
 			_dte.Events.SolutionEvents.Opened += SolutionEvents_Opened;
 			_dte.Events.SolutionEvents.AfterClosing += SolutionEvents_AfterClosing;
 		}
@@ -71,79 +106,47 @@ namespace DreamWorks.TddHelper.Model
 			}
 		}
 
-		public void SolutionItemsEvents_ItemRenamed(ProjectItem projectItem, string oldName)
-		{
-		}
-
-		public void SolutionItemsEvents_ItemRemoved(ProjectItem projectItem)
-		{
-		}
-
-		public void SolutionItemsEvents_ItemAdded(ProjectItem projectItem)
-		{
-		}
-
-		public void SolutionEvents_ProjectRenamed(Project project, string oldName)
-		{
-		}
-
-		public void SolutionEvents_ProjectRemoved(Project project)
-		{
-		}
-
-		public void SolutionEvents_ProjectAdded(Project project)
-		{
-		}
-
 		public void GetCSharpFilesFromSolution()
 		{
-			BusyEvent.Reset();
-			try
+		
+			var solution = _dte.Solution;
+
+			if (solution == null || solution.Projects == null)
+				return;
+
+			var solutionProjects = solution.Projects;
+			RelativePathHelper.BasePath = Path.GetDirectoryName(solution.FullName);
+
+				
+			_fileToProjectDictionary.Clear();
+				
+			foreach (var p in solutionProjects)
 			{
-				var solution = _dte.Solution;
+				var project = p as Project;
+				if (project == null)
+					continue;
 
-				if (solution == null || solution.Projects == null)
-					return;
+				var props = project.Properties;
 
-				var solutionProjects = solution.Projects;
-				RelativePathHelper.BasePath = Path.GetDirectoryName(solution.FullName);
+				if (!HasProperty(props, (FullPathPropertyName)))
+					continue;
 
-				
-				_fileToProjectDictionary.Clear();
-				
-				foreach (var p in solutionProjects)
-				{
-					var project = p as Project;
-					if (project == null)
-						continue;
-
-					var props = project.Properties;
-
-					if (!HasProperty(props, (FullPathPropertyName)))
-						continue;
-
-					if (!project.FileName.EndsWith(CsprojExtension))
-						continue;
+				if (!project.FileName.EndsWith(CsprojExtension))
+					continue;
 					
-					_projectItemList.Clear();
-					foreach (ProjectItem item in project.ProjectItems)
-					{
-						_subItemList.Clear();
-						var mainItem = RecursiveGetProjectItem(item);
-						_projectItemList.Add(mainItem);
-						_projectItemList.AddRange(_subItemList);
-					}
-					foreach (var item in _projectItemList)
-						GetFilesFromProjectItem(item, project);
+				_projectItemList.Clear();
+				foreach (ProjectItem item in project.ProjectItems)
+				{
+					_subItemList.Clear();
+					var mainItem = RecursiveGetProjectItem(item);
+					_projectItemList.Add(mainItem);
+					_projectItemList.AddRange(_subItemList);
 				}
+				foreach (var item in _projectItemList)
+					GetFilesFromProjectItem(item, project);
+			}
 
-				GetProjectPathsList();
-			}
-			finally
-			{
-				BusyEvent.Set();
-			}
-			
+			GetProjectPathsList();
 		}
 
 		private void GetProjectPathsList()
@@ -181,6 +184,7 @@ namespace DreamWorks.TddHelper.Model
 				return;
 			if (item.FileCount == 1)
 			{
+				// ReSharper disable once UseIndexedProperty
 				var filePath = item.get_FileNames(0);
 				if (filePath.ToLower().EndsWith(CsharpFileExtension))
 					_fileToProjectDictionary.Add(filePath, project.FullName);
@@ -202,6 +206,28 @@ namespace DreamWorks.TddHelper.Model
 				}
 			}
 			return false;
+		}
+
+		public string ImplementationProjectFromTestProject(string sourceProjectPath)
+		{
+			return _cachedProjectAssociations.ImplementationProjectFromTestProject(sourceProjectPath);
+		}
+
+		public string TestProjectFromImplementationProject(string sourceProjectPath)
+		{
+			return _cachedProjectAssociations.TestProjectFromImplementationProject(sourceProjectPath);
+		}
+
+		public string FindTargetFileInCache(string targetFileName)
+		{
+			string foundFile;
+			var isTest =
+				targetFileName.ToLower().EndsWith(StaticOptions.MainOptions.TestFileSuffix.ToLower());
+			if (isTest)
+				foundFile = _cachedFileAssociations.ImplementationFromTest(targetFileName);
+			else
+				foundFile = _cachedFileAssociations.TestFromImplementation(targetFileName);
+			return foundFile;
 		}
 	}
 }

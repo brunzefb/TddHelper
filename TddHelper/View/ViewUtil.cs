@@ -2,7 +2,9 @@
 using System;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Media;
+using DreamWorks.TddHelper.Implementation;
 using DreamWorks.TddHelper.Resources;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.PlatformUI.Shell.Controls;
@@ -42,7 +44,14 @@ namespace DreamWorks.TddHelper.View
 			return _tabPanelCount > 1;
 		}
 
-		
+		public static void SetModalDialogOwner(Window targetWindow)
+		{
+			IntPtr hWnd;
+			Access.Shell.GetDialogOwnerHwnd(out hWnd);
+			// ReSharper disable once PossibleNullReferenceException
+			var parent = HwndSource.FromHwnd(hWnd).RootVisual;
+			targetWindow.Owner = (Window)parent;
+		}
 
 		private static bool TryFindDocTabPanelElement(FrameworkElement parent, out FrameworkElement foundChild)
 		{

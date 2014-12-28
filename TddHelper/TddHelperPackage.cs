@@ -45,7 +45,7 @@ namespace DreamWorks.TddHelper
 			LoadOptions();
 			_projectModel = new ProjectModel(dte);
 			_tabJumper = new TabJumper(dte);
-			_solutionHelper = new TestLocator(dte, uiShell, packageInstaller);
+			_solutionHelper = new TestLocator(dte, uiShell, packageInstaller, _projectModel);
 			
 			var menuCommandService =
 				GetService(typeof(IMenuCommandService)) as OleMenuCommandService;

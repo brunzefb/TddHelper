@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace DreamWorks.TddHelper.Model
 {
-	internal class CachedFileAssociations
+	public class CachedFileAssociations
 	{
 		private string _solutionGuid;
 
