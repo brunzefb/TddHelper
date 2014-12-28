@@ -56,8 +56,6 @@ namespace DreamWorks.TddHelper.View
 				_optionsViewModel.Clone(fromDisk);
 			}
 			_optionsViewModel.UpdateUI();
-			ClearcacheButton.Enabled = StaticOptions.IsSolutionLoaded;
-			clearProjectCacheButton.Enabled = StaticOptions.IsSolutionLoaded;
 		}
 
 		private void AddBindings()

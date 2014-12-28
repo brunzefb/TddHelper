@@ -185,10 +185,10 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private string ResolveConflicts(IEnumerable<string> candidateList)
 		{
-			var targetFile = Access.ProjectModel.FindTargetFileInCache(SourceTargetInfo.TargetFileName);
+			var correspondingFile = Access.ProjectModel.FindTargetFileInCache(SourceTargetInfo.TargetPath);
 
-			if (!string.IsNullOrEmpty(targetFile))
-				return targetFile;
+			if (!string.IsNullOrEmpty(correspondingFile))
+				return correspondingFile;
 
 			var resolveFileConflictDialog = new ResolveFileConflictDialog(candidateList);
 			ViewUtil.SetModalDialogOwner(resolveFileConflictDialog);

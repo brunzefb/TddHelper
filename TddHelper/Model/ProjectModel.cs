@@ -90,7 +90,6 @@ namespace DreamWorks.TddHelper.Model
 
 		public void Clean()
 		{
-			StaticOptions.IsSolutionLoaded = true;
 			_fileToProjectDictionary.Clear();
 			_projectPathsList.Clear();
 			_projectItemList.Clear();
