@@ -7,5 +7,6 @@ namespace DreamWorks.TddHelper
 	{
 		public static OptionsViewModel MainOptions {get;set;}
 		public static AddReferencesOptionsViewModel ReferencesOptions { get; set; }
+		public static bool IsSolutionLoaded { get; set; }
 	}
 }

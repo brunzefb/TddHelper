@@ -2,6 +2,7 @@
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using DreamWorks.TddHelper.Implementation;
+using DreamWorks.TddHelper.Model;
 using DreamWorks.TddHelper.View;
 using DreamWorks.TddHelper.ViewModel;
 using EnvDTE;
@@ -27,6 +28,7 @@ namespace DreamWorks.TddHelper
 	{
 		private TabJumper _tabJumper;
 		private TestLocator _solutionHelper;
+		private ProjectModel _projectModel;
 
 		public TddHelperPackage()
 		{
@@ -38,10 +40,10 @@ namespace DreamWorks.TddHelper
 
 			var componentModel = (IComponentModel)GetService(typeof(SComponentModel));
 			var packageInstaller = componentModel.GetService<IVsPackageInstaller>();
-			
 			var dte = (DTE2)GetService(typeof(DTE));
 			var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
 			LoadOptions();
+			_projectModel = new ProjectModel(dte);
 			_tabJumper = new TabJumper(dte);
 			_solutionHelper = new TestLocator(dte, uiShell, packageInstaller);
 			
@@ -67,7 +69,7 @@ namespace DreamWorks.TddHelper
 			menuCommandService.AddCommand(menuItemLocateTest);
 		
 		}
-
+		
 		private static void LoadOptions()
 		{
 			var options = new OptionsViewModel();
@@ -76,29 +78,13 @@ namespace DreamWorks.TddHelper
 				options = JsonConvert.DeserializeObject<OptionsViewModel>(TddSettings.Default.Settings);
 			}
 			StaticOptions.MainOptions = options;
-		}
 
-		/*
-				private void VsShowMessageBox(string message)
-				{
-					var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-					uiShell.GetDialogOwnerHwnd()
-					var clsid = Guid.Empty;
-					int result;
-					ErrorHandler.ThrowOnFailure(uiShell.ShowMessageBox(
-						0,
-						ref clsid,
-						Resources.AppTitle,
-						message,
-						string.Empty,
-						0,
-						OLEMSGBUTTON.OLEMSGBUTTON_OK,
-						OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
-						OLEMSGICON.OLEMSGICON_INFO,
-						0,
-						out result));
-				}
-		 */
-	
+			var addOptions = new AddReferencesOptionsViewModel();
+			if (!string.IsNullOrEmpty(TddSettings.Default.AddAssemblySettings))
+			{
+				addOptions = JsonConvert.DeserializeObject<AddReferencesOptionsViewModel>(TddSettings.Default.AddAssemblySettings);
+			}
+			StaticOptions.ReferencesOptions = addOptions;
+		}
 	}
 }
