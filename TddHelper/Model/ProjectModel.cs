@@ -98,7 +98,6 @@ namespace DreamWorks.TddHelper.Model
 
 		public void GetCSharpFilesFromSolution()
 		{
-		
 			var solution = _dte.Solution;
 
 			if (solution == null || solution.Projects == null)

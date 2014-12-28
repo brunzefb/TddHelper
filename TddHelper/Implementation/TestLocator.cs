@@ -185,7 +185,7 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private string ResolveConflicts(IEnumerable<string> candidateList)
 		{
-			var correspondingFile = Access.ProjectModel.FindTargetFileInCache(SourceTargetInfo.TargetPath);
+			var correspondingFile = Access.ProjectModel.FindTargetFileInCache(SourceTargetInfo.SourcePath);
 
 			if (!string.IsNullOrEmpty(correspondingFile))
 				return correspondingFile;
@@ -199,9 +199,9 @@ namespace DreamWorks.TddHelper.Implementation
 
 			var selectedFilePath = resolveFileConflictDialog.ViewModel.SelectedFile.Path;
 			if (SourceTargetInfo.IsSourcePathTest)
-				Access.ProjectModel.AddFileAssociationToCache(selectedFilePath, SourceTargetInfo.TargetFileName);
+				Access.ProjectModel.AddFileAssociationToCache(selectedFilePath, SourceTargetInfo.TargetPath);
 			else
-				Access.ProjectModel.AddFileAssociationToCache(SourceTargetInfo.TargetFileName, selectedFilePath);
+				Access.ProjectModel.AddFileAssociationToCache(SourceTargetInfo.SourcePath, selectedFilePath);
 
 			return selectedFilePath;
 		}
