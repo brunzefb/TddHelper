@@ -8,9 +8,35 @@ namespace DreamWorks.TddHelper.Implementation
 	{
 		private const string CsharpFileExtension = ".cs";
 		private const char Period = '.';
+		private const string Space = " ";
 
 		public static string SourcePath { get; set; }
 		public static string TargetPath { get; set; }
+
+		public static string QuotedSourcePath
+		{
+			get
+			{
+				if (SourcePath.Contains(Space))
+					return Enquote(SourcePath);
+				return SourcePath;
+			}
+		}
+
+		public static string QuotedTargetPath
+		{
+			get
+			{
+				if (TargetPath.Contains(Space))
+					return Enquote(TargetPath);
+				return TargetPath;
+			}
+		}
+
+		private static string Enquote(string sourcePath)
+		{
+			return "\"" + sourcePath + "\"";
+		}
 
 		public static void Clear()
 		{

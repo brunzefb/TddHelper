@@ -72,17 +72,15 @@ namespace DreamWorks.TddHelper.Implementation
 
 			try
 			{
-				var sourcePath = SourceTargetInfo.SourcePath;
-				var targetPath = SourceTargetInfo.TargetPath;
 				if (StaticOptions.MainOptions.UnitTestLeft ^ SourceTargetInfo.IsSourcePathTest)
 				{
-					Access.Dte.ExecuteCommand(OpenFileCommand, targetPath);
-					Access.Dte.ExecuteCommand(OpenFileCommand, sourcePath);
+					Access.Dte.ExecuteCommand(OpenFileCommand, SourceTargetInfo.QuotedTargetPath);
+					Access.Dte.ExecuteCommand(OpenFileCommand, SourceTargetInfo.QuotedSourcePath);
 				}
 				else
 				{
-					Access.Dte.ExecuteCommand(OpenFileCommand, sourcePath);
-					Access.Dte.ExecuteCommand(OpenFileCommand, targetPath);
+					Access.Dte.ExecuteCommand(OpenFileCommand, SourceTargetInfo.QuotedSourcePath);
+					Access.Dte.ExecuteCommand(OpenFileCommand, SourceTargetInfo.QuotedTargetPath);
 				}
 
 				if (ViewUtil.IsMoreThanOneTabWellShown())
@@ -108,8 +106,8 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private void LoadDocumentsIntoOneTabWell()
 		{
-			Access.Dte.ExecuteCommand(OpenFileCommand, SourceTargetInfo.SourcePath);
-			Access.Dte.ExecuteCommand(OpenFileCommand, SourceTargetInfo.TargetPath);
+			Access.Dte.ExecuteCommand(OpenFileCommand, SourceTargetInfo.QuotedSourcePath);
+			Access.Dte.ExecuteCommand(OpenFileCommand, SourceTargetInfo.QuotedTargetPath);
 		}
 
 		private void SaveAndUnloadDocuments()
