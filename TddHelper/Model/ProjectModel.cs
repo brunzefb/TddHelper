@@ -9,6 +9,7 @@ namespace DreamWorks.TddHelper.Model
 {
 	public interface IProjectModel
 	{
+		void UpdateSolutionId();
 		string ImplementationProjectFromTestProject(string sourceProject);
 		string TestProjectFromImplementationProject(string sourceProject);
 		List<string> ProjectPathsList { get; }
@@ -43,7 +44,7 @@ namespace DreamWorks.TddHelper.Model
 			_cachedProjectAssociations = new CachedProjectAssociations(string.Empty);
 			_cachedFileAssociations.Load();
 			_cachedProjectAssociations.Load();
-			SubscribeToSolutionEvents();
+			
 		}
 
 		public List<string> ProjectPathsList 
@@ -52,6 +53,12 @@ namespace DreamWorks.TddHelper.Model
 			{
 				return _projectPathsList;
 			}
+		}
+
+		public void UpdateSolutionId()
+		{
+			_cachedFileAssociations.UpdateSolutionId(_dte.Solution.ExtenderCATID);
+			_cachedProjectAssociations.UpdateSolutionId(_dte.Solution.ExtenderCATID);
 		}
 
 		public List<string> CsharpFilesInProject
@@ -81,29 +88,13 @@ namespace DreamWorks.TddHelper.Model
 			return string.Empty;
 		}
 
-		private void SubscribeToSolutionEvents()
+		public void Clean()
 		{
-			_dte.Events.SolutionEvents.Opened += SolutionEvents_Opened;
-			_dte.Events.SolutionEvents.AfterClosing += SolutionEvents_AfterClosing;
-		}
-
-		public void SolutionEvents_AfterClosing()
-		{
-			StaticOptions.IsSolutionLoaded = false;
+			StaticOptions.IsSolutionLoaded = true;
 			_fileToProjectDictionary.Clear();
 			_projectPathsList.Clear();
 			_projectItemList.Clear();
 			_subItemList.Clear();
-		}
-
-		public void SolutionEvents_Opened()
-		{
-			StaticOptions.IsSolutionLoaded = true;
-			if (_dte.Solution != null)
-			{
-				_cachedFileAssociations.UpdateSolutionId(_dte.Solution.ExtenderCATID);
-				_cachedProjectAssociations.UpdateSolutionId(_dte.Solution.ExtenderCATID);
-			}
 		}
 
 		public void GetCSharpFilesFromSolution()

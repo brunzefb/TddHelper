@@ -35,6 +35,7 @@ namespace DreamWorks.TddHelper.Implementation
 			    Access.Dte.ActiveWindow.Document == null)
 				return;
 
+			Access.ProjectModel.UpdateSolutionId();
 			SourceTargetInfo.Clear();
 			SourceTargetInfo.SourcePath = Access.Dte.ActiveWindow.Document.FullName;
 			if (!SourceTargetInfo.IsSourcePathCsFile)

@@ -67,7 +67,6 @@ namespace DreamWorks.TddHelper
 			var menuItemLocateTest = new MenuCommand(_solutionHelper.OpenTestOrImplementation,
 				cmdIdLocateTest);
 			menuCommandService.AddCommand(menuItemLocateTest);
-		
 		}
 		
 		private static void LoadOptions()
