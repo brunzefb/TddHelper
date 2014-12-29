@@ -1,12 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="804fe725-8637-4682-97b5-07ce08876c6b" Version="1.0" Language="en-US" Publisher="DreamWorks" />
+    <Identity Id="804fe725-8637-4682-97b5-07ce08876c6b" Version="1.1" Language="en-US" Publisher="Friedrich Brunzema" />
     <DisplayName>TddHelper</DisplayName>
-    <Description xml:space="preserve">A helper utilty that exposes commands to move to the next tab group, split windows, and jump to test or implementation files.</Description>
+    <Description xml:space="preserve">The TddHelper extension is designed to simplify your life if you do Test-Driven Development. It is a helper utility that exposes commands to move to the next tab group, split windows, and jump to test or implementation files (C# only).  If a test or implementation file is not found, the utility can create both test/implementation classes and projects.  For created projects, automatic references to unit testing framework is supported, and friend assemblies (also strong-named ones) are supported.</Description>
+    <MoreInfo>https://github.com/brunzefb/TddHelper</MoreInfo>
     <License>License.txt</License>
+    <GettingStartedGuide>Tdd Helper Getting Started Guide.docx</GettingStartedGuide>
+    <ReleaseNotes>ReleaseNotes.html</ReleaseNotes>
     <Icon>Resources\Package.ico</Icon>
-    <Tags>TDD, </Tags>
+    <PreviewImage>OptionsDialog.png</PreviewImage>
+    <Tags>TDD, Test Driven Design, Navigation</Tags>
   </Metadata>
   <Installation InstalledByMsi="false">
     <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[12.0]" />

@@ -1,5 +1,5 @@
 ImageRuntimeVersion: v4.0.30319
-Assembly StrongNameHelper, Version=1.0.5475.26026, Culture=neutral, PublicKeyToken=01eb2c5b0ea91b53: 
+Assembly StrongNameHelper, Version=1.0.5476.1908, Culture=neutral, PublicKeyToken=01eb2c5b0ea91b53: 
 	hash=SHA1, flags=PublicKey
 Assembly mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
 	hash=None, flags=None
