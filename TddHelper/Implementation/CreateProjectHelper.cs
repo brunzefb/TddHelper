@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using DreamWorks.TddHelper.Utility;
 using EnvDTE;
 using EnvDTE80;
 using SnkHelper;
@@ -25,20 +26,34 @@ namespace DreamWorks.TddHelper.Implementation
 
 		public static bool CreateProject(string projectName)
 		{
+			Logger.Info("CreateProjectHelper.CreateProject");
 			var solution = Access.Dte.Solution as Solution2;
 			if (solution == null || string.IsNullOrEmpty(solution.FileName))
+			{
+				Logger.Info("CreateProjectHelper.CreateProject, Solution null");
 				return false;
+			}
 			var directoryName = Path.GetDirectoryName(solution.FileName);
 			if (directoryName == null)
+			{
+				Logger.Info("CreateProjectHelper.CreateProject, Solution Dir null");
 				return false;
+			}
 			var targetDir = Path.Combine(directoryName, projectName);
 			if (!targetDir.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
 				targetDir += Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
 			if (Directory.Exists(targetDir))
+			{
+				Logger.InfoFormat("CreateProjectHelper.CreateProject, Returning because dir exists: {0}", targetDir);
 				return false;
+			}
 			string newProjectName = projectName;
 			var projectItemTemplate = solution.GetProjectTemplate(ClassLibraryProjectTemplateName, CSharpLanguageName);
+			Logger.InfoFormat("CreateProjectHelper.CreateProject, AddFromTemplate, ProjTempl={0}, targetDir={1}, newProjectName={2}",
+				projectItemTemplate, targetDir, newProjectName);
 			solution.AddFromTemplate(projectItemTemplate, targetDir, newProjectName, false);
+			Logger.Info("CreateProjectHelper.CreateProject, After AddFromTemplate");
+			
 			PostCreateProject(newProjectName);
 			return true;
 		}
@@ -54,7 +69,10 @@ namespace DreamWorks.TddHelper.Implementation
 				break;
 			}
 			if (newlyCreatedProject == null)
+			{
+				Logger.Info("CreateProjectHelper.PostCreateProject, newlyCreateProject was null");
 				return;
+			}
 
 			AddProjectAssociationToCache(newlyCreatedProject);
 			RemoveClass1File(newlyCreatedProject);
@@ -65,6 +83,8 @@ namespace DreamWorks.TddHelper.Implementation
 		{
 			var newlyCreatedTargetProjectPath = newlyCreated.FullName;
 			var sourceProjectPath = GetSourceProjectPath();
+			Logger.InfoFormat("CreateProjectHelper.AddProjectAssociationToCache, Adding SourceProj={0}, TargetProj={1} to cache",
+				newlyCreatedTargetProjectPath, sourceProjectPath);
 
 			if (SourceTargetInfo.IsSourcePathTest)
 			{
@@ -81,29 +101,38 @@ namespace DreamWorks.TddHelper.Implementation
 		private static void AddProjectReferenceToImplementationProject(Project newlyCreatedProject)
 		{
 			if (!StaticOptions.MainOptions.CreateReference)
+			{
+				Logger.Info("CreateProjectHelper.AddProjectReferenceToImplementationProject, returning because StaticOptions.MainOptions.CreateReference false");
 				return;
+			}
 			var vsProjectNewlyCreated = newlyCreatedProject.Object as VSProject2;
 			if (vsProjectNewlyCreated == null)
+			{
+				Logger.Info("CreateProjectHelper.AddProjectReferenceToImplementationProject, vsProjectNewlyCreated null");
 				return;
+			}
 			var newlyCreatedRefs = vsProjectNewlyCreated.References;
 			if (newlyCreatedRefs == null)
+			{
+				Logger.Info("CreateProjectHelper.AddProjectReferenceToImplementationProject, newlyCreatedRefs null");
 				return;
+			}
 			string sourceProjectPath = GetSourceProjectPath();
 			var sourceProject = ProjectFromPath(sourceProjectPath);
 			if (sourceProject == null)
+			{
+				Logger.Info("CreateProjectHelper.AddProjectReferenceToImplementationProject, sourceProject null");
 				return;
+			}
 
 			if (SourceTargetInfo.IsSourcePathTest)
 			{
+				Logger.Info("CreateProjectHelper.AddProjectReferenceToImplementationProject, sourcePath is a test");
 				AddImplementationReferenceToTestProject(newlyCreatedProject, sourceProject);
-				if (StaticOptions.MainOptions.MakeFriendAssembly)
-				{
-					MakeFriendAssembly(sourceProject, newlyCreatedProject);
-				}
-				MakeNewAssemblyStrongNamed(sourceProject, newlyCreatedProject);
 			}
 			else
 			{
+				Logger.Info("CreateProjectHelper.AddProjectReferenceToImplementationProject, sourcePath is implementation");
 				HandleNewlyCreatedTestProject(newlyCreatedProject, newlyCreatedRefs, sourceProject);
 			}
 		}
@@ -115,10 +144,12 @@ namespace DreamWorks.TddHelper.Implementation
 			// a reference to the implementation (source) project
 			var testProjectRefs = newlyCreatedRefs;
 			var testProject = newlyCreatedProject;
+			Logger.Info("CreateProjectHelper.HandleNewlyCreatedTestProject adding project reference to test project");
 			testProjectRefs.AddProject(sourceProject);
 			AddTestFrameworkReferenceWithNuGet(testProject);
 			AddTestFramworkReferenceWithFile(testProjectRefs);
-
+			Logger.InfoFormat("CreateProjectHelper.HandleNewlyCreatedTestProject, MakeFriendAssemblyFlag={0}", 
+				StaticOptions.MainOptions.MakeFriendAssembly);
 			if (StaticOptions.MainOptions.MakeFriendAssembly)
 			{
 				MakeFriendAssembly(testProject, sourceProject);
@@ -134,18 +165,35 @@ namespace DreamWorks.TddHelper.Implementation
 			// project
 			var vsTestProject = sourceProject.Object as VSProject2;
 			if (vsTestProject == null)
+			{
+				Logger.Info("CreateProjectHelper.AddImplementationReferenceToTestProject, vsTestProject is null"); 
 				return;
+			}
 			var sourceTestProjRefs = vsTestProject.References;
 			if (sourceTestProjRefs == null)
+			{
+				Logger.Info("CreateProjectHelper.AddImplementationReferenceToTestProject, sourceTestProjectRefs is null"); 
 				return;
+			}
+			Logger.Info("CreateProjectHelper.AddImplementationReferenceToTestProject, Adding reference"); 
+
 			sourceTestProjRefs.AddProject(newlyCreatedProject);
 		}
 
 		private static void AddTestFramworkReferenceWithFile(References testProjectReferences)
 		{
+			Logger.InfoFormat("CreateProjectHelper.AddTestFramworkReferenceWithFile, UseFileAssemblyFlag={0}",
+					StaticOptions.ReferencesOptions.UseFileAssembly); 
+
 			if (StaticOptions.ReferencesOptions.UseFileAssembly &&
 			    File.Exists(StaticOptions.ReferencesOptions.AssemblyPath))
+			{
+				Logger.InfoFormat("CreateProjectHelper.AddTestFramworkReferenceWithFile, Adding File reference:{0}",
+					StaticOptions.ReferencesOptions.AssemblyPath); 
 				testProjectReferences.Add(StaticOptions.ReferencesOptions.AssemblyPath);
+			}
+			else
+				Logger.Info("CreateProjectHelper.AddTestFramworkReferenceWithFile, could not add file reference!");
 		}
 
 		private static void AddTestFrameworkReferenceWithNuGet(Project testProject)
@@ -162,14 +210,18 @@ namespace DreamWorks.TddHelper.Implementation
 			int.TryParse(StaticOptions.ReferencesOptions.VersionBuild, out verBuild);
 			try
 			{
+				Logger.InfoFormat("CreateProjectHelper.AddTestFrameworkReferenceWithNuGet, Installing package with nuget, " +
+				                    "testProject={0}, packageId={1}, verMaj={2}, verMin={3}, verBuild={4}",
+									testProject.Name, StaticOptions.ReferencesOptions.PackageId,
+									verMajor, verMinor, verBuild);
 				Access.PackageInstaller.InstallPackage(null, testProject,
 					StaticOptions.ReferencesOptions.PackageId,
 					new Version(verMajor, verMinor, verBuild),
 					false);
 			}
-			// ReSharper disable once EmptyGeneralCatchClause
-			catch
+			catch (Exception e)
 			{
+				ExceptionLogHelper.LogException(e);
 			}
 		}
 
@@ -177,21 +229,35 @@ namespace DreamWorks.TddHelper.Implementation
 		{
 			var implementionFullPathToSnk = GetFullPathToSnkFile(implProject);
 			if (string.IsNullOrEmpty(implementionFullPathToSnk))
+			{
+				Logger.Info("CreateProjectHelper.MakeNewAssemblyStrongNamed, implementationFullPathToSnk is null");
 				return;
+			}
 			var testProjectFolder = Path.GetDirectoryName(testProject.FullName);
 			if (string.IsNullOrEmpty(testProjectFolder))
+			{
+				Logger.Info("CreateProjectHelper.MakeNewAssemblyStrongNamed, testProjectFolder is null");
 				return;
+			}
 
 			var fullTargetPath = Path.Combine(testProjectFolder, Path.GetFileName(implementionFullPathToSnk));
+			Logger.InfoFormat("CreateProjectHelper.MakeNewAssemblyStrongNamed, Copying key file from {0} to {1}",
+				implementionFullPathToSnk, fullTargetPath);
 			File.Copy(implementionFullPathToSnk, fullTargetPath, true);
 
 			// make test project signed.
 			var testProj = testProject.Object as VSProject2;
 			if (testProj == null)
+			{
+				Logger.Info("CreateProjectHelper.MakeNewAssemblyStrongNamed, testProj is null");
 				return;
+			}
 			var testProjectProps = testProj.Project.Properties;
 			if (testProjectProps == null)
+			{
+				Logger.Info("CreateProjectHelper.MakeNewAssemblyStrongNamed, testProjectProps is null");
 				return;
+			}
 			testProjectProps.Item(SignAssemblyPropertyName).Value = true;
 			testProjectProps.Item(AssemblyOriginatorKeyFilePropertyName).Value =
 				Path.GetFileName(implementionFullPathToSnk);
@@ -205,12 +271,14 @@ namespace DreamWorks.TddHelper.Implementation
 			var fullPathToSnk = GetFullPathToSnkFile(sourceProject);
 			if (!string.IsNullOrEmpty(fullPathToSnk))
 			{
+				Logger.InfoFormat("CreateProjectHelper.MakeFriendAssembly, fullPathToSnk={0}", fullPathToSnk);
 				var publicKeyAsString = Helper.PublicKeyFromSnkFile(fullPathToSnk);
 				if (string.IsNullOrEmpty(publicKeyAsString))
+				{
+					Logger.Info("CreateProjectHelper.MakeFriendAssembly - PublicKeyFromSnkFile (c++) failed");
 					return;
+				}
 				string assemblyName = newlyCreatedProject.Name;
-				if (string.IsNullOrEmpty(publicKeyAsString))
-					return;
 				patchString = GetInternalsVisibleToString(assemblyName, publicKeyAsString);
 			}
 			else
@@ -220,6 +288,9 @@ namespace DreamWorks.TddHelper.Implementation
 
 		private static void PatchSourceAssemblyInfoCsWithInternalsVisibleTo(Project sourceProject, string patchString)
 		{
+			Logger.InfoFormat("CreateProjectHelper.PatchSourceAssemblyInfoCsWithInternalsVisibleTo, sourceProject={0}", sourceProject.Name);
+			Logger.InfoFormat("patchString={0}", patchString);
+
 			string fullPathToAssemblyInfoCs = string.Empty;
 			foreach (var fullPathToFile in Access.ProjectModel.CsharpFilesInProject)
 			{
@@ -235,7 +306,11 @@ namespace DreamWorks.TddHelper.Implementation
 				}
 			}
 			if (string.IsNullOrEmpty(fullPathToAssemblyInfoCs))
+			{
+				Logger.Info(
+					"CreateProjectHelper.PatchSourceAssemblyInfoCsWithInternalsVisibleTo, could not find path to AssemblyInfo.cs");
 				return;
+			}
 			using (var sw = File.AppendText(fullPathToAssemblyInfoCs))
 			{
 				sw.WriteLine("\r\n");
@@ -247,20 +322,38 @@ namespace DreamWorks.TddHelper.Implementation
 		{
 			var sourceProj = sourceProject.Object as VSProject2;
 			if (sourceProj == null)
+			{
+				Logger.Info("CreateProjectHelper.GetFullPathToSnkFile sourceProj is null");
 				return null;
+			}
 			var props = sourceProj.Project.Properties;
 			if (props == null)
+			{
+				Logger.Info("CreateProjectHelper.GetFullPathToSnkFile props is null"); 
 				return null;
+			}
 			var isSigned = props.Item(SignAssemblyPropertyName).Value as bool?;
 			var keyFile = props.Item(AssemblyOriginatorKeyFilePropertyName).Value as string;
 			var projectDirectoryName = Path.GetDirectoryName(sourceProject.FullName);
 			if (string.IsNullOrEmpty(projectDirectoryName) || string.IsNullOrEmpty(keyFile))
+			{
+				Logger.Info("CreateProjectHelper.GetFullPathToSnkFile projectDirectory or keyFile is null");
 				return null;
+			}
+			Logger.InfoFormat("CreateProjectHelper.GetFullPathToSnkFile isSigned={0}, keyFile={1}, projectDirectoryName={2}",
+				isSigned, keyFile, projectDirectoryName);
 			string fullPathToSnk = Path.Combine(projectDirectoryName, keyFile);
 			if (!isSigned.HasValue || !isSigned.Value)
+			{
+				Logger.Info("CreateProjectHelper.GetFullPathToSnkFile not signed");
 				return null;
+			}
 			if (!File.Exists(fullPathToSnk))
+			{
+				Logger.Info("CreateProjectHelper.GetFullPathToSnkFile No key file (fullPathToSnk) on disk");
 				return null;
+			}
+			Logger.InfoFormat("CreateProjectHelper.GetFullPathToSnkFile returning fullPathToSnk={0}", fullPathToSnk); 
 			return fullPathToSnk;
 		}
 
@@ -286,8 +379,19 @@ namespace DreamWorks.TddHelper.Implementation
 				projectItem = newlyCreatedProject.ProjectItems.Item(Class1ItemCreatedByTemplate);
 			if (projectItem != null)
 			{
-				if(File.Exists(projectItem.get_FileNames(0)))
-					File.Delete(projectItem.get_FileNames(0));
+				var fileName = projectItem.get_FileNames(0);
+				if(File.Exists(fileName))
+				{
+					try
+					{
+						Logger.InfoFormat("CreateProjectHelper.RemoveClass1File removing file={0}", fileName); 
+						File.Delete(fileName);
+					}
+					catch (Exception e)
+					{
+						ExceptionLogHelper.LogException(e);
+					}
+				}
 				projectItem.Delete();
 			}
 		}
@@ -312,6 +416,7 @@ namespace DreamWorks.TddHelper.Implementation
 				{
 				}
 			}
+			Logger.InfoFormat("CreateProjectHelper.ProjectFromPath project found for {0}", path);
 			return null;
 		}
 

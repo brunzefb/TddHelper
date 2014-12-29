@@ -9,6 +9,9 @@ namespace DreamWorks.TddHelper.Implementation
 		private const string CsharpFileExtension = ".cs";
 		private const char Period = '.';
 		private const string Space = " ";
+		private static readonly log4net.ILog Logger = log4net.LogManager.
+						GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
 
 		public static string SourcePath { get; set; }
 		public static string TargetPath { get; set; }
@@ -79,12 +82,16 @@ namespace DreamWorks.TddHelper.Implementation
 					StringComparison.OrdinalIgnoreCase);
 				if (index == -1)
 					return string.Empty;
-				return sourceFileName.Substring(0, index) + CsharpFileExtension;
+				var fileName = sourceFileName.Substring(0, index) + CsharpFileExtension;
+				Logger.InfoFormat("SourceTargetInfo.GetTargetFileName() returns: {0}", fileName);
+				return fileName;
 			}
 			index = sourceFileName.LastIndexOf(Period);
 			if (index == -1)
 				return string.Empty;
-			return sourceFileName.Substring(0, index) + StaticOptions.MainOptions.TestFileSuffix;
+			var targetFileName = sourceFileName.Substring(0, index) + StaticOptions.MainOptions.TestFileSuffix;
+			Logger.InfoFormat("SourceTargetInfo.GetTargetFileName() returns: {0}", targetFileName);
+			return targetFileName;
 		}
 	}
 }

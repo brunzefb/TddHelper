@@ -1,15 +1,16 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using DreamWorks.TddHelper.Resources;
 using DreamWorks.TddHelper.Utility;
 using DreamWorks.TddHelper.View;
 using EnvDTE;
 using EnvDTE80;
+using log4net;
 
 namespace DreamWorks.TddHelper.Implementation
 {
@@ -17,10 +18,12 @@ namespace DreamWorks.TddHelper.Implementation
 	{
 		private const string CSharpLanguageName = "CSharp";
 		private const string ClassItemTemplateName = "Class.zip";
-		private static readonly log4net.ILog Logger = log4net.LogManager.
-					GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+		private static readonly ILog Logger = LogManager.
+			GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 		private static ProjectItem LastProjectItem;
-	
+
 		public static bool TryToCreateNewTargetClass()
 		{
 			if (!StaticOptions.MainOptions.AutoCreateTestFile)
@@ -28,22 +31,38 @@ namespace DreamWorks.TddHelper.Implementation
 				const int noDontCreateFile = 7; // winuser.h - IDNO
 				var result = ViewUtil.VsShowMessageBox(Access.Shell, Strings.ConfirmFileCreation);
 				if (result == noDontCreateFile)
+				{
+					Logger.Info("CreateClassHelper.TryToCreateNewTargetClass exiting because user cancelled");
 					return false;
+				}
 			}
 			var targetProjectPath = GetAssociatedTargetProjectPath();
 			if (string.IsNullOrEmpty(targetProjectPath))
+			{
+				Logger.Info("CreateClassHelper.TryToCreateNewTargetClass exiting because targetProjectPath empty");
 				return false;
+			}
 
 			var solution = Access.Dte.Solution as Solution2;
 			if (solution == null)
+			{
+				Logger.Info("CreateClassHelper.TryToCreateNewTargetClass exiting because no solution");
 				return false;
+			}
 			var templatePath = solution.GetProjectItemTemplate(ClassItemTemplateName, CSharpLanguageName);
 			var targetProject = ProjectFromPath(targetProjectPath);
 			if (targetProject == null)
+			{
+				Logger.Info("CreateClassHelper.TryToCreateNewTargetClass exiting because targetProject is null");
 				return false;
+			}
 
-			return CreateTargetClassInTargetProject(targetProject, templatePath);
+			var createClassSuccess = CreateTargetClassInTargetProject(targetProject, templatePath);
+			Logger.InfoFormat("CreateClassHelper.TryToCreateNewTargetClass CreateTargetClassInTargetProjectPath returns:{0}",
+				createClassSuccess);
+			return createClassSuccess;
 		}
+
 		private static Project ProjectFromPath(string path)
 		{
 			foreach (Project project in Access.Dte.Solution.Projects)
@@ -51,16 +70,18 @@ namespace DreamWorks.TddHelper.Implementation
 				try
 				{
 					if (!string.IsNullOrEmpty(project.FullName) &&
-						string.Equals(project.FullName, path, StringComparison.CurrentCultureIgnoreCase))
+					    string.Equals(project.FullName, path, StringComparison.CurrentCultureIgnoreCase))
 						return project;
 				}
-				// ReSharper disable once EmptyGeneralCatchClause
+					// ReSharper disable once EmptyGeneralCatchClause
 				catch
 				{
 				}
 			}
+			Logger.InfoFormat("CreateClassHelper.ProjectFromPath with {0} arg not found", path);
 			return null;
 		}
+
 		private static string PathForProject(string project)
 		{
 			foreach (Project proj in Access.Dte.Solution.Projects)
@@ -68,6 +89,7 @@ namespace DreamWorks.TddHelper.Implementation
 				if (proj.Name.Contains(project))
 					return proj.FullName;
 			}
+			Logger.InfoFormat("CreateClassHelper.PathForProject with {0} arg not found", project);
 			return null;
 		}
 
@@ -76,7 +98,8 @@ namespace DreamWorks.TddHelper.Implementation
 		{
 			var sourceProjectPath = Access.ProjectModel.ProjectPathFromFilePath(SourceTargetInfo.SourcePath);
 			Project sourceProject = ProjectFromPath(sourceProjectPath);
-
+			Logger.InfoFormat("CreateClassHelper.CreateTargetClassInTargetProject, MirrorFolders={0} ",
+				StaticOptions.MainOptions.MirrorProjectFolders);
 			if (!StaticOptions.MainOptions.MirrorProjectFolders)
 			{
 				targetProject.ProjectItems.AddFromTemplate(classTemplatePath, SourceTargetInfo.TargetFileName);
@@ -86,20 +109,21 @@ namespace DreamWorks.TddHelper.Implementation
 
 			var relative = RelativePathHelper.GetRelativePath(Path.GetDirectoryName(sourceProject.FullName),
 				Path.GetDirectoryName(SourceTargetInfo.SourcePath));
-			var trimmed = relative.TrimStart(new[] { '.', Path.DirectorySeparatorChar });
+			var trimmed = relative.TrimStart(new[] {'.', Path.DirectorySeparatorChar});
 
 			// If we just have a single item without dir separator chars
 			// then there is no folder structure to create
 			if (string.IsNullOrEmpty(trimmed) ||
-				!trimmed.Contains(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
+			    !trimmed.Contains(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
 			{
+				Logger.Info("CreateClassHelper.CreateTargetClassInTargetProject, no folder struct");
 				targetProject.ProjectItems.AddFromTemplate(classTemplatePath, SourceTargetInfo.TargetFileName);
 				SetTargetPathWithAddedItem(targetProject.ProjectItems);
 				return true;
 			}
 
 			// get a stack
-			var folderArray = trimmed.Split(new[] { Path.DirectorySeparatorChar });
+			var folderArray = trimmed.Split(new[] {Path.DirectorySeparatorChar});
 			var folderStack = StackFromArray(folderArray);
 
 			// add folders recursively if they don't exist
@@ -133,6 +157,7 @@ namespace DreamWorks.TddHelper.Implementation
 		{
 			return items.Cast<ProjectItem>().Any(item => item.Name == itemName);
 		}
+
 		private static Stack<string> StackFromArray(string[] folderArray)
 		{
 			var folderStack = new Stack<string>();
@@ -155,6 +180,7 @@ namespace DreamWorks.TddHelper.Implementation
 				if (item.Document == null)
 					continue;
 				SourceTargetInfo.TargetPath = item.Document.FullName;
+				Logger.InfoFormat("CreateClassHelper.SetTargetPathWithAddedItem, TargetPath={0} ", item.Document.FullName);
 				return;
 			}
 			Debug.Assert(false);
@@ -166,18 +192,28 @@ namespace DreamWorks.TddHelper.Implementation
 			string sourceProjectPath = Access.ProjectModel.ProjectPathFromFilePath(SourceTargetInfo.SourcePath);
 
 			if (string.IsNullOrEmpty(sourceProjectPath))
+			{
+				Logger.Info("CreateClassHelper.GetAssociatedTargetProjectPath, sourceProjectPath is null");
 				return null;
+			}
 
 			// check the cache first
 			if (SourceTargetInfo.IsSourcePathTest)
+			{
 				targetProjectPath =
 					Access.ProjectModel.ImplementationProjectFromTestProject(sourceProjectPath);
+			}
 			else
+			{
 				targetProjectPath =
 					Access.ProjectModel.TestProjectFromImplementationProject(sourceProjectPath);
+			}
 
 			if (!string.IsNullOrEmpty(targetProjectPath))
+			{
+				Logger.InfoFormat("CreateClassHelper.GetAssociatedTargetProjectPath, found target in cache:{0}", targetProjectPath);
 				return targetProjectPath;
+			}
 
 			// ask user in which project they want to create missing test/implementation
 			var associateTestProjectDialog = new AssociateTestProject(sourceProjectPath);
@@ -185,14 +221,26 @@ namespace DreamWorks.TddHelper.Implementation
 
 			var dlgResult = associateTestProjectDialog.ShowDialog();
 			if (!dlgResult.HasValue || dlgResult != true)
+			{
+				Logger.Info("CreateClassHelper.GetAssociatedTargetProjectPath AssociateTestProjectDlg cancelled");
 				return null;
+			}
 			if (!associateTestProjectDialog.ViewModel.RequestCreateProject)
+			{
+				Logger.InfoFormat("CreateClassHelper.GetAssociatedTargetProjectPath, user picked project through dialog:{0}",
+					associateTestProjectDialog.SelectedProject);
 				return associateTestProjectDialog.SelectedProject;
+			}
 
 			var projectName = associateTestProjectDialog.ViewModel.NewProjectName;
 			if (!CreateProjectHelper.CreateProject(projectName))
+			{
+				Logger.Info("CreateClassHelper.GetAssociatedTargetProjectPath CreateProjectHelper.CreateProject returned false");
 				return null;
-			return PathForProject(projectName);
+			}
+			var associatedTargetProjectPath = PathForProject(projectName);
+			Logger.InfoFormat("CreateClassHelper.GetAssociatedTargetProjectPath returns:{0}", associatedTargetProjectPath);
+			return associatedTargetProjectPath;
 		}
 	}
 }

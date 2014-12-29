@@ -131,7 +131,7 @@ namespace DreamWorks.TddHelper
 			var logConfig = defaultLogConfigTemplate.Replace("{REPLACE}", pathToLogfile);
 			var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(logConfig));
 			log4net.Config.XmlConfigurator.Configure(stream);
-			Logger.Info("TddStarted logging at " + DateTime.Now);
+			Logger.Info("\r\n\r\n\r\nNEW SESSION - TddStarted logging at " + DateTime.Now);
 		}
 
 		private void currentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
