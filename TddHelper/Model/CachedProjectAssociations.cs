@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
-
+using System.IO;
+using DreamWorks.TddHelper.Implementation;
 using GalaSoft.MvvmLight.Messaging;
 using Newtonsoft.Json;
 
@@ -95,7 +96,11 @@ namespace DreamWorks.TddHelper.Model
 			foreach (var implementationKey in implementationToTest.Keys)
 			{
 				if (implementationToTest[implementationKey] == testProject)
-					return implementationKey;
+				{
+					if (File.Exists(implementationKey) && 
+						Access.ProjectModel.ProjectPathsList.Contains(implementationKey))
+						return implementationKey;
+				}
 			}
 			return string.Empty;
 		}
@@ -113,7 +118,12 @@ namespace DreamWorks.TddHelper.Model
 				return string.Empty;
 
 			if (implementationToTest.ContainsKey(implementation))
-				return implementationToTest[implementation];
+			{
+				if (File.Exists(implementationToTest[implementation]) &&
+					Access.ProjectModel.ProjectPathsList.Contains(implementationToTest[implementation]))
+					return implementationToTest[implementation];
+				return string.Empty;
+			}
 			return string.Empty;
 		}
 	}

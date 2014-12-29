@@ -20,6 +20,8 @@ namespace DreamWorks.TddHelper.Implementation
 		private const string SignAssemblyPropertyName = "SignAssembly";
 		private const string AssemblyOriginatorKeyFilePropertyName = "AssemblyOriginatorKeyFile";
 		private const string AssemblyInfoCsFile = "AssemblyInfo.cs";
+		private static readonly log4net.ILog Logger = log4net.LogManager.
+			GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		public static bool CreateProject(string projectName)
 		{
@@ -199,7 +201,7 @@ namespace DreamWorks.TddHelper.Implementation
 		private static void MakeFriendAssembly(Project sourceProject, Project newlyCreatedProject)
 		{
 			// the way to get the sign info out of the project is not very well documented...
-			string patchString = string.Empty;
+			string patchString;
 			var fullPathToSnk = GetFullPathToSnkFile(sourceProject);
 			if (!string.IsNullOrEmpty(fullPathToSnk))
 			{
@@ -283,7 +285,11 @@ namespace DreamWorks.TddHelper.Implementation
 			if (ContainsItem(Class1ItemCreatedByTemplate, newlyCreatedProject.ProjectItems))
 				projectItem = newlyCreatedProject.ProjectItems.Item(Class1ItemCreatedByTemplate);
 			if (projectItem != null)
+			{
+				if(File.Exists(projectItem.get_FileNames(0)))
+					File.Delete(projectItem.get_FileNames(0));
 				projectItem.Delete();
+			}
 		}
 
 		private static bool ContainsItem(string itemName, ProjectItems items)

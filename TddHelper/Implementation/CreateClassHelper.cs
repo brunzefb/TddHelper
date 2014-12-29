@@ -17,7 +17,8 @@ namespace DreamWorks.TddHelper.Implementation
 	{
 		private const string CSharpLanguageName = "CSharp";
 		private const string ClassItemTemplateName = "Class.zip";
-
+		private static readonly log4net.ILog Logger = log4net.LogManager.
+					GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		private static ProjectItem LastProjectItem;
 	
 		public static bool TryToCreateNewTargetClass()

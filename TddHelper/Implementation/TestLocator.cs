@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using DreamWorks.TddHelper.Model;
+using DreamWorks.TddHelper.Utility;
 using DreamWorks.TddHelper.View;
 using EnvDTE;
 using EnvDTE80;
@@ -20,6 +21,8 @@ namespace DreamWorks.TddHelper.Implementation
 		private const string WindowMoveToNextTabGroupCommand = "Window.MoveToNextTabGroup";
 		private const string FileSaveAll = "File.SaveAll";
 		private const string WindowCloseAllDocuments = "Window.CloseAllDocuments";
+		private static readonly log4net.ILog Logger = log4net.LogManager.
+			GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		public TestLocator(DTE2 dte, IVsUIShell shell, IVsPackageInstaller packageInstaller, IProjectModel project)
 		{
@@ -31,10 +34,12 @@ namespace DreamWorks.TddHelper.Implementation
 
 		internal void OpenTestOrImplementation(object sender, EventArgs e)
 		{
+			Logger.Info("Executing: JumpToTestOrImplmentation");
 			if (Access.Dte.ActiveWindow == null || Access.Dte.ActiveDocument == null ||
 			    Access.Dte.ActiveWindow.Document == null)
 			{
-				System.Media.SystemSounds.Asterisk.Play();
+				Console.Beep();
+				Logger.Warn("JumpToTestOrImplmentation: No Active Window - aborting");
 				return;
 			}
 
@@ -42,23 +47,37 @@ namespace DreamWorks.TddHelper.Implementation
 			SourceTargetInfo.Clear();
 			SourceTargetInfo.SourcePath = Access.Dte.ActiveWindow.Document.FullName;
 			if (!SourceTargetInfo.IsSourcePathCsFile)
+			{
+				Logger.Warn("JumpToTestOrImplmentation: Attemting to jump on non CSharp File - aborting");
 				return;
+			}
 
 			Access.ProjectModel.GetCSharpFilesFromSolution();
 
 			SourceTargetInfo.TargetPath = FindExistingFileWithConflictResolution();
 			if (SourceTargetInfo.TargetPath == null) // dialog cancelled
+			{
+				Logger.Warn("JumpToTestOrImplmentation: User Cancelled Resolution Dialog - aborting");
 				return;
+			}
 			if (SourceTargetInfo.TargetPath == string.Empty) // not found
+			{
 				if (!CreateClassHelper.TryToCreateNewTargetClass())
+				{
+					Logger.Warn("JumpToTestOrImplmentation: TryToCreateNewTargetClass returns false - aborting");
 					return;
+				}
+			}
 			Load();
 		}
 
 		private void Load()
 		{
 			if (string.IsNullOrEmpty(SourceTargetInfo.TargetPath))
+			{
+				Logger.Warn("JumpToTestOrImplmentation: No SourceTargetInfo.TargetPath, load cancelled");
 				return;
+			}
 
 			SaveAndUnloadDocuments();
 
@@ -98,13 +117,13 @@ namespace DreamWorks.TddHelper.Implementation
 			}
 			catch (COMException e)
 			{
-				Debug.WriteLine(e.Message);
-				Debug.WriteLine(e.StackTrace);
+				Logger.Warn("JumpToTestOrImplmentation: LoadAndPlaceImplementationAndTest(), got COM Exception");
+				ExceptionLogHelper.LogException(e);
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine(e.Message);
-				Debug.WriteLine(e.StackTrace);
+				Logger.Warn("JumpToTestOrImplmentation: LoadAndPlaceImplementationAndTest(), got other exception");
+				ExceptionLogHelper.LogException(e);
 			}
 		}
 

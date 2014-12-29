@@ -9,7 +9,9 @@ namespace DreamWorks.TddHelper.Implementation
 	{
 		private const string Document = "Document";
 		private readonly DTE2 _dte;
-		
+		private static readonly log4net.ILog Logger = log4net.LogManager.
+			GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
 		internal TabJumper(DTE2 dte)
 		{
 			_dte = dte;
@@ -17,12 +19,14 @@ namespace DreamWorks.TddHelper.Implementation
 
 		internal void JumpRight(object sender, EventArgs e)
 		{
+			Logger.Info("Executing: JumpRight");
 			ExecuteJump(true);
 		}
 
 
 		internal void JumpLeft(object sender, EventArgs e)
 		{
+			Logger.Info("Executing: JumpLeft");
 			ExecuteJump(false);
 		}
 
@@ -31,7 +35,8 @@ namespace DreamWorks.TddHelper.Implementation
 			var topLevelWindows = GetSortedTopLevelWindows();
 			if (topLevelWindows.Count < 2)
 			{
-				System.Media.SystemSounds.Asterisk.Play();
+				Console.Beep();
+				Logger.Warn("ExecuteJump, only one top level window - aborting");
 				return;
 			}
 			var activeIndex = FindActiveWindowIndex(topLevelWindows);
