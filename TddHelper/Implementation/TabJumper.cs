@@ -30,7 +30,10 @@ namespace DreamWorks.TddHelper.Implementation
 		{
 			var topLevelWindows = GetSortedTopLevelWindows();
 			if (topLevelWindows.Count < 2)
+			{
+				System.Media.SystemSounds.Asterisk.Play();
 				return;
+			}
 			var activeIndex = FindActiveWindowIndex(topLevelWindows);
 			if (jumpRight)
 				activeIndex--;

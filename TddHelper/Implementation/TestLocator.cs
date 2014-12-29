@@ -33,7 +33,10 @@ namespace DreamWorks.TddHelper.Implementation
 		{
 			if (Access.Dte.ActiveWindow == null || Access.Dte.ActiveDocument == null ||
 			    Access.Dte.ActiveWindow.Document == null)
+			{
+				System.Media.SystemSounds.Asterisk.Play();
 				return;
+			}
 
 			Access.ProjectModel.UpdateSolutionId();
 			SourceTargetInfo.Clear();
