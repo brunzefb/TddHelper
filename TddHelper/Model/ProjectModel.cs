@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using DreamWorks.TddHelper.Utility;
 using EnvDTE;
 using EnvDTE80;
 

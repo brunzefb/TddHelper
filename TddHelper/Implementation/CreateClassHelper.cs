@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using DreamWorks.TddHelper.Resources;
+using DreamWorks.TddHelper.Utility;
 using DreamWorks.TddHelper.View;
 using EnvDTE;
 using EnvDTE80;

@@ -216,7 +216,7 @@
     <Compile Include="Model\CachedFileAssociations.cs" />
     <Compile Include="Model\ImplementationToTest.cs" />
     <Compile Include="Model\ProjectModel.cs" />
-    <Compile Include="RelativePathHelper.cs" />
+    <Compile Include="Utility\RelativePathHelper.cs" />
     <Compile Include="StaticOptions.cs" />
     <Compile Include="TddSettings.Designer.cs">
       <AutoGen>True</AutoGen>

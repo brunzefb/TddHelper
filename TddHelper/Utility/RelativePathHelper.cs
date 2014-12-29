@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace DreamWorks.TddHelper
+namespace DreamWorks.TddHelper.Utility
 {
 	// borrowed from http://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path
 	public static class RelativePathHelper

@@ -91,11 +91,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cpp\HelperTest.cs" />
+    <Compile Include="Implementation\AccessTest.cs" />
+    <Compile Include="Implementation\CreateClassHelperTest.cs" />
+    <Compile Include="Implementation\CreateProjectHelperTest.cs" />
+    <Compile Include="Implementation\SourceTargetInfoTest.cs" />
     <Compile Include="Model\CachedFileAssociationsTest.cs" />
+    <Compile Include="Model\CachedProjectAssociationsTest.cs" />
+    <Compile Include="Model\ImplementationTo.cs" />
+    <Compile Include="Model\OptionsClearFileAssociationsCacheTest.cs" />
+    <Compile Include="Model\OptionsClearProjectAssociationsCacheTest.cs" />
+    <Compile Include="Model\ProjectModelTest.cs" />
     <Compile Include="OptionsViewModelTest.cs" />
     <Compile Include="Implementation\TabJumperTest.cs" />
     <Compile Include="Implementation\TestLocatorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\PathUtilTest.cs" />
+    <Compile Include="Utility\RelativePathHelperTest.cs" />
+    <Compile Include="ViewModel\AddReferencesOptionsViewModelTest.cs" />
+    <Compile Include="ViewModel\AssociateTestProjectViewModelTest.cs" />
+    <Compile Include="ViewModel\ResolveFileConflictDialogViewModelTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\TddHelper\Key.snk">
