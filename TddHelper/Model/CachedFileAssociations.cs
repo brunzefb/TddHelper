@@ -74,13 +74,14 @@ namespace DreamWorks.TddHelper.Model
 			}
 
 			if (!implementationToTest.ContainsKey(implementation))
-				implementationToTest.Add(implementation, test);
+				implementationToTest.Add(implementation.ToLowerInvariant(), test.ToLowerInvariant());
 			else
-				implementationToTest[implementation] = test;
+				implementationToTest[implementation] = test.ToLowerInvariant();
 		}
 
 		public string ImplementationFromTest(string test)
 		{
+			string lowerTest = test.ToLowerInvariant();
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return string.Empty;
 			ImplementationToTest implementationToTest;
@@ -93,7 +94,7 @@ namespace DreamWorks.TddHelper.Model
 
 			foreach (var implementationKey in implementationToTest.Keys)
 			{
-				if (implementationToTest[implementationKey] == test)
+				if (implementationToTest[implementationKey] == lowerTest)
 				{
 					if (File.Exists(implementationKey))
 						return implementationKey;
@@ -105,6 +106,7 @@ namespace DreamWorks.TddHelper.Model
 
 		public string TestFromImplementation(string implementation)
 		{
+			var lowerImplementation = implementation.ToLowerInvariant();
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return string.Empty;
 			ImplementationToTest implementationToTest;
@@ -115,10 +117,10 @@ namespace DreamWorks.TddHelper.Model
 			else
 				return string.Empty;
 
-			if (implementationToTest.ContainsKey(implementation))
+			if (implementationToTest.ContainsKey(lowerImplementation))
 			{
-				if (File.Exists(implementationToTest[implementation]))
-					return implementationToTest[implementation];
+				if (File.Exists(implementationToTest[lowerImplementation]))
+					return implementationToTest[lowerImplementation];
 				return string.Empty;
 			}
 			return string.Empty;

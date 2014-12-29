@@ -62,6 +62,8 @@ namespace DreamWorks.TddHelper.Model
 
 		public void AddAssociation(string implementationProject, string testProject)
 		{
+			var implLower = implementationProject.ToLowerInvariant();
+			var testLower = testProject.ToLowerInvariant();
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return;
 			ImplementationToTest implementationToTest;
@@ -75,14 +77,15 @@ namespace DreamWorks.TddHelper.Model
 				Associations.Add(_solutionGuid, implementationToTest);
 			}
 
-			if (!implementationToTest.ContainsKey(implementationProject))
-				implementationToTest.Add(implementationProject, testProject);
+			if (!implementationToTest.ContainsKey(implLower))
+				implementationToTest.Add(implLower, testLower);
 			else
-				implementationToTest[implementationProject] = testProject;
+				implementationToTest[implLower] = testLower;
 		}
 
 		public string ImplementationProjectFromTestProject(string testProject)
 		{
+			var testProjectLower = testProject.ToLowerInvariant();
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return string.Empty;
 			ImplementationToTest implementationToTest;
@@ -95,7 +98,7 @@ namespace DreamWorks.TddHelper.Model
 
 			foreach (var implementationKey in implementationToTest.Keys)
 			{
-				if (implementationToTest[implementationKey] == testProject)
+				if (implementationToTest[implementationKey] == testProjectLower)
 				{
 					if (File.Exists(implementationKey) && 
 						Access.ProjectModel.ProjectPathsList.Contains(implementationKey))
@@ -107,6 +110,7 @@ namespace DreamWorks.TddHelper.Model
 
 		public string TestProjectFromImplementationProject(string implementation)
 		{
+			var implProjLower = implementation.ToLowerInvariant();
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return string.Empty;
 			ImplementationToTest implementationToTest;
@@ -117,11 +121,11 @@ namespace DreamWorks.TddHelper.Model
 			else
 				return string.Empty;
 
-			if (implementationToTest.ContainsKey(implementation))
+			if (implementationToTest.ContainsKey(implProjLower))
 			{
-				if (File.Exists(implementationToTest[implementation]) &&
-					Access.ProjectModel.ProjectPathsList.Contains(implementationToTest[implementation]))
-					return implementationToTest[implementation];
+				if (File.Exists(implementationToTest[implProjLower]) &&
+					Access.ProjectModel.ProjectPathsList.Contains(implementationToTest[implProjLower]))
+					return implementationToTest[implProjLower];
 				return string.Empty;
 			}
 			return string.Empty;

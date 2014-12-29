@@ -44,7 +44,7 @@ namespace DreamWorks.TddHelper.Implementation
 
 			Access.ProjectModel.UpdateSolutionId();
 			SourceTargetInfo.Clear();
-			SourceTargetInfo.SourcePath = Access.Dte.ActiveWindow.Document.FullName;
+			SourceTargetInfo.SourcePath = Access.Dte.ActiveWindow.Document.FullName.ToLowerInvariant();
 			if (!SourceTargetInfo.IsSourcePathCsFile)
 			{
 				Logger.Warn("JumpToTestOrImplmentation: Attemting to jump on non CSharp File - aborting");

@@ -128,7 +128,7 @@ namespace DreamWorks.TddHelper.Implementation
 			if (SourceTargetInfo.IsSourcePathTest)
 			{
 				Logger.Info("CreateProjectHelper.AddProjectReferenceToImplementationProject, sourcePath is a test");
-				AddImplementationReferenceToTestProject(newlyCreatedProject, sourceProject);
+				HandleNewlyCreatedImplementationProject(newlyCreatedProject, sourceProject);
 			}
 			else
 			{
@@ -137,47 +137,75 @@ namespace DreamWorks.TddHelper.Implementation
 			}
 		}
 
-		private static void HandleNewlyCreatedTestProject(Project newlyCreatedProject, References newlyCreatedRefs,
-			Project sourceProject)
+		private static void HandleNewlyCreatedTestProject(Project newlyCreatedTestProject, References newlyCreatedRefs,
+			Project sourceImplementationProject)
 		{
 			// newly created project is test, so we must add
 			// a reference to the implementation (source) project
 			var testProjectRefs = newlyCreatedRefs;
-			var testProject = newlyCreatedProject;
+			var testProject = newlyCreatedTestProject;
 			Logger.Info("CreateProjectHelper.HandleNewlyCreatedTestProject adding project reference to test project");
-			testProjectRefs.AddProject(sourceProject);
+			testProjectRefs.AddProject(sourceImplementationProject);
 			AddTestFrameworkReferenceWithNuGet(testProject);
 			AddTestFramworkReferenceWithFile(testProjectRefs);
 			Logger.InfoFormat("CreateProjectHelper.HandleNewlyCreatedTestProject, MakeFriendAssemblyFlag={0}", 
 				StaticOptions.MainOptions.MakeFriendAssembly);
 			if (StaticOptions.MainOptions.MakeFriendAssembly)
 			{
-				MakeFriendAssembly(testProject, sourceProject);
+				MakeFriendAssemblyNewlyCreatedTest(sourceImplementationProject, testProject );
 			}
-			MakeNewAssemblyStrongNamed(sourceProject, testProject);
+			MakeTestAssemblyStrongNamed(sourceImplementationProject, testProject);
 		}
 
-		private static void AddImplementationReferenceToTestProject(Project newlyCreatedProject, 
-			Project sourceProject)
+		private static void HandleNewlyCreatedImplementationProject(Project implementationProject, Project testProject)
 		{
 			// newly created project is implementation, so add
 			// a reference to the newly created to the test *source"
 			// project
-			var vsTestProject = sourceProject.Object as VSProject2;
+			var vsTestProject = testProject.Object as VSProject2;
 			if (vsTestProject == null)
 			{
-				Logger.Info("CreateProjectHelper.AddImplementationReferenceToTestProject, vsTestProject is null"); 
+				Logger.Info("CreateProjectHelper.HandleNewlyCreatedImplementationProject, vsTestProject is null"); 
 				return;
 			}
 			var sourceTestProjRefs = vsTestProject.References;
 			if (sourceTestProjRefs == null)
 			{
-				Logger.Info("CreateProjectHelper.AddImplementationReferenceToTestProject, sourceTestProjectRefs is null"); 
+				Logger.Info("CreateProjectHelper.HandleNewlyCreatedImplementationProject, sourceTestProjectRefs is null"); 
 				return;
 			}
-			Logger.Info("CreateProjectHelper.AddImplementationReferenceToTestProject, Adding reference"); 
+			Logger.Info("CreateProjectHelper.HandleNewlyCreatedImplementationProject, Adding reference"); 
 
-			sourceTestProjRefs.AddProject(newlyCreatedProject);
+			sourceTestProjRefs.AddProject(implementationProject);
+			Logger.InfoFormat("CreateProjectHelper.HandleNewlyCreatedImplementationProject, MakeFriendAssemblyFlag={0}",
+				StaticOptions.MainOptions.MakeFriendAssembly);
+			if (StaticOptions.MainOptions.MakeFriendAssembly)
+			{
+				if (MakeFriendAssemblyNewlyCreatedImplementation(implementationProject, testProject)) return;
+			}
+
+			MakeImplementationAssemblyStrongNamed(implementationProject, testProject);
+		}
+
+		private static bool MakeFriendAssemblyNewlyCreatedImplementation(Project implementationProject, Project testProject)
+		{
+			string patchString;
+			var fullPathToSnk = GetFullPathToSnkFile(testProject);
+			if (!string.IsNullOrEmpty(fullPathToSnk))
+			{
+				Logger.InfoFormat("CreateProjectHelper., fullPathToSnk={0}", fullPathToSnk);
+				var publicKeyAsString = Helper.PublicKeyFromSnkFile(fullPathToSnk);
+				if (string.IsNullOrEmpty(publicKeyAsString))
+				{
+					Logger.Info("CreateProjectHelper. - PublicKeyFromSnkFile (c++) failed");
+					return true;
+				}
+				patchString = GetInternalsVisibleToString(testProject.Name, publicKeyAsString);
+			}
+			else
+				patchString = string.Format("[assembly: InternalsVisibleTo (\"{0}\")]", testProject.Name);
+			PatchSourceAssemblyInfoCsWithInternalsVisibleTo(implementationProject, patchString);
+			return false;
 		}
 
 		private static void AddTestFramworkReferenceWithFile(References testProjectReferences)
@@ -225,23 +253,62 @@ namespace DreamWorks.TddHelper.Implementation
 			}
 		}
 
-		private static void MakeNewAssemblyStrongNamed(Project implProject, Project testProject)
+		private static void MakeImplementationAssemblyStrongNamed(Project implProject, Project testProject)
+		{
+			var testProjectSnkPath = GetFullPathToSnkFile(testProject);
+			if (string.IsNullOrEmpty(testProjectSnkPath))
+			{
+				Logger.Info("CreateProjectHelper.MakeImplementationAssemblyStrongNamed, testProjectSnkPath is null");
+				return;
+			}
+			var implementationProjectFolder = Path.GetDirectoryName(implProject.FullName);
+			if (string.IsNullOrEmpty(implementationProjectFolder))
+			{
+				Logger.Info("CreateProjectHelper.MakeImplementationAssemblyStrongNamed, implementationProjectFolder is null");
+				return;
+			}
+
+			var fullTargetPath = Path.Combine(implementationProjectFolder, Path.GetFileName(testProjectSnkPath));
+			Logger.InfoFormat("CreateProjectHelper.MakeImplementationAssemblyStrongNamed, Copying key file from {0} to {1}",
+				testProjectSnkPath, fullTargetPath);
+			File.Copy(testProjectSnkPath, fullTargetPath, true);
+
+			// make new implementation project signed.
+			var implProj = implProject.Object as VSProject2;
+			if (implProj == null)
+			{
+				Logger.Info("CreateProjectHelper.MakeImplementationAssemblyStrongNamed, implProj is null");
+				return;
+			}
+			var implProjectProps = implProj.Project.Properties;
+			if (implProjectProps == null)
+			{
+				Logger.Info("CreateProjectHelper.MakeImplementationAssemblyStrongNamed, implProjectProps is null");
+				return;
+			}
+			implProjectProps.Item(SignAssemblyPropertyName).Value = true;
+			implProjectProps.Item(AssemblyOriginatorKeyFilePropertyName).Value =
+				Path.GetFileName(testProjectSnkPath);
+			implProject.Save();
+		}
+
+		private static void MakeTestAssemblyStrongNamed(Project implProject, Project testProject)
 		{
 			var implementionFullPathToSnk = GetFullPathToSnkFile(implProject);
 			if (string.IsNullOrEmpty(implementionFullPathToSnk))
 			{
-				Logger.Info("CreateProjectHelper.MakeNewAssemblyStrongNamed, implementationFullPathToSnk is null");
+				Logger.Info("CreateProjectHelper.MakeTestAssemblyStrongNamed, implementationFullPathToSnk is null");
 				return;
 			}
 			var testProjectFolder = Path.GetDirectoryName(testProject.FullName);
 			if (string.IsNullOrEmpty(testProjectFolder))
 			{
-				Logger.Info("CreateProjectHelper.MakeNewAssemblyStrongNamed, testProjectFolder is null");
+				Logger.Info("CreateProjectHelper.MakeTestAssemblyStrongNamed, testProjectFolder is null");
 				return;
 			}
 
 			var fullTargetPath = Path.Combine(testProjectFolder, Path.GetFileName(implementionFullPathToSnk));
-			Logger.InfoFormat("CreateProjectHelper.MakeNewAssemblyStrongNamed, Copying key file from {0} to {1}",
+			Logger.InfoFormat("CreateProjectHelper.MakeTestAssemblyStrongNamed, Copying key file from {0} to {1}",
 				implementionFullPathToSnk, fullTargetPath);
 			File.Copy(implementionFullPathToSnk, fullTargetPath, true);
 
@@ -249,13 +316,13 @@ namespace DreamWorks.TddHelper.Implementation
 			var testProj = testProject.Object as VSProject2;
 			if (testProj == null)
 			{
-				Logger.Info("CreateProjectHelper.MakeNewAssemblyStrongNamed, testProj is null");
+				Logger.Info("CreateProjectHelper.MakeTestAssemblyStrongNamed, testProj is null");
 				return;
 			}
 			var testProjectProps = testProj.Project.Properties;
 			if (testProjectProps == null)
 			{
-				Logger.Info("CreateProjectHelper.MakeNewAssemblyStrongNamed, testProjectProps is null");
+				Logger.Info("CreateProjectHelper.MakeTestAssemblyStrongNamed, testProjectProps is null");
 				return;
 			}
 			testProjectProps.Item(SignAssemblyPropertyName).Value = true;
@@ -264,18 +331,18 @@ namespace DreamWorks.TddHelper.Implementation
 			testProject.Save();
 		}
 
-		private static void MakeFriendAssembly(Project sourceProject, Project newlyCreatedProject)
+		private static void MakeFriendAssemblyNewlyCreatedTest(Project sourceProject, Project newlyCreatedProject)
 		{
 			// the way to get the sign info out of the project is not very well documented...
 			string patchString;
 			var fullPathToSnk = GetFullPathToSnkFile(sourceProject);
 			if (!string.IsNullOrEmpty(fullPathToSnk))
 			{
-				Logger.InfoFormat("CreateProjectHelper.MakeFriendAssembly, fullPathToSnk={0}", fullPathToSnk);
+				Logger.InfoFormat("CreateProjectHelper.MakeFriendAssemblyNewlyCreatedTest, fullPathToSnk={0}", fullPathToSnk);
 				var publicKeyAsString = Helper.PublicKeyFromSnkFile(fullPathToSnk);
 				if (string.IsNullOrEmpty(publicKeyAsString))
 				{
-					Logger.Info("CreateProjectHelper.MakeFriendAssembly - PublicKeyFromSnkFile (c++) failed");
+					Logger.Info("CreateProjectHelper.MakeFriendAssemblyNewlyCreatedTest - PublicKeyFromSnkFile (c++) failed");
 					return;
 				}
 				string assemblyName = newlyCreatedProject.Name;
@@ -295,10 +362,11 @@ namespace DreamWorks.TddHelper.Implementation
 			foreach (var fullPathToFile in Access.ProjectModel.CsharpFilesInProject)
 			{
 				var fileName = Path.GetFileName(fullPathToFile);
+				var projectPathFromFilePath = Access.ProjectModel.ProjectPathFromFilePath(fullPathToFile);
 				if (String.Equals(fileName, AssemblyInfoCsFile, StringComparison.OrdinalIgnoreCase))
 				{
 					if (File.Exists(fullPathToFile) &&
-					    Access.ProjectModel.ProjectPathFromFilePath(fullPathToFile) == sourceProject.FullName)
+						String.Equals(projectPathFromFilePath, sourceProject.FullName, StringComparison.OrdinalIgnoreCase))
 					{
 						fullPathToAssemblyInfoCs = fullPathToFile;
 						break;
@@ -337,7 +405,10 @@ namespace DreamWorks.TddHelper.Implementation
 			var projectDirectoryName = Path.GetDirectoryName(sourceProject.FullName);
 			if (string.IsNullOrEmpty(projectDirectoryName) || string.IsNullOrEmpty(keyFile))
 			{
-				Logger.Info("CreateProjectHelper.GetFullPathToSnkFile projectDirectory or keyFile is null");
+				if (string.IsNullOrEmpty(keyFile))
+					Logger.Info("CreateProjectHelper.GetFullPathToSnkFile keyFile is null");
+				else
+					Logger.Info("CreateProjectHelper.GetFullPathToSnkFile projectDirectory is null");
 				return null;
 			}
 			Logger.InfoFormat("CreateProjectHelper.GetFullPathToSnkFile isSigned={0}, keyFile={1}, projectDirectoryName={2}",

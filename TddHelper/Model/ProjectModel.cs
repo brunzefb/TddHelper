@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -68,7 +69,7 @@ namespace DreamWorks.TddHelper.Model
 		public string ProjectPathFromFilePath(string path )
 		{
 			if (!string.IsNullOrEmpty(path) &&
-				_fileToProjectDictionary.ContainsKey(path))
+				_fileToProjectDictionary.Keys.Contains(path))
 			{
 				return _fileToProjectDictionary[path];
 			}
@@ -92,7 +93,6 @@ namespace DreamWorks.TddHelper.Model
 
 			var solutionProjects = solution.Projects;
 			RelativePathHelper.BasePath = Path.GetDirectoryName(solution.FullName);
-
 				
 			_fileToProjectDictionary.Clear();
 				
@@ -139,7 +139,7 @@ namespace DreamWorks.TddHelper.Model
 			{
 				if (!project.FileName.EndsWith(CsprojExtension))
 					continue;
-				_projectPathsList.Add(project.FileName);
+				_projectPathsList.Add(project.FileName.ToLowerInvariant());
 			}
 		}
 		private ProjectItem RecursiveGetProjectItem(ProjectItem item)
@@ -163,7 +163,7 @@ namespace DreamWorks.TddHelper.Model
 				// ReSharper disable once UseIndexedProperty
 				var filePath = item.get_FileNames(0);
 				if (filePath.ToLower().EndsWith(CsharpFileExtension))
-					_fileToProjectDictionary.Add(filePath, project.FullName);
+					_fileToProjectDictionary.Add(filePath.ToLowerInvariant(), project.FullName.ToLowerInvariant());
 				return;
 			}
 
