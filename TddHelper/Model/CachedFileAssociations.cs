@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.IO;
 using GalaSoft.MvvmLight.Messaging;
@@ -10,12 +11,12 @@ namespace DreamWorks.TddHelper.Model
 	{
 		private string _solutionGuid;
 
-		internal Dictionary<string, ImplementationToTest> Associations { get; set; }
+		public Dictionary<string, ImplementationToTestMapper> Associations { get; set; }
 
 		public CachedFileAssociations(string id)
 		{
 			_solutionGuid = id;
-			Associations = new Dictionary<string, ImplementationToTest>();
+			Associations = new Dictionary<string, ImplementationToTestMapper>(StringComparer.OrdinalIgnoreCase);
 			Messenger.Default.Register<OptionsClearFileAssociationsCache>(this, OnCacheCleared);
 		}
 
@@ -62,39 +63,39 @@ namespace DreamWorks.TddHelper.Model
 		{
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return;
-			ImplementationToTest implementationToTest;
+			ImplementationToTestMapper implementationToTestMapper;
 			if (Associations.ContainsKey(_solutionGuid))
 			{
-				implementationToTest = Associations[_solutionGuid];
+				implementationToTestMapper = Associations[_solutionGuid];
 			}
 			else
 			{
-				implementationToTest = new ImplementationToTest();
-				Associations.Add(_solutionGuid, implementationToTest);
+				implementationToTestMapper = new ImplementationToTestMapper();
+				Associations.Add(_solutionGuid, implementationToTestMapper);
 			}
 
-			if (!implementationToTest.ContainsKey(implementation))
-				implementationToTest.Add(implementation.ToLowerInvariant(), test.ToLowerInvariant());
+			if (!implementationToTestMapper.ContainsKey(implementation))
+				implementationToTestMapper.Add(implementation, test);
 			else
-				implementationToTest[implementation] = test.ToLowerInvariant();
+				implementationToTestMapper[implementation] = test;
 		}
 
 		public string ImplementationFromTest(string test)
 		{
-			string lowerTest = test.ToLowerInvariant();
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return string.Empty;
-			ImplementationToTest implementationToTest;
+			ImplementationToTestMapper implementationToTestMapper;
 			if (Associations.ContainsKey(_solutionGuid))
 			{
-				implementationToTest = Associations[_solutionGuid];
+				implementationToTestMapper = Associations[_solutionGuid];
 			}
 			else
 				return string.Empty;
 
-			foreach (var implementationKey in implementationToTest.Keys)
+			foreach (var implementationKey in implementationToTestMapper.Keys)
 			{
-				if (implementationToTest[implementationKey] == lowerTest)
+				var testFileInCache = implementationToTestMapper[implementationKey];
+				if (string.Equals(testFileInCache, test, StringComparison.OrdinalIgnoreCase))
 				{
 					if (File.Exists(implementationKey))
 						return implementationKey;
@@ -106,21 +107,21 @@ namespace DreamWorks.TddHelper.Model
 
 		public string TestFromImplementation(string implementation)
 		{
-			var lowerImplementation = implementation.ToLowerInvariant();
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return string.Empty;
-			ImplementationToTest implementationToTest;
+			ImplementationToTestMapper implementationToTestMapper;
 			if (Associations.ContainsKey(_solutionGuid))
 			{
-				implementationToTest = Associations[_solutionGuid];
+				implementationToTestMapper = Associations[_solutionGuid];
 			}
 			else
 				return string.Empty;
 
-			if (implementationToTest.ContainsKey(lowerImplementation))
+			if (implementationToTestMapper.ContainsKey(implementation))
 			{
-				if (File.Exists(implementationToTest[lowerImplementation]))
-					return implementationToTest[lowerImplementation];
+				var testFile = implementationToTestMapper[implementation];
+				if (File.Exists(testFile))
+					return testFile;
 				return string.Empty;
 			}
 			return string.Empty;

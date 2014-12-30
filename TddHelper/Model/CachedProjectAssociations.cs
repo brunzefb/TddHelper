@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.IO;
 using DreamWorks.TddHelper.Implementation;
@@ -7,17 +8,16 @@ using Newtonsoft.Json;
 
 namespace DreamWorks.TddHelper.Model
 {
-	
 	public class CachedProjectAssociations
 	{
 		private string _solutionGuid;
 
-		internal Dictionary<string, ImplementationToTest> Associations { get; set; }
+		public Dictionary<string, ImplementationToTestMapper> Associations { get; set; }
 
 		public CachedProjectAssociations(string id)
 		{
 			_solutionGuid = id;
-			Associations = new Dictionary<string, ImplementationToTest>();
+			Associations = new Dictionary<string, ImplementationToTestMapper>(StringComparer.OrdinalIgnoreCase);
 			Messenger.Default.Register<OptionsClearProjectAssociationsCache>(this, OnCacheCleared);
 		}
 
@@ -30,8 +30,8 @@ namespace DreamWorks.TddHelper.Model
 		{
 			if (Associations.ContainsKey(_solutionGuid))
 			{
-				var implementationToTest = Associations[_solutionGuid];
-				implementationToTest.Clear();
+				var toTestMapper = Associations[_solutionGuid];
+				toTestMapper.Clear();
 			}
 			Save();
 		}
@@ -62,70 +62,78 @@ namespace DreamWorks.TddHelper.Model
 
 		public void AddAssociation(string implementationProject, string testProject)
 		{
-			var implLower = implementationProject.ToLowerInvariant();
-			var testLower = testProject.ToLowerInvariant();
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return;
-			ImplementationToTest implementationToTest;
+			ImplementationToTestMapper implementationToTestMapper;
 			if (Associations.ContainsKey(_solutionGuid))
 			{
-				implementationToTest = Associations[_solutionGuid];
+				implementationToTestMapper = Associations[_solutionGuid];
 			}
 			else
 			{
-				implementationToTest = new ImplementationToTest();
-				Associations.Add(_solutionGuid, implementationToTest);
+				implementationToTestMapper = new ImplementationToTestMapper();
+				Associations.Add(_solutionGuid, implementationToTestMapper);
 			}
 
-			if (!implementationToTest.ContainsKey(implLower))
-				implementationToTest.Add(implLower, testLower);
+			if (!implementationToTestMapper.Dictionary.ContainsKey(implementationProject))
+				implementationToTestMapper.Add(implementationProject, testProject);
 			else
-				implementationToTest[implLower] = testLower;
+				implementationToTestMapper[implementationProject] = testProject;
 		}
 
 		public string ImplementationProjectFromTestProject(string testProject)
 		{
-			var testProjectLower = testProject.ToLowerInvariant();
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return string.Empty;
-			ImplementationToTest implementationToTest;
+			ImplementationToTestMapper implementationToTestMapper;
 			if (Associations.ContainsKey(_solutionGuid))
 			{
-				implementationToTest = Associations[_solutionGuid];
+				implementationToTestMapper = Associations[_solutionGuid];
 			}
 			else
 				return string.Empty;
 
-			foreach (var implementationKey in implementationToTest.Keys)
+			foreach (var implementationProjectFile in implementationToTestMapper.Keys)
 			{
-				if (implementationToTest[implementationKey] == testProjectLower)
+				if (string.Equals(implementationToTestMapper[implementationProjectFile],
+					testProject, StringComparison.OrdinalIgnoreCase))
 				{
-					if (File.Exists(implementationKey) && 
-						Access.ProjectModel.ProjectPathsList.Contains(implementationKey))
-						return implementationKey;
+					if (File.Exists(implementationProjectFile) &&
+						ProjectPathListsContains(implementationProjectFile))
+					{
+						return implementationProjectFile;
+					}
 				}
 			}
 			return string.Empty;
 		}
 
+		private bool ProjectPathListsContains(string key)
+		{
+			foreach (var p in Access.ProjectModel.ProjectPathsList)
+				if (string.Equals(p, key, StringComparison.OrdinalIgnoreCase))
+					return true;
+			return false;
+		}
+
 		public string TestProjectFromImplementationProject(string implementation)
 		{
-			var implProjLower = implementation.ToLowerInvariant();
 			if (string.IsNullOrEmpty(_solutionGuid))
 				return string.Empty;
-			ImplementationToTest implementationToTest;
+			ImplementationToTestMapper implementationToTestMapper;
 			if (Associations.ContainsKey(_solutionGuid))
 			{
-				implementationToTest = Associations[_solutionGuid];
+				implementationToTestMapper = Associations[_solutionGuid];
 			}
 			else
 				return string.Empty;
 
-			if (implementationToTest.ContainsKey(implProjLower))
+			if (implementationToTestMapper.ContainsKey(implementation))
 			{
-				if (File.Exists(implementationToTest[implProjLower]) &&
-					Access.ProjectModel.ProjectPathsList.Contains(implementationToTest[implProjLower]))
-					return implementationToTest[implProjLower];
+				var testProject = implementationToTestMapper[implementation];
+				if (File.Exists(testProject) &&
+					Access.ProjectModel.ProjectPathsList.Contains(testProject))
+					return testProject;
 				return string.Empty;
 			}
 			return string.Empty;

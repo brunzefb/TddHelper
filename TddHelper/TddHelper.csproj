@@ -218,7 +218,7 @@
     <Compile Include="Implementation\SourceTargetInfo.cs" />
     <Compile Include="Model\CachedProjectAssociations.cs" />
     <Compile Include="Model\CachedFileAssociations.cs" />
-    <Compile Include="Model\ImplementationToTest.cs" />
+    <Compile Include="Model\ImplementationToTestMapper.cs" />
     <Compile Include="Model\IProjectModel.cs" />
     <Compile Include="Model\ProjectModel.cs" />
     <Compile Include="Utility\ExceptionLogHelper.cs" />

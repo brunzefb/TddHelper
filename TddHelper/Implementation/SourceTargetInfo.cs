@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 
 namespace DreamWorks.TddHelper.Implementation
@@ -74,9 +73,13 @@ namespace DreamWorks.TddHelper.Implementation
 				return string.Empty;
 
 			var sourceFileName = Path.GetFileName(SourcePath);
-			Debug.Assert(sourceFileName != null);
+			if (string.IsNullOrEmpty(sourceFileName))
+			{
+				Logger.Warn("SourceTargetInfo.GetTargetFileName() - sourceFileName is null");
+				return string.Empty;
+			}
 			int index;
-			if (IsSourcePathTest)
+			if (IsSourcePathTest )
 			{
 				index = sourceFileName.LastIndexOf(StaticOptions.MainOptions.TestFileSuffix,
 					StringComparison.OrdinalIgnoreCase);
@@ -88,9 +91,12 @@ namespace DreamWorks.TddHelper.Implementation
 			}
 			index = sourceFileName.LastIndexOf(Period);
 			if (index == -1)
+			{
+				Logger.InfoFormat("SourceTargetInfo.GetTargetFileName cant find period, file={0}", sourceFileName);
 				return string.Empty;
-			var targetFileName = sourceFileName.Substring(0, index) + StaticOptions.MainOptions.TestFileSuffix;
-			Logger.InfoFormat("SourceTargetInfo.GetTargetFileName() returns: {0}", targetFileName);
+			}
+			var targetFileName = sourceFileName.Substring(0, index) + 
+				StaticOptions.MainOptions.TestFileSuffix;
 			return targetFileName;
 		}
 	}

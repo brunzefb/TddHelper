@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using DreamWorks.TddHelper.Utility;
@@ -19,11 +18,13 @@ namespace DreamWorks.TddHelper.Model
 		private readonly List<ProjectItem> _subItemList = new List<ProjectItem>();
 
 		private readonly Dictionary<string, string> _fileToProjectDictionary =
-			new Dictionary<string, string>();
+			new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 		public const string FullPathPropertyName = "FullPath";
 		private const string CsprojExtension = ".csproj";
 		private const string CsharpFileExtension = ".cs";
+		private static readonly log4net.ILog Logger = log4net.LogManager.
+			GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		public ProjectModel(DTE2 dte)
 		{
@@ -32,7 +33,6 @@ namespace DreamWorks.TddHelper.Model
 			_cachedProjectAssociations = new CachedProjectAssociations(string.Empty);
 			_cachedFileAssociations.Load();
 			_cachedProjectAssociations.Load();
-			
 		}
 
 		public List<string> ProjectPathsList 
@@ -86,6 +86,7 @@ namespace DreamWorks.TddHelper.Model
 
 		public void GetCSharpFilesFromSolution()
 		{
+			Logger.Info("ProjectModel.GetCSharpFilesFromSolution() - Getting project files");
 			var solution = _dte.Solution;
 
 			if (solution == null || solution.Projects == null)
@@ -123,6 +124,7 @@ namespace DreamWorks.TddHelper.Model
 			}
 
 			GetProjectPathsList();
+			Logger.Info("ProjectModel.GetCSharpFilesFromSolution() - Done!");
 		}
 
 		private void GetProjectPathsList()
@@ -139,7 +141,7 @@ namespace DreamWorks.TddHelper.Model
 			{
 				if (!project.FileName.EndsWith(CsprojExtension))
 					continue;
-				_projectPathsList.Add(project.FileName.ToLowerInvariant());
+				_projectPathsList.Add(project.FileName);
 			}
 		}
 		private ProjectItem RecursiveGetProjectItem(ProjectItem item)
@@ -163,18 +165,18 @@ namespace DreamWorks.TddHelper.Model
 				// ReSharper disable once UseIndexedProperty
 				var filePath = item.get_FileNames(0);
 				if (filePath.ToLower().EndsWith(CsharpFileExtension))
-					_fileToProjectDictionary.Add(filePath.ToLowerInvariant(), project.FullName.ToLowerInvariant());
+					_fileToProjectDictionary.Add(filePath, project.FullName);
 				return;
 			}
 
-			//should not happen more than one file per item
-			Debug.Assert(item.FileCount <= 1);
+			Logger.Warn("ProjectModel.GetFilesFromProjectItem more than 1 project item!");
 		}
 
 		public void AddFileToProjectAssociation(string file, string project)
 		{
-			_fileToProjectDictionary.Add(file.ToLowerInvariant(), project.ToLowerInvariant());
+			_fileToProjectDictionary.Add(file, project);
 		}
+
 		private bool HasProperty(Properties properties, string propertyName)
 		{
 			if (properties != null)
