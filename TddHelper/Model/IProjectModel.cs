@@ -14,5 +14,6 @@ namespace DreamWorks.TddHelper.Model
 		string FindTargetFileInCache(string targetFileName);
 		string ProjectPathFromFilePath(string path);
 		void GetCSharpFilesFromSolution();
+		void AddFileToProjectAssociation(string file, string project);
 	}
 }

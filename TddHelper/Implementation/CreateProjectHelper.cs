@@ -181,7 +181,12 @@ namespace DreamWorks.TddHelper.Implementation
 				StaticOptions.MainOptions.MakeFriendAssembly);
 			if (StaticOptions.MainOptions.MakeFriendAssembly)
 			{
-				if (MakeFriendAssemblyNewlyCreatedImplementation(implementationProject, testProject)) return;
+				// in this case the newly created assemblyinfo.cs which we must patch later
+				// is not the file to project list
+				var projectPath = Path.GetDirectoryName(implementationProject.FullName);
+				var file = Path.Combine(projectPath, @"Properties\AssemblyInfo.cs");
+				Access.ProjectModel.AddFileToProjectAssociation(file, implementationProject.FullName);
+				MakeFriendAssemblyNewlyCreatedImplementation(implementationProject, testProject);
 			}
 
 			MakeImplementationAssemblyStrongNamed(implementationProject, testProject);

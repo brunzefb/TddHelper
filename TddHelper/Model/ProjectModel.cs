@@ -171,6 +171,10 @@ namespace DreamWorks.TddHelper.Model
 			Debug.Assert(item.FileCount <= 1);
 		}
 
+		public void AddFileToProjectAssociation(string file, string project)
+		{
+			_fileToProjectDictionary.Add(file.ToLowerInvariant(), project.ToLowerInvariant());
+		}
 		private bool HasProperty(Properties properties, string propertyName)
 		{
 			if (properties != null)
