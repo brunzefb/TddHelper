@@ -75,7 +75,7 @@ namespace DreamWorks.TddHelper.Implementation
 			}
 
 			AddProjectAssociationToCache(newlyCreatedProject);
-			RemoveClass1File(newlyCreatedProject);
+			//RemoveClass1File(newlyCreatedProject);
 			AddProjectReferenceToImplementationProject(newlyCreatedProject);
 		}
 

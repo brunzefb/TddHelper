@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TddHelper", "TddHelper\TddHelper.csproj", "{C7534B37-0FB0-432D-8F47-EAACD78AD460}"
 EndProject
@@ -26,8 +26,8 @@ Global
 		{C7534B37-0FB0-432D-8F47-EAACD78AD460}.Debug|Win32.ActiveCfg = Debug|Any CPU
 		{C7534B37-0FB0-432D-8F47-EAACD78AD460}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7534B37-0FB0-432D-8F47-EAACD78AD460}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C7534B37-0FB0-432D-8F47-EAACD78AD460}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{C7534B37-0FB0-432D-8F47-EAACD78AD460}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C7534B37-0FB0-432D-8F47-EAACD78AD460}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{C7534B37-0FB0-432D-8F47-EAACD78AD460}.Release|Mixed Platforms.Build.0 = Release|x86
 		{C7534B37-0FB0-432D-8F47-EAACD78AD460}.Release|Win32.ActiveCfg = Release|Any CPU
 		{702E3404-6B6A-4EA8-BA30-E760C1616EC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{702E3404-6B6A-4EA8-BA30-E760C1616EC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
@@ -36,8 +36,8 @@ Global
 		{702E3404-6B6A-4EA8-BA30-E760C1616EC2}.Debug|Win32.ActiveCfg = Debug|Any CPU
 		{702E3404-6B6A-4EA8-BA30-E760C1616EC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{702E3404-6B6A-4EA8-BA30-E760C1616EC2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{702E3404-6B6A-4EA8-BA30-E760C1616EC2}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{702E3404-6B6A-4EA8-BA30-E760C1616EC2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{702E3404-6B6A-4EA8-BA30-E760C1616EC2}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{702E3404-6B6A-4EA8-BA30-E760C1616EC2}.Release|Mixed Platforms.Build.0 = Release|x86
 		{702E3404-6B6A-4EA8-BA30-E760C1616EC2}.Release|Win32.ActiveCfg = Release|Any CPU
 		{74EC1B4E-6675-491E-AA5D-C9790C7EB3F6}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{74EC1B4E-6675-491E-AA5D-C9790C7EB3F6}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
